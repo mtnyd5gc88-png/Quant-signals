@@ -23,15 +23,20 @@ gap:20px;
 }
 
 .card{
-background:#1e293b;
 padding:20px;
 border-radius:12px;
+transition:0.2s;
 }
 
 .ticker{
 font-size:22px;
 font-weight:bold;
 margin-bottom:10px;
+}
+
+.label{
+font-weight:bold;
+margin-bottom:8px;
 }
 </style>
 </head>
@@ -44,22 +49,46 @@ margin-bottom:10px;
 
 <script>
 
+function getSignal(prob){
+    if(prob >= 0.55) return "BUY"
+    if(prob >= 0.40) return "HOLD"
+    return "CASH"
+}
+
+function getColor(signal, target){
+    if(signal === "CASH") return "#7f1d1d"  // red
+    if(signal === "HOLD") return "#854d0e"  // yellow
+
+    // BUY → intensity by target return
+    let intensity = Math.min(Math.max(target, 0), 0.15) / 0.15
+    let green = Math.floor(100 + intensity * 155)
+    return `rgb(0, ${green}, 80)`
+}
+
 fetch("./data/predictions.json")
-.then(response => response.json())
+.then(res => res.json())
 .then(data => {
 
 const container = document.getElementById("signals")
 
 data.forEach(stock => {
 
+const signal = getSignal(stock.prob_up)
+const color = getColor(signal, stock.target_return)
+
 const card = document.createElement("div")
 card.className = "card"
+card.style.background = color
+
+const targetPrice = stock.price * (1 + stock.target_return)
 
 card.innerHTML = `
 <div class="ticker">${stock.ticker}</div>
-<div>Probability: ${(stock.prob_up * 100).toFixed(1)}%</div>
-<div>Target Return: ${(stock.target_return * 100).toFixed(2)}%</div>
+<div class="label">${signal}</div>
+<div>Probability: ${(stock.prob_up*100).toFixed(1)}%</div>
+<div>Target Return: ${(stock.target_return*100).toFixed(2)}%</div>
 <div>Price: $${stock.price.toFixed(2)}</div>
+<div>Target Price: $${targetPrice.toFixed(2)}</div>
 `
 
 container.appendChild(card)
@@ -67,7 +96,6 @@ container.appendChild(card)
 })
 
 })
-.catch(err => console.error(err))
 
 </script>
 
