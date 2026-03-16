@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Quant Signals</title>
+
+<style>
+
+body{
+background:#0f172a;
+color:white;
+font-family:Arial;
+padding:40px;
+}
+
+h1{
+margin-bottom:30px;
+}
+
+.container{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+gap:20px;
+}
+
+.card{
+background:#1e293b;
+padding:20px;
+border-radius:12px;
+}
+
+.ticker{
+font-size:22px;
+font-weight:bold;
+margin-bottom:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Today's Quant Signals</h1>
+
+<div class="container" id="signals"></div>
+
+<script>
+
+fetch("data/predictions.json")
+.then(res => res.json())
+.then(data => {
+
+const container = document.getElementById("signals")
+
+data.forEach(stock => {
+
+const card = document.createElement("div")
+card.className="card"
+
+card.innerHTML = `
+<div class="ticker">${stock.ticker}</div>
+<div>Probability: ${(stock.prob_up*100).toFixed(1)}%</div>
+<div>Target Return: ${(stock.target_return*100).toFixed(2)}%</div>
+<div>Price: $${stock.price.toFixed(2)}</div>
+`
+
+container.appendChild(card)
+
+})
+
+})
+
+</script>
+
+</body>
+</html>
