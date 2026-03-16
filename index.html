@@ -74,3 +74,30 @@ container.appendChild(card)
 
 </body>
 </html>
+
+<script>
+fetch("./data/predictions.json")
+  .then(response => response.json())
+  .then(data => {
+
+    const container = document.createElement("div");
+    container.className = "container";
+    document.body.appendChild(container);
+
+    data.forEach(stock => {
+
+      const card = document.createElement("div");
+      card.className = "card";
+
+      card.innerHTML = `
+        <div class="ticker">${stock.ticker}</div>
+        <div>Probability: ${(stock.prob_up * 100).toFixed(1)}%</div>
+        <div>Target Return: ${(stock.target_return * 100).toFixed(2)}%</div>
+        <div>Price: $${stock.price.toFixed(2)}</div>
+      `;
+
+      container.appendChild(card);
+    });
+
+  });
+</script>
