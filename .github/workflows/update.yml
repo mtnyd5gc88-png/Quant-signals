@@ -1,0 +1,33 @@
+name: Update Quant Signals
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run quant model
+        run: |
+          python main.py
+
+      - name: Commit & push results
+        run: |
+          git config --global user.name "bot"
+          git config --global user.email "bot@example.com"
+          git add .
+          git commit -m "auto update signals" || echo "no changes"
+          git push
