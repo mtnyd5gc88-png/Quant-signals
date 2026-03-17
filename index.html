@@ -234,8 +234,13 @@ function render(data){
 fetch(DATA_URL)
 .then(r=>r.json())
 .then(data=>{
-  ALL_DATA=data.sort((a,b)=>b.prob_up-a.prob_up)
-  renderTop(ALL_DATA)
+  // 전체는 prob 기준 유지
+  ALL_DATA = data.sort((a,b)=>b.prob_up-a.prob_up)
+
+// Top만 따로 정렬
+  const TOP_DATA = [...data].sort((a,b)=>b.target_return-a.target_return)
+
+  renderTop(TOP_DATA)
   render(ALL_DATA)
 })
 
