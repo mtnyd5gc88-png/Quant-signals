@@ -13,9 +13,45 @@ padding:40px;
 }
 
 h1{
-margin-bottom:30px;
+margin-bottom:20px;
 }
 
+/* 🔽 레전드 바 */
+.legend{
+display:flex;
+height:50px;
+margin-bottom:30px;
+border-radius:10px;
+overflow:hidden;
+font-weight:bold;
+}
+
+.legend-item{
+flex:1;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:14px;
+}
+
+/* 빨강 */
+.legend-item.red{
+background:#7f1d1d;
+}
+
+/* 노랑 */
+.legend-item.yellow{
+background:#854d0e;
+}
+
+/* 초록 (그라데이션) */
+.legend-item.green{
+background:linear-gradient(to right, rgb(0,100,80), rgb(0,255,80));
+color:white;
+text-shadow:0 0 3px rgba(0,0,0,0.5);
+}
+
+/* 카드 영역 */
 .container{
 display:grid;
 grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
@@ -44,6 +80,13 @@ margin-bottom:8px;
 <body>
 
 <h1>Today's Quant Signals</h1>
+
+<!-- 🔽 레전드 추가 -->
+<div class="legend">
+  <div class="legend-item red">STAY IN CASH</div>
+  <div class="legend-item yellow">HOLD</div>
+  <div class="legend-item green">BUY (LOW → HIGH)</div>
+</div>
 
 <div class="container" id="signals"></div>
 
@@ -74,7 +117,7 @@ data.forEach(stock => {
 
 let signal = getSignal(stock.prob_up)
 
-// ✅ 핵심 수정 (여기만 추가됨)
+// ✅ 2차 필터 (핵심 수정)
 if(signal === "BUY" && stock.target_return < 0){
     signal = "HOLD"
 }
