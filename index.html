@@ -16,14 +16,12 @@ h1{
 margin-bottom:20px;
 }
 
-/* 🔽 레전드 바 */
 .legend{
 display:flex;
 height:50px;
-margin-bottom:30px;
+margin-bottom:20px;
 border-radius:10px;
 overflow:hidden;
-font-weight:bold;
 }
 
 .legend-item{
@@ -31,27 +29,15 @@ flex:1;
 display:flex;
 align-items:center;
 justify-content:center;
-font-size:14px;
+font-weight:bold;
 }
 
-/* 빨강 */
-.legend-item.red{
-background:#7f1d1d;
-}
-
-/* 노랑 */
-.legend-item.yellow{
-background:#854d0e;
-}
-
-/* 초록 (그라데이션) */
-.legend-item.green{
+.red{background:#7f1d1d;}
+.yellow{background:#854d0e;}
+.green{
 background:linear-gradient(to right, rgb(0,100,80), rgb(0,255,80));
-color:white;
-text-shadow:0 0 3px rgba(0,0,0,0.5);
 }
 
-/* 카드 영역 */
 .container{
 display:grid;
 grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
@@ -61,18 +47,38 @@ gap:20px;
 .card{
 padding:20px;
 border-radius:12px;
-transition:0.2s;
+cursor:pointer;
 }
 
-.ticker{
-font-size:22px;
+button{
+padding:10px 20px;
+margin-bottom:20px;
+background:#22c55e;
+border:none;
+border-radius:8px;
+color:white;
 font-weight:bold;
-margin-bottom:10px;
+cursor:pointer;
 }
 
-.label{
-font-weight:bold;
-margin-bottom:8px;
+/* 모달 */
+.modal{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.8);
+overflow:auto;
+}
+
+.modal-content{
+background:#0f172a;
+margin:50px auto;
+padding:20px;
+width:80%;
+border-radius:10px;
 }
 </style>
 </head>
@@ -81,7 +87,9 @@ margin-bottom:8px;
 
 <h1>Today's Quant Signals</h1>
 
-<!-- 🔽 레전드 추가 -->
+<!-- 백테스트 버튼 -->
+<button onclick="openBacktest()">📊 View Backtest</button>
+
 <div class="legend">
   <div class="legend-item red">STAY IN CASH</div>
   <div class="legend-item yellow">HOLD</div>
@@ -89,6 +97,11 @@ margin-bottom:8px;
 </div>
 
 <div class="container" id="signals"></div>
+
+<!-- 모달 -->
+<div id="modal" class="modal" onclick="closeModal()">
+  <div class="modal-content" id="modal-content"></div>
+</div>
 
 <script>
 
@@ -107,6 +120,26 @@ function getColor(signal, target){
     return `rgb(0, ${green}, 80)`
 }
 
+// 🔥 백테스트 모달
+function openBacktest(){
+  const modal = document.getElementById("modal")
+  const content = document.getElementById("modal-content")
+
+  modal.style.display = "block"
+
+  content.innerHTML = `
+    <h2>Strategy Performance</h2>
+
+    <img src="charts/equity_curve.png" width="100%"><br><br>
+    <img src="charts/strategy_vs_spy.png" width="100%"><br><br>
+    <img src="charts/drawdown.png" width="100%">
+  `
+}
+
+function closeModal(){
+  document.getElementById("modal").style.display = "none"
+}
+
 fetch("./data/predictions.json")
 .then(res => res.json())
 .then(data => {
@@ -117,7 +150,7 @@ data.forEach(stock => {
 
 let signal = getSignal(stock.prob_up)
 
-// ✅ 2차 필터 (핵심 수정)
+// 2차 필터
 if(signal === "BUY" && stock.target_return < 0){
     signal = "HOLD"
 }
@@ -130,9 +163,14 @@ card.style.background = color
 
 const targetPrice = stock.price * (1 + stock.target_return)
 
+// 👉 카드 클릭하면 상세 (선택적으로 확장 가능)
+card.onclick = () => {
+  alert(`${stock.ticker}\nProb: ${stock.prob_up}`)
+}
+
 card.innerHTML = `
-<div class="ticker">${stock.ticker}</div>
-<div class="label">${signal}</div>
+<div style="font-size:22px;font-weight:bold;">${stock.ticker}</div>
+<div style="font-weight:bold;">${signal}</div>
 <div>Probability: ${(stock.prob_up*100).toFixed(1)}%</div>
 <div>Target Return: ${(stock.target_return*100).toFixed(2)}%</div>
 <div>Price: $${stock.price.toFixed(2)}</div>
