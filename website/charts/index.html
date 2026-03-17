@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Quant Signals</title>
+
+<style>
+body{
+  background:#0b1220;
+  color:#e2e8f0;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  padding:40px;
+}
+
+h1{
+  font-size:32px;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+.sub{
+  color:#94a3b8;
+  margin-bottom:30px;
+}
+
+/* 버튼 */
+button{
+  padding:10px 18px;
+  margin-right:10px;
+  background:#22c55e;
+  border:none;
+  border-radius:8px;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+button:hover{
+  opacity:0.85;
+}
+
+/* 레전드 */
+.legend{
+  display:flex;
+  height:45px;
+  margin-bottom:25px;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.legend-item{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:600;
+  font-size:13px;
+}
+
+.red{background:#7f1d1d;}
+.yellow{background:#854d0e;}
+.green{
+  background:linear-gradient(to right, rgb(0,100,80), rgb(0,255,120));
+}
+
+/* 카드 */
+.container{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:20px;
+}
+
+.card{
+  padding:20px;
+  border-radius:14px;
+  cursor:pointer;
+  transition:0.2s;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+}
+
+.card:hover{
+  transform:translateY(-4px);
+}
+
+.ticker{
+  font-size:20px;
+  font-weight:700;
+}
+
+.signal{
+  font-size:14px;
+  font-weight:600;
+  margin-bottom:10px;
+}
+
+.meta{
+  font-size:13px;
+  opacity:0.9;
+  line-height:1.6;
+}
+
+/* 모달 */
+.modal{
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.85);
+  overflow:auto;
+}
+
+.modal-content{
+  background:#0b1220;
+  margin:60px auto;
+  padding:25px;
+  width:80%;
+  border-radius:12px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Quant Signals</h1>
+<div class="sub">AI-driven probability-based trading signals</div>
+
+<button onclick="openBacktest()">📊 Backtest</button>
+<button onclick="openReport()">📄 Report</button>
+
+<div class="legend">
+  <div class="legend-item red">CASH</div>
+  <div class="legend-item yellow">HOLD</div>
+  <div class="legend-item green">BUY (LOW → HIGH)</div>
+</div>
+
+<div class="container" id="signals"></div>
+
+<div id="modal" class="modal" onclick="closeModal()">
+  <div class="modal-content" id="modal-content"></div>
+</div>
+
+<script>
+
+// ===== 캐시 방지 =====
+const DATA_URL = "data/predictions.json?nocache=" + Date.now()
+
+function getSignal(prob){
+  if(prob >= 0.55) return "BUY"
+  if(prob >= 0.40) return "HOLD"
+  return "CASH"
+}
+
+function getColor(signal, target){
+  if(signal === "CASH") return "#7f1d1d"
+  if(signal === "HOLD") return "#854d0e"
+
+  let intensity = Math.min(Math.max(target, 0), 0.15) / 0.15
+  let green = Math.floor(100 + intensity * 155)
+  return `rgb(0, ${green}, 90)`
+}
+
+// ===== 백테스트 =====
+function openBacktest(){
+  const modal = document.getElementById("modal")
+  const content = document.getElementById("modal-content")
+
+  modal.style.display = "block"
+
+  content.innerHTML = `
+    <h2>Backtest Performance</h2>
+    <img src="charts/equity_curve.png" width="100%"><br><br>
+    <img src="charts/strategy_vs_spy.png" width="100%"><br><br>
+    <img src="charts/drawdown.png" width="100%">
+  `
+}
+
+// ===== 리포트 =====
+function openReport(){
+  const modal = document.getElementById("modal")
+  const content = document.getElementById("modal-content")
+
+  modal.style.display = "block"
+
+  fetch("reports/performance_report.txt?nocache=" + Date.now())
+  .then(res => res.text())
+  .then(text => {
+    content.innerHTML = `
+      <h2>Performance Report</h2>
+      <pre style="white-space:pre-wrap;">${text}</pre>
+    `
+  })
+}
+
+function closeModal(){
+  document.getElementById("modal").style.display = "none"
+}
+
+// ===== 데이터 로드 =====
+fetch(DATA_URL)
+.then(res => res.json())
+.then(data => {
+
+const container = document.getElementById("signals")
+
+data.forEach(stock => {
+
+let signal = getSignal(stock.prob_up)
+
+// 2차 필터
+if(signal === "BUY" && stock.target_return < 0){
+  signal = "HOLD"
+}
+
+const color = getColor(signal, stock.target_return)
+const targetPrice = stock.price * (1 + stock.target_return)
+
+const card = document.createElement("div")
+card.className = "card"
+card.style.background = color
+
+card.innerHTML = `
+  <div class="ticker">${stock.ticker}</div>
+  <div class="signal">${signal}</div>
+  <div class="meta">
+    Prob: ${(stock.prob_up*100).toFixed(1)}%<br>
+    Return: ${(stock.target_return*100).toFixed(2)}%<br>
+    Price: $${stock.price.toFixed(2)}<br>
+    Target: $${targetPrice.toFixed(2)}
+  </div>
+`
+
+container.appendChild(card)
+
+})
+
+})
+</script>
+
+</body>
+</html>
