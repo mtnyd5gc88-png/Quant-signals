@@ -23,7 +23,6 @@ h1{
   margin-bottom:30px;
 }
 
-/* 버튼 */
 button{
   padding:10px 18px;
   margin-right:10px;
@@ -40,7 +39,6 @@ button:hover{
   opacity:0.85;
 }
 
-/* 레전드 */
 .legend{
   display:flex;
   height:45px;
@@ -64,7 +62,6 @@ button:hover{
   background:linear-gradient(to right, rgb(0,100,80), rgb(0,255,120));
 }
 
-/* 카드 */
 .container{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
@@ -100,7 +97,6 @@ button:hover{
   line-height:1.6;
 }
 
-/* 모달 */
 .modal{
   display:none;
   position:fixed;
@@ -127,8 +123,8 @@ button:hover{
 <h1>Quant Signals</h1>
 <div class="sub">AI-driven probability-based trading signals</div>
 
-<button onclick="openBacktest()">📊 Backtest</button>
-<button onclick="openReport()">📄 Report</button>
+<button onclick="openBacktest()"> Backtest</button>
+<button onclick="openReport()"> Report</button>
 
 <div class="legend">
   <div class="legend-item red">CASH</div>
@@ -144,8 +140,11 @@ button:hover{
 
 <script>
 
-// ===== 캐시 방지 =====
-const DATA_URL = "data/predictions.json?nocache=" + Date.now()
+// 🔥 핵심: BASE 경로 (너 repo 이름)
+const BASE = "/Quant-signals/website"
+
+// 캐시 방지
+const DATA_URL = `${BASE}/data/predictions.json?nocache=` + Date.now()
 
 function getSignal(prob){
   if(prob >= 0.55) return "BUY"
@@ -171,9 +170,9 @@ function openBacktest(){
 
   content.innerHTML = `
     <h2>Backtest Performance</h2>
-    <img src="charts/equity_curve.png" width="100%"><br><br>
-    <img src="charts/strategy_vs_spy.png" width="100%"><br><br>
-    <img src="charts/drawdown.png" width="100%">
+    <img src="${BASE}/charts/equity_curve.png" width="100%"><br><br>
+    <img src="${BASE}/charts/strategy_vs_spy.png" width="100%"><br><br>
+    <img src="${BASE}/charts/drawdown.png" width="100%">
   `
 }
 
@@ -184,13 +183,20 @@ function openReport(){
 
   modal.style.display = "block"
 
-  fetch("reports/performance_report.txt?nocache=" + Date.now())
-  .then(res => res.text())
+  fetch(`${BASE}/reports/performance_report.txt?nocache=` + Date.now())
+  .then(res => {
+    if(!res.ok) throw new Error("Report not found")
+    return res.text()
+  })
   .then(text => {
     content.innerHTML = `
       <h2>Performance Report</h2>
       <pre style="white-space:pre-wrap;">${text}</pre>
     `
+  })
+  .catch(err => {
+    content.innerHTML = `<p style="color:red;">Failed to load report</p>`
+    console.error(err)
   })
 }
 
@@ -200,7 +206,10 @@ function closeModal(){
 
 // ===== 데이터 로드 =====
 fetch(DATA_URL)
-.then(res => res.json())
+.then(res => {
+  if(!res.ok) throw new Error("JSON not found")
+  return res.json()
+})
 .then(data => {
 
 const container = document.getElementById("signals")
@@ -237,6 +246,12 @@ container.appendChild(card)
 })
 
 })
+.catch(err => {
+  console.error(err)
+  document.getElementById("signals").innerHTML =
+    "<p style='color:red;'>Failed to load data</p>"
+})
+
 </script>
 
 </body>
