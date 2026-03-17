@@ -20,7 +20,15 @@ h1{
 
 .sub{
   color:#94a3b8;
-  margin-bottom:30px;
+  margin-bottom:20px;
+}
+
+input{
+  padding:10px;
+  width:250px;
+  margin-bottom:20px;
+  border-radius:8px;
+  border:none;
 }
 
 button{
@@ -101,8 +109,13 @@ button{
 <h1>Quant Signals</h1>
 <div class="sub">AI-driven probability-based trading signals</div>
 
-<button onclick="openBacktest()"> Backtest</button>
-<button onclick="openReport()"> Report</button>
+<!-- 🔍 검색 -->
+<input id="search" placeholder="Search ticker (e.g. NVDA, TSLA)">
+
+<br>
+
+<button onclick="openBacktest()">📊 Backtest</button>
+<button onclick="openReport()">📄 Report</button>
 
 <div class="legend">
   <div class="legend-item red">CASH</div>
@@ -118,11 +131,11 @@ button{
 
 <script>
 
-// ===== BASE 경로 =====
+// ===== BASE =====
 const BASE = "/Quant-signals/website"
-
-// ===== 데이터 URL =====
 const DATA_URL = `${BASE}/data/predictions.json?nocache=` + Date.now()
+
+let ALL_DATA = []
 
 function getSignal(prob){
   if(prob >= 0.55) return "BUY"
@@ -138,6 +151,76 @@ function getColor(signal, target){
   let green = Math.floor(100 + intensity * 155)
   return `rgb(0, ${green}, 90)`
 }
+
+// ===== render =====
+function render(data){
+  const container = document.getElementById("signals")
+  container.innerHTML = ""
+
+  data.forEach(stock => {
+
+    let signal = getSignal(stock.prob_up)
+
+    if(signal === "BUY" && stock.target_return < 0){
+      signal = "HOLD"
+    }
+
+    const color = getColor(signal, stock.target_return)
+
+    const card = document.createElement("div")
+    card.className = "card"
+    card.style.background = color
+
+    card.onclick = () => openChart(stock.ticker)
+
+    card.innerHTML = `
+      <div><b>${stock.ticker}</b></div>
+      <div>${signal}</div>
+      <div>
+        ${(stock.prob_up*100).toFixed(1)}%<br>
+        ${(stock.target_return*100).toFixed(2)}%
+      </div>
+    `
+
+    container.appendChild(card)
+  })
+}
+
+// ===== 데이터 로드 =====
+fetch(DATA_URL)
+.then(res => {
+  if(!res.ok) throw new Error()
+  return res.json()
+})
+.then(data => {
+  ALL_DATA = data
+  render(data)
+})
+.catch(() => {
+  document.getElementById("signals").innerHTML =
+    "<p style='color:red;'>Failed to load data</p>"
+})
+
+// ===== 검색 (핵심 기능) =====
+document.getElementById("search").addEventListener("input", e => {
+  const keyword = e.target.value.toUpperCase()
+
+  if(keyword === ""){
+    render(ALL_DATA)
+    return
+  }
+
+  const filtered = ALL_DATA.filter(stock =>
+    stock.ticker === keyword
+  )
+
+  if(filtered.length === 0){
+    document.getElementById("signals").innerHTML =
+      `<p style="color:#94a3b8;">No signal found</p>`
+  } else {
+    render(filtered)
+  }
+})
 
 // ===== 백테스트 =====
 function openBacktest(){
@@ -162,23 +245,13 @@ function openReport(){
   modal.style.display = "block"
 
   fetch(`${BASE}/reports/performance_report.txt?nocache=` + Date.now())
-  .then(res => {
-    if(!res.ok) throw new Error("Report not found")
-    return res.text()
-  })
+  .then(res => res.text())
   .then(text => {
     content.innerHTML = `
       <h2>Performance Report</h2>
       <pre style="white-space:pre-wrap;">${text}</pre>
     `
   })
-  .catch(() => {
-    content.innerHTML = `<p style="color:red;">Failed to load report</p>`
-  })
-}
-
-function closeModal(){
-  document.getElementById("modal").style.display = "none"
 }
 
 // ===== 차트 =====
@@ -193,18 +266,18 @@ function openChart(ticker){
     <div id="tv_chart" style="height:500px;"></div>
   `
 
-  if(!window.tvScriptLoaded){
+  if(!window.tvLoaded){
     const script = document.createElement("script")
     script.src = "https://s3.tradingview.com/tv.js"
-    script.onload = () => createWidget(ticker)
+    script.onload = () => createChart(ticker)
     document.body.appendChild(script)
-    window.tvScriptLoaded = true
+    window.tvLoaded = true
   } else {
-    createWidget(ticker)
+    createChart(ticker)
   }
 }
 
-function createWidget(ticker){
+function createChart(ticker){
   new TradingView.widget({
     container_id: "tv_chart",
     symbol: "NASDAQ:" + ticker,
@@ -213,55 +286,13 @@ function createWidget(ticker){
     style: "1",
     width: "100%",
     height: 500
-  });
+  })
 }
 
-// ===== 데이터 로드 =====
-fetch(DATA_URL)
-.then(res => {
-  if(!res.ok) throw new Error("JSON not found")
-  return res.json()
-})
-.then(data => {
-
-const container = document.getElementById("signals")
-
-data.forEach(stock => {
-
-let signal = getSignal(stock.prob_up)
-
-if(signal === "BUY" && stock.target_return < 0){
-  signal = "HOLD"
+// ===== 모달 =====
+function closeModal(){
+  document.getElementById("modal").style.display = "none"
 }
-
-const color = getColor(signal, stock.target_return)
-const targetPrice = stock.price * (1 + stock.target_return)
-
-const card = document.createElement("div")
-card.className = "card"
-card.style.background = color
-
-// 🔥 클릭 이벤트
-card.onclick = () => openChart(stock.ticker)
-
-card.innerHTML = `
-  <div><b>${stock.ticker}</b></div>
-  <div>${signal}</div>
-  <div>
-    ${(stock.prob_up*100).toFixed(1)}%<br>
-    ${(stock.target_return*100).toFixed(2)}%
-  </div>
-`
-
-container.appendChild(card)
-
-})
-
-})
-.catch(() => {
-  document.getElementById("signals").innerHTML =
-    "<p style='color:red;'>Failed to load data</p>"
-})
 
 </script>
 
