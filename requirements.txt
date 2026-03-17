@@ -1,2 +1,5 @@
-ㄴㄴ
-
+pandas
+numpy
+scikit-learn
+yfinance
+matplotlib
