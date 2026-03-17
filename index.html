@@ -56,10 +56,9 @@ function getSignal(prob){
 }
 
 function getColor(signal, target){
-    if(signal === "CASH") return "#7f1d1d"  // red
-    if(signal === "HOLD") return "#854d0e"  // yellow
+    if(signal === "CASH") return "#7f1d1d"
+    if(signal === "HOLD") return "#854d0e"
 
-    // BUY → intensity by target return
     let intensity = Math.min(Math.max(target, 0), 0.15) / 0.15
     let green = Math.floor(100 + intensity * 155)
     return `rgb(0, ${green}, 80)`
@@ -73,7 +72,13 @@ const container = document.getElementById("signals")
 
 data.forEach(stock => {
 
-const signal = getSignal(stock.prob_up)
+let signal = getSignal(stock.prob_up)
+
+// ✅ 핵심 수정 (여기만 추가됨)
+if(signal === "BUY" && stock.target_return < 0){
+    signal = "HOLD"
+}
+
 const color = getColor(signal, stock.target_return)
 
 const card = document.createElement("div")
