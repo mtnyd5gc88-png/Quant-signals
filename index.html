@@ -32,11 +32,6 @@ button{
   color:white;
   font-weight:600;
   cursor:pointer;
-  transition:0.2s;
-}
-
-button:hover{
-  opacity:0.85;
 }
 
 .legend{
@@ -80,23 +75,6 @@ button:hover{
   transform:translateY(-4px);
 }
 
-.ticker{
-  font-size:20px;
-  font-weight:700;
-}
-
-.signal{
-  font-size:14px;
-  font-weight:600;
-  margin-bottom:10px;
-}
-
-.meta{
-  font-size:13px;
-  opacity:0.9;
-  line-height:1.6;
-}
-
 .modal{
   display:none;
   position:fixed;
@@ -129,7 +107,7 @@ button:hover{
 <div class="legend">
   <div class="legend-item red">CASH</div>
   <div class="legend-item yellow">HOLD</div>
-  <div class="legend-item green">BUY (LOW → HIGH)</div>
+  <div class="legend-item green">BUY</div>
 </div>
 
 <div class="container" id="signals"></div>
@@ -140,10 +118,10 @@ button:hover{
 
 <script>
 
-// 🔥 핵심: BASE 경로 (너 repo 이름)
+// ===== BASE 경로 =====
 const BASE = "/Quant-signals/website"
 
-// 캐시 방지
+// ===== 데이터 URL =====
 const DATA_URL = `${BASE}/data/predictions.json?nocache=` + Date.now()
 
 function getSignal(prob){
@@ -194,14 +172,48 @@ function openReport(){
       <pre style="white-space:pre-wrap;">${text}</pre>
     `
   })
-  .catch(err => {
+  .catch(() => {
     content.innerHTML = `<p style="color:red;">Failed to load report</p>`
-    console.error(err)
   })
 }
 
 function closeModal(){
   document.getElementById("modal").style.display = "none"
+}
+
+// ===== 차트 =====
+function openChart(ticker){
+  const modal = document.getElementById("modal")
+  const content = document.getElementById("modal-content")
+
+  modal.style.display = "block"
+
+  content.innerHTML = `
+    <h2>${ticker} Chart</h2>
+    <div id="tv_chart" style="height:500px;"></div>
+  `
+
+  if(!window.tvScriptLoaded){
+    const script = document.createElement("script")
+    script.src = "https://s3.tradingview.com/tv.js"
+    script.onload = () => createWidget(ticker)
+    document.body.appendChild(script)
+    window.tvScriptLoaded = true
+  } else {
+    createWidget(ticker)
+  }
+}
+
+function createWidget(ticker){
+  new TradingView.widget({
+    container_id: "tv_chart",
+    symbol: "NASDAQ:" + ticker,
+    interval: "D",
+    theme: "dark",
+    style: "1",
+    width: "100%",
+    height: 500
+  });
 }
 
 // ===== 데이터 로드 =====
@@ -218,7 +230,6 @@ data.forEach(stock => {
 
 let signal = getSignal(stock.prob_up)
 
-// 2차 필터
 if(signal === "BUY" && stock.target_return < 0){
   signal = "HOLD"
 }
@@ -230,14 +241,15 @@ const card = document.createElement("div")
 card.className = "card"
 card.style.background = color
 
+// 🔥 클릭 이벤트
+card.onclick = () => openChart(stock.ticker)
+
 card.innerHTML = `
-  <div class="ticker">${stock.ticker}</div>
-  <div class="signal">${signal}</div>
-  <div class="meta">
-    Prob: ${(stock.prob_up*100).toFixed(1)}%<br>
-    Return: ${(stock.target_return*100).toFixed(2)}%<br>
-    Price: $${stock.price.toFixed(2)}<br>
-    Target: $${targetPrice.toFixed(2)}
+  <div><b>${stock.ticker}</b></div>
+  <div>${signal}</div>
+  <div>
+    ${(stock.prob_up*100).toFixed(1)}%<br>
+    ${(stock.target_return*100).toFixed(2)}%
   </div>
 `
 
@@ -246,8 +258,7 @@ container.appendChild(card)
 })
 
 })
-.catch(err => {
-  console.error(err)
+.catch(() => {
   document.getElementById("signals").innerHTML =
     "<p style='color:red;'>Failed to load data</p>"
 })
