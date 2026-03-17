@@ -9,80 +9,88 @@ body{
   background:#0b1220;
   color:#e2e8f0;
   font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-  padding:40px;
+  margin:0;
 }
 
-h1{
-  font-size:32px;
+/* HEADER */
+.header{
+  padding:25px 40px;
+  border-bottom:1px solid #1e293b;
+}
+
+.title{
+  font-size:28px;
   font-weight:700;
-  margin-bottom:10px;
 }
 
-.sub{
+.subtitle{
   color:#94a3b8;
-  margin-bottom:20px;
-}
-
-input{
-  padding:10px;
-  width:250px;
-  margin-bottom:20px;
-  border-radius:8px;
-  border:none;
-}
-
-button{
-  padding:10px 18px;
-  margin-right:10px;
-  background:#22c55e;
-  border:none;
-  border-radius:8px;
-  color:white;
-  font-weight:600;
-  cursor:pointer;
-}
-
-.legend{
-  display:flex;
-  height:45px;
-  margin-bottom:25px;
-  border-radius:10px;
-  overflow:hidden;
-}
-
-.legend-item{
-  flex:1;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:600;
   font-size:13px;
 }
 
-.red{background:#7f1d1d;}
-.yellow{background:#854d0e;}
-.green{
-  background:linear-gradient(to right, rgb(0,100,80), rgb(0,255,120));
+/* SECTION */
+.section{
+  padding:30px 40px;
 }
 
-.container{
+.section h2{
+  margin-bottom:15px;
+}
+
+/* SEARCH */
+.search{
+  padding:12px;
+  width:260px;
+  border-radius:10px;
+  border:none;
+  background:#1e293b;
+  color:white;
+}
+
+/* GRID */
+.grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
   gap:20px;
 }
 
+/* CARD */
 .card{
-  padding:20px;
+  padding:18px;
   border-radius:14px;
   cursor:pointer;
   transition:0.2s;
-  box-shadow:0 4px 20px rgba(0,0,0,0.4);
 }
 
 .card:hover{
   transform:translateY(-4px);
 }
 
+.big{
+  font-size:22px;
+  font-weight:700;
+}
+
+.meta{
+  font-size:13px;
+  margin-top:8px;
+  opacity:0.9;
+}
+
+/* TOP PICKS */
+.top-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+
+.top-card{
+  padding:25px;
+  border-radius:16px;
+  cursor:pointer;
+}
+
+/* MODAL */
 .modal{
   display:none;
   position:fixed;
@@ -91,7 +99,6 @@ button{
   width:100%;
   height:100%;
   background:rgba(0,0,0,0.85);
-  overflow:auto;
 }
 
 .modal-content{
@@ -106,32 +113,36 @@ button{
 
 <body>
 
-<h1>Quant Signals</h1>
-<div class="sub">AI-driven probability-based trading signals</div>
-
-<!-- 🔍 검색 -->
-<input id="search" placeholder="Search ticker (e.g. NVDA, TSLA)">
-
-<br>
-
-<button onclick="openBacktest()"> Backtest</button>
-<button onclick="openReport()"> Report</button>
-
-<div class="legend">
-  <div class="legend-item red">CASH</div>
-  <div class="legend-item yellow">HOLD</div>
-  <div class="legend-item green">BUY</div>
+<!-- HEADER -->
+<div class="header">
+  <div class="title">Quant Signals</div>
+  <div class="subtitle">Probability-based stock ranking engine</div>
 </div>
 
-<div class="container" id="signals"></div>
+<!-- TOP PICKS -->
+<div class="section">
+  <h2>⭐ Top Signals</h2>
+  <div class="top-grid" id="top"></div>
+</div>
 
+<!-- SEARCH -->
+<div class="section">
+  <input id="search" class="search" placeholder="Search ticker (e.g. NVDA)">
+</div>
+
+<!-- ALL -->
+<div class="section">
+  <h2>All Signals</h2>
+  <div class="grid" id="signals"></div>
+</div>
+
+<!-- MODAL -->
 <div id="modal" class="modal" onclick="closeModal()">
   <div class="modal-content" id="modal-content"></div>
 </div>
 
 <script>
 
-// ===== BASE =====
 const BASE = "/Quant-signals/website"
 const DATA_URL = `${BASE}/data/predictions.json?nocache=` + Date.now()
 
@@ -143,155 +154,117 @@ function getSignal(prob){
   return "CASH"
 }
 
-function getColor(signal, target){
-  if(signal === "CASH") return "#7f1d1d"
-  if(signal === "HOLD") return "#854d0e"
-
-  let intensity = Math.min(Math.max(target, 0), 0.15) / 0.15
-  let green = Math.floor(100 + intensity * 155)
-  return `rgb(0, ${green}, 90)`
+function getColor(signal){
+  if(signal==="BUY") return "#065f46"
+  if(signal==="HOLD") return "#78350f"
+  return "#7f1d1d"
 }
 
-// ===== render =====
-function render(data){
-  const container = document.getElementById("signals")
+function renderTop(data){
+  const container = document.getElementById("top")
   container.innerHTML = ""
 
-  data.forEach(stock => {
-
-    let signal = getSignal(stock.prob_up)
-
-    if(signal === "BUY" && stock.target_return < 0){
-      signal = "HOLD"
-    }
-
-    const color = getColor(signal, stock.target_return)
+  data.slice(0,3).forEach(stock=>{
+    const signal = getSignal(stock.prob_up)
 
     const card = document.createElement("div")
-    card.className = "card"
-    card.style.background = color
+    card.className="top-card"
+    card.style.background=getColor(signal)
 
-    card.onclick = () => openChart(stock.ticker)
+    card.onclick=()=>openChart(stock.ticker)
 
-    card.innerHTML = `
-      <div><b>${stock.ticker}</b></div>
+    card.innerHTML=`
+      <div class="big">${stock.ticker}</div>
       <div>${signal}</div>
-      <div>
-        ${(stock.prob_up*100).toFixed(1)}%<br>
-        ${(stock.target_return*100).toFixed(2)}%
-      </div>
+      <div class="meta">${(stock.prob_up*100).toFixed(1)}%</div>
     `
 
     container.appendChild(card)
   })
 }
 
-// ===== 데이터 로드 =====
+function render(data){
+  const container=document.getElementById("signals")
+  container.innerHTML=""
+
+  data.forEach(stock=>{
+    const signal=getSignal(stock.prob_up)
+
+    const card=document.createElement("div")
+    card.className="card"
+    card.style.background=getColor(signal)
+
+    card.onclick=()=>openChart(stock.ticker)
+
+    card.innerHTML=`
+      <div><b>${stock.ticker}</b></div>
+      <div>${signal}</div>
+      <div class="meta">${(stock.prob_up*100).toFixed(1)}%</div>
+    `
+
+    container.appendChild(card)
+  })
+}
+
 fetch(DATA_URL)
-.then(res => {
-  if(!res.ok) throw new Error()
-  return res.json()
-})
-.then(data => {
-  ALL_DATA = data
-  render(data)
-})
-.catch(() => {
-  document.getElementById("signals").innerHTML =
-    "<p style='color:red;'>Failed to load data</p>"
+.then(r=>r.json())
+.then(data=>{
+  ALL_DATA=data.sort((a,b)=>b.prob_up-a.prob_up)
+  renderTop(ALL_DATA)
+  render(ALL_DATA)
 })
 
-// ===== 검색 (핵심 기능) =====
-document.getElementById("search").addEventListener("input", e => {
-  const keyword = e.target.value.toUpperCase()
+document.getElementById("search").addEventListener("input",e=>{
+  const k=e.target.value.toUpperCase()
 
-  if(keyword === ""){
+  if(k===""){
     render(ALL_DATA)
     return
   }
 
-  const filtered = ALL_DATA.filter(stock =>
-    stock.ticker === keyword
-  )
+  const f=ALL_DATA.filter(s=>s.ticker===k)
 
-  if(filtered.length === 0){
-    document.getElementById("signals").innerHTML =
-      `<p style="color:#94a3b8;">No signal found</p>`
-  } else {
-    render(filtered)
+  if(f.length===0){
+    document.getElementById("signals").innerHTML="No signal"
+  }else{
+    render(f)
   }
 })
 
-// ===== 백테스트 =====
-function openBacktest(){
-  const modal = document.getElementById("modal")
-  const content = document.getElementById("modal-content")
-
-  modal.style.display = "block"
-
-  content.innerHTML = `
-    <h2>Backtest Performance</h2>
-    <img src="${BASE}/charts/equity_curve.png" width="100%"><br><br>
-    <img src="${BASE}/charts/strategy_vs_spy.png" width="100%"><br><br>
-    <img src="${BASE}/charts/drawdown.png" width="100%">
-  `
-}
-
-// ===== 리포트 =====
-function openReport(){
-  const modal = document.getElementById("modal")
-  const content = document.getElementById("modal-content")
-
-  modal.style.display = "block"
-
-  fetch(`${BASE}/reports/performance_report.txt?nocache=` + Date.now())
-  .then(res => res.text())
-  .then(text => {
-    content.innerHTML = `
-      <h2>Performance Report</h2>
-      <pre style="white-space:pre-wrap;">${text}</pre>
-    `
-  })
-}
-
-// ===== 차트 =====
 function openChart(ticker){
-  const modal = document.getElementById("modal")
-  const content = document.getElementById("modal-content")
+  const modal=document.getElementById("modal")
+  const content=document.getElementById("modal-content")
 
-  modal.style.display = "block"
+  modal.style.display="block"
 
-  content.innerHTML = `
-    <h2>${ticker} Chart</h2>
+  content.innerHTML=`
+    <h2>${ticker}</h2>
     <div id="tv_chart" style="height:500px;"></div>
   `
 
   if(!window.tvLoaded){
-    const script = document.createElement("script")
-    script.src = "https://s3.tradingview.com/tv.js"
-    script.onload = () => createChart(ticker)
-    document.body.appendChild(script)
-    window.tvLoaded = true
-  } else {
+    const s=document.createElement("script")
+    s.src="https://s3.tradingview.com/tv.js"
+    s.onload=()=>createChart(ticker)
+    document.body.appendChild(s)
+    window.tvLoaded=true
+  }else{
     createChart(ticker)
   }
 }
 
 function createChart(ticker){
   new TradingView.widget({
-    container_id: "tv_chart",
-    symbol: "NASDAQ:" + ticker,
-    interval: "D",
-    theme: "dark",
-    style: "1",
-    width: "100%",
-    height: 500
+    container_id:"tv_chart",
+    symbol:"NASDAQ:"+ticker,
+    theme:"dark",
+    width:"100%",
+    height:500
   })
 }
 
-// ===== 모달 =====
 function closeModal(){
-  document.getElementById("modal").style.display = "none"
+  document.getElementById("modal").style.display="none"
 }
 
 </script>
