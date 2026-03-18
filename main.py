@@ -98,7 +98,13 @@ def main() -> None:
     extra_tickers = [BENCHMARK]
     if USE_MARKET_REGIME:
         extra_tickers.append(VIX_TICKER)
-    cfg = DataConfig(tickers=tickers + extra_tickers, start=START_DATE, end=END_DATE, cache_dir=Path("data"))
+    cfg = DataConfig(
+    tickers=tickers + extra_tickers,
+    start=START_DATE,
+    end=END_DATE,
+    cache_dir=Path("data"),
+    use_cache=False 
+    )
     raw = load_data(cfg)
     spy_df = raw.pop(BENCHMARK, None)
     vix_df = raw.pop(VIX_TICKER, None) if USE_MARKET_REGIME else None
