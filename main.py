@@ -389,7 +389,7 @@ def main() -> None:
     strategy_eq = bt.equity_curve
     recent_returns = strategy_eq.pct_change().dropna().tail(20)
 
-    if len(recent_returns) > 5:
+    if len(recent_returns) > 5 and recent_returns.std() != 0:
         recent_sharpe = (recent_returns.mean() / recent_returns.std()) * (252 ** 0.5)
     else:
         recent_sharpe = 0
