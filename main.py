@@ -32,6 +32,9 @@ from visualization import (
 
 def main() -> None:
 
+    import shutil
+    shutil.rmtree("data", ignore_errors=True)  # 🔥 캐시 삭제
+
     print("Run time:", datetime.datetime.now())
     # --------------------
     # User-configurable settings
