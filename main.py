@@ -319,7 +319,13 @@ def main() -> None:
                 train_years=WALK_FORWARD_TRAIN_YEARS,
                 step_years=WALK_FORWARD_STEP_YEARS,
             )
-            per_ticker_probs[ticker] = probs
+            latest_pred_map = {p.ticker: p for p in latest_preds}
+
+            for ticker, probs in per_ticker_probs.items():
+                p = latest_pred_map.get(ticker)
+
+                if p and p.target_price is not None and p.target_price < 0.02:
+                    per_ticker_probs[ticker] = probs * 0  # 진입 금지s
 
             if rf_importances is None and best.name == "random_forest":
                 clf = fitted_full.named_steps["clf"]
