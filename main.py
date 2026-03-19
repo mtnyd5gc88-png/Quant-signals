@@ -318,14 +318,17 @@ def main() -> None:
                 model_name=best.name,
                 train_years=WALK_FORWARD_TRAIN_YEARS,
                 step_years=WALK_FORWARD_STEP_YEARS,
-            )
-            latest_pred_map = {p.ticker: p for p in latest_preds}
+)
 
-            for ticker, probs in per_ticker_probs.items():
-                p = latest_pred_map.get(ticker)
+# 🔥 여기서 바로 필터 적용
+            latest_pred = next((x for x in latest_preds if x.ticker == ticker), None)
 
-                if p and p.target_price is not None and p.target_price < 0.02:
-                    per_ticker_probs[ticker] = probs * 0  # 진입 금지s
+            if latest_pred and latest_pred.target_price is not None:
+                if latest_pred.target_price < 0.02:
+                    probs = probs * 0  # 👉 이 종목 매수 금지
+
+# ✅ 그 다음에 넣는다
+            per_ticker_probs[ticker] = probs
 
             if rf_importances is None and best.name == "random_forest":
                 clf = fitted_full.named_steps["clf"]
