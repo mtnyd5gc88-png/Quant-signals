@@ -340,6 +340,11 @@ def main() -> None:
 
         rec = recommendation_from_probability(p.prob_up, effective_reco_thresh)
 
+    # 🔥 핵심 필터 추가
+        if p.target_price is not None:
+            if p.target_price < 0.02:   # 기대수익 2% 미만 제거
+                rec = "HOLD"
+
         if rec == "BUY" and p.target_price is not None and p.current_price is not None:
 
             # Regressor predicts forward return directly; derive target price.
@@ -374,62 +379,14 @@ def main() -> None:
         px = df["Adj Close"] if "Adj Close" in df.columns else df["Close"]
         price_by_ticker[ticker] = px
 
-    # =========================
-# 1️⃣ 1차 백테스트
+   # =========================
+# 🔥 단순 전략 (adaptive 제거)
 # =========================
     bt = run_portfolio_backtest(
         price_by_ticker=price_by_ticker,
         prob_by_ticker=per_ticker_probs,
         cfg=effective_portfolio_cfg
-)
-
-# =========================
-# 2️⃣ 최근 성과 기반 판단
-# =========================
-    strategy_eq = bt.equity_curve
-    recent_returns = strategy_eq.pct_change().dropna().tail(20)
-
-    if len(recent_returns) > 5 and recent_returns.std() != 0:
-        recent_sharpe = (recent_returns.mean() / recent_returns.std()) * (252 ** 0.5)
-    else:
-        recent_sharpe = 0
-
-    print(f"Recent Sharpe (20d): {recent_sharpe:.2f}")
-
-# =========================
-# 3️⃣ 전략 조정
-# =========================
-    if recent_sharpe < 0:
-        print("⚠️ Reducing risk")
-
-        adjusted_cfg = PortfolioConfig(
-            initial_capital=PORTFOLIO_CFG.initial_capital,
-            top_n=3,
-            max_exposure=0.5
-        )
-
-    elif recent_sharpe > 1:
-        print("✅ Strong performance")
-
-        adjusted_cfg = effective_portfolio_cfg
-
-    else:
-        print("➡️ Neutral")
-
-        adjusted_cfg = PortfolioConfig(
-            initial_capital=PORTFOLIO_CFG.initial_capital,
-            top_n=5,
-            max_exposure=0.7
-        )
-
-# =========================
-# 4️⃣ 최종 백테스트 (🔥 핵심)
-# =========================
-    bt = run_portfolio_backtest(
-        price_by_ticker=price_by_ticker,
-        prob_by_ticker=per_ticker_probs,
-        cfg=adjusted_cfg
-)
+    )
 
 # =========================
 # 5️⃣ 이후 기존 코드 그대로
