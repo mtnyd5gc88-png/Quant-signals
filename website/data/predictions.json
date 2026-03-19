@@ -1,25 +1,25 @@
 [
   {
     "ticker": "IBM",
-    "prob_up": 0.714,
+    "prob_up": 0.715,
     "price": 251.60000610351562,
     "target_return": 0.014819755337929287
   },
   {
     "ticker": "CNI",
-    "prob_up": 0.692,
+    "prob_up": 0.694,
     "price": 100.33000183105469,
-    "target_return": -0.0010890952625560574
+    "target_return": -0.0012127751104549767
   },
   {
     "ticker": "CDNS",
     "prob_up": 0.69,
     "price": 289.6400146484375,
-    "target_return": -0.00012531929426319265
+    "target_return": -0.00012531929426319217
   },
   {
     "ticker": "STX",
-    "prob_up": 0.687,
+    "prob_up": 0.686,
     "price": 406.7699890136719,
     "target_return": 0.0721859361266121
   },
@@ -31,7 +31,7 @@
   },
   {
     "ticker": "MKC",
-    "prob_up": 0.67,
+    "prob_up": 0.673,
     "price": 55.060001373291016,
     "target_return": 0.008794815440111967
   },
@@ -45,7 +45,7 @@
     "ticker": "ICE",
     "prob_up": 0.645,
     "price": 157.16000366210938,
-    "target_return": 0.0293176004861589
+    "target_return": 0.029430361953512466
   },
   {
     "ticker": "BABA",
@@ -55,33 +55,27 @@
   },
   {
     "ticker": "CME",
-    "prob_up": 0.643,
+    "prob_up": 0.642,
     "price": 308.8999938964844,
-    "target_return": 0.015480298163031609
+    "target_return": 0.015273568970436907
   },
   {
     "ticker": "CRWD",
     "prob_up": 0.639,
     "price": 435.80999755859375,
-    "target_return": -0.022370773638537355
+    "target_return": -0.022370773638537362
   },
   {
     "ticker": "WDC",
     "prob_up": 0.638,
     "price": 304.8999938964844,
-    "target_return": 0.07785711264444437
+    "target_return": 0.07769346855661648
   },
   {
     "ticker": "HON",
-    "prob_up": 0.637,
+    "prob_up": 0.635,
     "price": 229.9199981689453,
-    "target_return": -0.012509960540086029
-  },
-  {
-    "ticker": "PAYX",
-    "prob_up": 0.633,
-    "price": 90.63999938964844,
-    "target_return": 0.024689329851043763
+    "target_return": -0.012435216987966236
   },
   {
     "ticker": "CNX",
@@ -91,15 +85,21 @@
   },
   {
     "ticker": "SPGI",
-    "prob_up": 0.628,
+    "prob_up": 0.629,
     "price": 426.6400146484375,
-    "target_return": 0.045058135893273316
+    "target_return": 0.04505813589327331
   },
   {
     "ticker": "GPN",
-    "prob_up": 0.626,
+    "prob_up": 0.625,
     "price": 69.63999938964844,
     "target_return": 0.0058972356864498586
+  },
+  {
+    "ticker": "PAYX",
+    "prob_up": 0.624,
+    "price": 90.63999938964844,
+    "target_return": 0.024452878700108996
   },
   {
     "ticker": "NET",
@@ -111,43 +111,37 @@
     "ticker": "ADP",
     "prob_up": 0.618,
     "price": 208.27999877929688,
-    "target_return": 0.006549378357728469
+    "target_return": 0.006687250466036377
   },
   {
     "ticker": "ETN",
-    "prob_up": 0.613,
+    "prob_up": 0.615,
     "price": 360.5400085449219,
-    "target_return": -0.018042793037302215
+    "target_return": -0.01771598050740948
   },
   {
-    "ticker": "USB",
+    "ticker": "ODFL",
     "prob_up": 0.613,
-    "price": 51.31999969482422,
-    "target_return": -0.027611065219882793
+    "price": 182.57000732421875,
+    "target_return": 0.009288563115286749
   },
   {
     "ticker": "ECL",
-    "prob_up": 0.612,
+    "prob_up": 0.613,
     "price": 261.8399963378906,
-    "target_return": -0.022939755331867737
+    "target_return": -0.02362373413407991
   },
   {
     "ticker": "HRL",
     "prob_up": 0.612,
     "price": 22.709999084472656,
-    "target_return": 0.032069267426141676
+    "target_return": 0.03203347144409646
   },
   {
     "ticker": "BIIB",
     "prob_up": 0.612,
     "price": 182.30999755859375,
     "target_return": 0.008756361669736125
-  },
-  {
-    "ticker": "ODFL",
-    "prob_up": 0.612,
-    "price": 182.57000732421875,
-    "target_return": 0.009314816792707296
   },
   {
     "ticker": "PANW",
@@ -162,46 +156,58 @@
     "target_return": 0.017910813700863084
   },
   {
+    "ticker": "USB",
+    "prob_up": 0.61,
+    "price": 51.31999969482422,
+    "target_return": -0.027578433167538777
+  },
+  {
+    "ticker": "AAPL",
+    "prob_up": 0.608,
+    "price": 249.94000244140625,
+    "target_return": -0.01162001828880787
+  },
+  {
     "ticker": "ALLY",
     "prob_up": 0.608,
     "price": 37.59000015258789,
-    "target_return": 0.05656478320112503
+    "target_return": 0.057070798313430524
   },
   {
     "ticker": "MA",
     "prob_up": 0.607,
     "price": 488.4700012207031,
-    "target_return": 0.004506990039849053
+    "target_return": 0.004506990039849054
   },
   {
     "ticker": "HUM",
     "prob_up": 0.604,
     "price": 170.4199981689453,
-    "target_return": 0.01964764227990053
+    "target_return": 0.019490214086342276
+  },
+  {
+    "ticker": "META",
+    "prob_up": 0.604,
+    "price": 615.6799926757812,
+    "target_return": 0.010450243246055833
   },
   {
     "ticker": "BIDU",
     "prob_up": 0.603,
     "price": 121.87000274658203,
-    "target_return": 0.008467148421351819
+    "target_return": 0.00846714842135182
   },
   {
-    "ticker": "META",
-    "prob_up": 0.601,
-    "price": 615.6799926757812,
-    "target_return": 0.011735809702933584
-  },
-  {
-    "ticker": "AAPL",
-    "prob_up": 0.601,
-    "price": 249.94000244140625,
-    "target_return": -0.01166467946558782
+    "ticker": "TMO",
+    "prob_up": 0.603,
+    "price": 464.69000244140625,
+    "target_return": 0.03746924394466531
   },
   {
     "ticker": "SEDG",
     "prob_up": 0.598,
     "price": 44.880001068115234,
-    "target_return": 0.06649359527590713
+    "target_return": 0.06649359527590712
   },
   {
     "ticker": "ON",
@@ -210,10 +216,16 @@
     "target_return": 0.003552712767348027
   },
   {
-    "ticker": "TMO",
-    "prob_up": 0.597,
-    "price": 464.69000244140625,
-    "target_return": 0.037657997681887524
+    "ticker": "SWKS",
+    "prob_up": 0.596,
+    "price": 53.58000183105469,
+    "target_return": 0.00011319791006504
+  },
+  {
+    "ticker": "CVX",
+    "prob_up": 0.596,
+    "price": 198.61000061035156,
+    "target_return": 0.009165787174791473
   },
   {
     "ticker": "PYPL",
@@ -222,58 +234,46 @@
     "target_return": -0.038470660810766236
   },
   {
-    "ticker": "SWKS",
-    "prob_up": 0.596,
-    "price": 53.58000183105469,
-    "target_return": -0.00027381296022014435
-  },
-  {
-    "ticker": "CVX",
-    "prob_up": 0.596,
-    "price": 198.61000061035156,
-    "target_return": 0.00893786386480974
-  },
-  {
-    "ticker": "CHRW",
-    "prob_up": 0.594,
-    "price": 170.63999938964844,
-    "target_return": 0.05751522691869097
-  },
-  {
     "ticker": "PNC",
-    "prob_up": 0.592,
+    "prob_up": 0.593,
     "price": 201.1699981689453,
     "target_return": -0.02170986269985211
   },
   {
     "ticker": "AMAT",
-    "prob_up": 0.592,
+    "prob_up": 0.593,
     "price": 349.4700012207031,
     "target_return": 0.04656664359357026
   },
   {
-    "ticker": "NKE",
-    "prob_up": 0.59,
-    "price": 53.470001220703125,
-    "target_return": 0.008931560650223934
+    "ticker": "CHRW",
+    "prob_up": 0.593,
+    "price": 170.63999938964844,
+    "target_return": 0.05713894170203601
   },
   {
     "ticker": "PM",
     "prob_up": 0.59,
     "price": 166.13999938964844,
-    "target_return": -0.022883158696086783
+    "target_return": -0.022825347025657316
+  },
+  {
+    "ticker": "NKE",
+    "prob_up": 0.59,
+    "price": 53.470001220703125,
+    "target_return": 0.00967764741695871
   },
   {
     "ticker": "BK",
-    "prob_up": 0.589,
+    "prob_up": 0.59,
     "price": 114.66000366210938,
-    "target_return": -0.03763074422691064
+    "target_return": -0.03763074422691063
   },
   {
-    "ticker": "NDAQ",
-    "prob_up": 0.582,
-    "price": 85.44000244140625,
-    "target_return": -0.015605541607353017
+    "ticker": "WMT",
+    "prob_up": 0.583,
+    "price": 121.9800033569336,
+    "target_return": 0.021106908860175872
   },
   {
     "ticker": "XPEV",
@@ -282,14 +282,8 @@
     "target_return": -0.027133347350435287
   },
   {
-    "ticker": "WMT",
-    "prob_up": 0.582,
-    "price": 121.9800033569336,
-    "target_return": 0.0212798232977401
-  },
-  {
     "ticker": "COF",
-    "prob_up": 0.58,
+    "prob_up": 0.581,
     "price": 180.13999938964844,
     "target_return": 0.006203755760857523
   },
@@ -297,67 +291,61 @@
     "ticker": "DPZ",
     "prob_up": 0.579,
     "price": 376.9200134277344,
-    "target_return": 0.021587075157317035
+    "target_return": 0.021587075157317028
+  },
+  {
+    "ticker": "KR",
+    "prob_up": 0.579,
+    "price": 73.27999877929688,
+    "target_return": -0.03321523935098711
   },
   {
     "ticker": "NXPI",
     "prob_up": 0.578,
     "price": 192.69000244140625,
-    "target_return": 0.053638968881578805
+    "target_return": 0.05381055044821364
   },
   {
     "ticker": "ORCL",
-    "prob_up": 0.577,
+    "prob_up": 0.578,
     "price": 152.89999389648438,
-    "target_return": 0.012281966899221026
+    "target_return": 0.011833914276755812
   },
   {
-    "ticker": "KR",
-    "prob_up": 0.576,
-    "price": 73.27999877929688,
-    "target_return": -0.03307892257409194
+    "ticker": "CSCO",
+    "prob_up": 0.577,
+    "price": 77.5999984741211,
+    "target_return": 0.004862958035161815
   },
   {
     "ticker": "DOW",
     "prob_up": 0.576,
     "price": 37.689998626708984,
-    "target_return": 0.004643013208129069
-  },
-  {
-    "ticker": "CSCO",
-    "prob_up": 0.574,
-    "price": 77.5999984741211,
-    "target_return": 0.005154435096627415
+    "target_return": 0.004643013208129071
   },
   {
     "ticker": "MCHP",
-    "prob_up": 0.573,
+    "prob_up": 0.574,
     "price": 64.70999908447266,
-    "target_return": 0.0201751125013931
+    "target_return": 0.019767155343508553
   },
   {
     "ticker": "DXCM",
     "prob_up": 0.573,
     "price": 67.66000366210938,
-    "target_return": 0.0393390474969397
-  },
-  {
-    "ticker": "CL",
-    "prob_up": 0.573,
-    "price": 87.5199966430664,
-    "target_return": 0.0018839748253429434
+    "target_return": 0.03933904749693969
   },
   {
     "ticker": "SCHW",
     "prob_up": 0.571,
     "price": 93.27999877929688,
-    "target_return": 0.012195691613617917
+    "target_return": 0.011617723627650204
   },
   {
     "ticker": "RTX",
-    "prob_up": 0.57,
+    "prob_up": 0.571,
     "price": 204.55999755859375,
-    "target_return": 0.004476042456991672
+    "target_return": 0.004421470212518666
   },
   {
     "ticker": "ULTA",
@@ -366,10 +354,10 @@
     "target_return": -0.035685926359592876
   },
   {
-    "ticker": "JBHT",
+    "ticker": "CL",
     "prob_up": 0.57,
-    "price": 197.63999938964844,
-    "target_return": -0.08318190405848166
+    "price": 87.5199966430664,
+    "target_return": 0.002629188751117717
   },
   {
     "ticker": "HUBS",
@@ -381,7 +369,13 @@
     "ticker": "DELL",
     "prob_up": 0.569,
     "price": 149.2100067138672,
-    "target_return": 0.01362394512139814
+    "target_return": 0.013975600684236759
+  },
+  {
+    "ticker": "REGN",
+    "prob_up": 0.569,
+    "price": 744.1199951171875,
+    "target_return": 0.0219818183469579
   },
   {
     "ticker": "DHR",
@@ -390,16 +384,16 @@
     "target_return": 0.017307296509334227
   },
   {
-    "ticker": "REGN",
-    "prob_up": 0.568,
-    "price": 744.1199951171875,
-    "target_return": 0.02218219706833052
+    "ticker": "JBHT",
+    "prob_up": 0.567,
+    "price": 197.63999938964844,
+    "target_return": -0.08384141527247485
   },
   {
     "ticker": "XYL",
     "prob_up": 0.566,
     "price": 119.62000274658203,
-    "target_return": -0.0062993838991042515
+    "target_return": -0.006614305390011768
   },
   {
     "ticker": "ENPH",
@@ -411,7 +405,13 @@
     "ticker": "ROKU",
     "prob_up": 0.566,
     "price": 95.66000366210938,
-    "target_return": 0.015271563113158776
+    "target_return": 0.015271563113158772
+  },
+  {
+    "ticker": "STZ",
+    "prob_up": 0.564,
+    "price": 152.08999633789062,
+    "target_return": 0.0056995782666952564
   },
   {
     "ticker": "FISV",
@@ -426,16 +426,28 @@
     "target_return": 0.04344784703519211
   },
   {
-    "ticker": "AON",
+    "ticker": "SWK",
     "prob_up": 0.564,
-    "price": 317.8800048828125,
-    "target_return": 0.017930427572260717
+    "price": 69.62000274658203,
+    "target_return": -0.007458892581713978
   },
   {
-    "ticker": "STZ",
-    "prob_up": 0.564,
-    "price": 152.08999633789062,
-    "target_return": 0.0056995782666952564
+    "ticker": "ELV",
+    "prob_up": 0.563,
+    "price": 294.95001220703125,
+    "target_return": -0.006165943777062111
+  },
+  {
+    "ticker": "AON",
+    "prob_up": 0.563,
+    "price": 317.8800048828125,
+    "target_return": 0.01793042757226072
+  },
+  {
+    "ticker": "CHD",
+    "prob_up": 0.563,
+    "price": 95.73999786376953,
+    "target_return": -0.0022438978046714834
   },
   {
     "ticker": "CRM",
@@ -447,35 +459,17 @@
     "ticker": "PH",
     "prob_up": 0.562,
     "price": 912.4000244140625,
-    "target_return": -0.012882928296316962
-  },
-  {
-    "ticker": "CHD",
-    "prob_up": 0.561,
-    "price": 95.73999786376953,
-    "target_return": -0.0020979099880085676
-  },
-  {
-    "ticker": "ELV",
-    "prob_up": 0.561,
-    "price": 294.95001220703125,
-    "target_return": -0.0063757397682426276
-  },
-  {
-    "ticker": "SWK",
-    "prob_up": 0.56,
-    "price": 69.62000274658203,
-    "target_return": -0.007458892581713977
+    "target_return": -0.01276339538495025
   },
   {
     "ticker": "TTD",
     "prob_up": 0.558,
     "price": 23.549999237060547,
-    "target_return": -0.00612822084809661
+    "target_return": -0.006128220848096606
   },
   {
     "ticker": "ACN",
-    "prob_up": 0.557,
+    "prob_up": 0.556,
     "price": 195.14999389648438,
     "target_return": 0.028026416091554627
   },
@@ -483,13 +477,25 @@
     "ticker": "T",
     "prob_up": 0.555,
     "price": 27.40999984741211,
-    "target_return": 0.007445286342753138
+    "target_return": 0.008100553519074162
   },
   {
     "ticker": "TJX",
     "prob_up": 0.554,
     "price": 152.8699951171875,
-    "target_return": 0.0031944403471728965
+    "target_return": 0.0036299518145632118
+  },
+  {
+    "ticker": "NDAQ",
+    "prob_up": 0.553,
+    "price": 85.44000244140625,
+    "target_return": -0.015748178015277416
+  },
+  {
+    "ticker": "ADI",
+    "prob_up": 0.553,
+    "price": 308.5899963378906,
+    "target_return": -0.005243517309994586
   },
   {
     "ticker": "DRI",
@@ -505,21 +511,21 @@
   },
   {
     "ticker": "SBUX",
-    "prob_up": 0.552,
+    "prob_up": 0.551,
     "price": 92.66000366210938,
-    "target_return": -0.005795530960894506
-  },
-  {
-    "ticker": "BLK",
-    "prob_up": 0.552,
-    "price": 968.3099975585938,
-    "target_return": 0.022312122464946627
+    "target_return": -0.006188252114752242
   },
   {
     "ticker": "IFF",
-    "prob_up": 0.55,
+    "prob_up": 0.551,
     "price": 68.30999755859375,
-    "target_return": -0.005454030687726137
+    "target_return": -0.005870137223068335
+  },
+  {
+    "ticker": "BLK",
+    "prob_up": 0.551,
+    "price": 968.3099975585938,
+    "target_return": 0.022312122464946627
   },
   {
     "ticker": "LYFT",
@@ -528,16 +534,22 @@
     "target_return": 0.012888887143568319
   },
   {
-    "ticker": "ADI",
-    "prob_up": 0.55,
-    "price": 308.5899963378906,
-    "target_return": -0.005243517309994586
-  },
-  {
     "ticker": "CHWY",
     "prob_up": 0.55,
     "price": 24.329999923706055,
     "target_return": 0.01855244307437774
+  },
+  {
+    "ticker": "XOM",
+    "prob_up": 0.549,
+    "price": 157.58999633789062,
+    "target_return": 0.008738609993288357
+  },
+  {
+    "ticker": "PPG",
+    "prob_up": 0.548,
+    "price": 100.77999877929688,
+    "target_return": 0.04642247509296639
   },
   {
     "ticker": "SNAP",
@@ -546,16 +558,22 @@
     "target_return": 0.04275886258430204
   },
   {
-    "ticker": "PPG",
+    "ticker": "HSY",
     "prob_up": 0.547,
-    "price": 100.77999877929688,
-    "target_return": 0.04642247509296638
+    "price": 212.72000122070312,
+    "target_return": 0.0033259033269417686
   },
   {
-    "ticker": "HSY",
-    "prob_up": 0.546,
-    "price": 212.72000122070312,
-    "target_return": 0.0032424703769062795
+    "ticker": "MU",
+    "prob_up": 0.545,
+    "price": 461.7300109863281,
+    "target_return": 0.028783292466019
+  },
+  {
+    "ticker": "CI",
+    "prob_up": 0.544,
+    "price": 264.6099853515625,
+    "target_return": 0.027436772826676968
   },
   {
     "ticker": "MOH",
@@ -564,46 +582,34 @@
     "target_return": 0.04311520865734793
   },
   {
-    "ticker": "CI",
-    "prob_up": 0.544,
-    "price": 264.6099853515625,
-    "target_return": 0.02686117726331837
-  },
-  {
-    "ticker": "MU",
-    "prob_up": 0.542,
-    "price": 461.7300109863281,
-    "target_return": 0.03326141607086428
-  },
-  {
-    "ticker": "XOM",
-    "prob_up": 0.542,
-    "price": 157.58999633789062,
-    "target_return": 0.009526014120119736
-  },
-  {
     "ticker": "KMB",
     "prob_up": 0.542,
     "price": 98.72000122070312,
-    "target_return": 0.017047456996470114
+    "target_return": 0.016810579965380663
   },
   {
     "ticker": "HPE",
     "prob_up": 0.539,
     "price": 21.530000686645508,
-    "target_return": -0.026578504293513234
+    "target_return": -0.027227285859927352
   },
   {
     "ticker": "ROST",
-    "prob_up": 0.539,
+    "prob_up": 0.538,
     "price": 207.22000122070312,
-    "target_return": 0.01743931427718716
+    "target_return": 0.01781275690185325
   },
   {
     "ticker": "FANG",
-    "prob_up": 0.535,
+    "prob_up": 0.536,
     "price": 189.67999267578125,
     "target_return": 0.0060834942619850665
+  },
+  {
+    "ticker": "EBAY",
+    "prob_up": 0.535,
+    "price": 91.7699966430664,
+    "target_return": 0.020974896568731218
   },
   {
     "ticker": "KLAC",
@@ -612,16 +618,10 @@
     "target_return": -0.004397245801955243
   },
   {
-    "ticker": "EBAY",
-    "prob_up": 0.534,
-    "price": 91.7699966430664,
-    "target_return": 0.021634070537400053
-  },
-  {
     "ticker": "TGT",
     "prob_up": 0.534,
     "price": 115.05000305175781,
-    "target_return": 0.0037013421814950233
+    "target_return": 0.0036816295281071614
   },
   {
     "ticker": "BURL",
@@ -633,13 +633,7 @@
     "ticker": "MRK",
     "prob_up": 0.532,
     "price": 114.5,
-    "target_return": -0.0009655555264421235
-  },
-  {
-    "ticker": "CLX",
-    "prob_up": 0.53,
-    "price": 107.93000030517578,
-    "target_return": 0.02395901445518187
+    "target_return": -0.0005542792705013166
   },
   {
     "ticker": "V",
@@ -648,22 +642,28 @@
     "target_return": 0.015658146139255084
   },
   {
+    "ticker": "CLX",
+    "prob_up": 0.529,
+    "price": 107.93000030517578,
+    "target_return": 0.0242035586664631
+  },
+  {
     "ticker": "DOCU",
     "prob_up": 0.528,
     "price": 48.900001525878906,
-    "target_return": 0.043746298345597755
-  },
-  {
-    "ticker": "HPQ",
-    "prob_up": 0.527,
-    "price": 18.219999313354492,
-    "target_return": 0.0022386531155785686
+    "target_return": 0.04374629834559777
   },
   {
     "ticker": "SJM",
     "prob_up": 0.526,
     "price": 101.4000015258789,
-    "target_return": 0.010394334245391271
+    "target_return": 0.010037773578334757
+  },
+  {
+    "ticker": "HPQ",
+    "prob_up": 0.526,
+    "price": 18.219999313354492,
+    "target_return": 0.002137944533986921
   },
   {
     "ticker": "WDAY",
@@ -672,16 +672,10 @@
     "target_return": 0.009799523263000848
   },
   {
-    "ticker": "CTSH",
-    "prob_up": 0.526,
-    "price": 60.290000915527344,
-    "target_return": 0.0035796271600156693
-  },
-  {
     "ticker": "HAL",
     "prob_up": 0.525,
     "price": 36.220001220703125,
-    "target_return": -0.012517119060502874
+    "target_return": -0.01202556561718893
   },
   {
     "ticker": "APD",
@@ -690,16 +684,22 @@
     "target_return": 0.004084413244548622
   },
   {
-    "ticker": "YUM",
-    "prob_up": 0.519,
-    "price": 159.10000610351562,
-    "target_return": 0.012487565315498961
+    "ticker": "CTSH",
+    "prob_up": 0.524,
+    "price": 60.290000915527344,
+    "target_return": 0.0038516406814316497
   },
   {
     "ticker": "HLT",
     "prob_up": 0.519,
     "price": 294.55999755859375,
-    "target_return": 0.002212268748761693
+    "target_return": 0.0026899605930356734
+  },
+  {
+    "ticker": "YUM",
+    "prob_up": 0.519,
+    "price": 159.10000610351562,
+    "target_return": 0.012250653849461704
   },
   {
     "ticker": "LCID",
@@ -708,22 +708,34 @@
     "target_return": 0.011085168871169955
   },
   {
+    "ticker": "HCA",
+    "prob_up": 0.518,
+    "price": 502.04998779296875,
+    "target_return": 0.008587878856804317
+  },
+  {
     "ticker": "SPOT",
     "prob_up": 0.517,
     "price": 516.719970703125,
-    "target_return": 0.011583327551734962
+    "target_return": 0.011583327551734964
   },
   {
     "ticker": "COST",
     "prob_up": 0.516,
     "price": 979.9199829101562,
-    "target_return": 0.0037510371846254573
+    "target_return": 0.00337584333689507
   },
   {
     "ticker": "NCLH",
     "prob_up": 0.515,
     "price": 19.799999237060547,
-    "target_return": -0.003626494491292898
+    "target_return": -0.003626494491292897
+  },
+  {
+    "ticker": "EMN",
+    "prob_up": 0.513,
+    "price": 68.91000366210938,
+    "target_return": 0.004661751265203592
   },
   {
     "ticker": "QRVO",
@@ -732,58 +744,64 @@
     "target_return": -0.013758000899468874
   },
   {
-    "ticker": "EMN",
-    "prob_up": 0.512,
-    "price": 68.91000366210938,
-    "target_return": 0.004661751265203595
-  },
-  {
     "ticker": "UAL",
     "prob_up": 0.511,
     "price": 92.51000213623047,
     "target_return": -0.08743257215397704
   },
   {
+    "ticker": "PFE",
+    "prob_up": 0.511,
+    "price": 27.31999969482422,
+    "target_return": -0.0014816959760271383
+  },
+  {
+    "ticker": "KHC",
+    "prob_up": 0.511,
+    "price": 22.079999923706055,
+    "target_return": 0.015635038295989324
+  },
+  {
     "ticker": "JD",
     "prob_up": 0.51,
     "price": 28.200000762939453,
-    "target_return": 0.004155177874247118
+    "target_return": 0.005228536749442336
   },
   {
     "ticker": "ISRG",
     "prob_up": 0.509,
     "price": 477.7300109863281,
-    "target_return": 0.027120885229422565
+    "target_return": 0.0271989264432758
   },
   {
     "ticker": "OKTA",
     "prob_up": 0.509,
     "price": 78.43000030517578,
-    "target_return": 0.008195110155115672
-  },
-  {
-    "ticker": "PFE",
-    "prob_up": 0.508,
-    "price": 27.31999969482422,
-    "target_return": -0.0014142226655919387
+    "target_return": 0.008195110155115674
   },
   {
     "ticker": "INTC",
     "prob_up": 0.507,
     "price": 45.029998779296875,
-    "target_return": 0.011014392706704856
+    "target_return": 0.012555162034343821
   },
   {
     "ticker": "MCO",
     "prob_up": 0.507,
     "price": 438.6700134277344,
-    "target_return": -0.03725149846053307
+    "target_return": -0.037088427349081736
+  },
+  {
+    "ticker": "BTU",
+    "prob_up": 0.505,
+    "price": 36.2599983215332,
+    "target_return": -0.030136973432798943
   },
   {
     "ticker": "UPS",
-    "prob_up": 0.505,
+    "prob_up": 0.504,
     "price": 96.83999633789062,
-    "target_return": -0.028330338111373605
+    "target_return": -0.027309282286237014
   },
   {
     "ticker": "ANET",
@@ -792,34 +810,34 @@
     "target_return": 0.006847061050107925
   },
   {
+    "ticker": "ERIC",
+    "prob_up": 0.504,
+    "price": 11.470000267028809,
+    "target_return": -0.011363216229798098
+  },
+  {
     "ticker": "BMY",
     "prob_up": 0.504,
     "price": 59.369998931884766,
-    "target_return": 0.01252046568371979
+    "target_return": 0.012453826090247559
   },
   {
     "ticker": "WBD",
     "prob_up": 0.504,
     "price": 27.350000381469727,
-    "target_return": 0.008227455239680846
+    "target_return": 0.008227455239680848
+  },
+  {
+    "ticker": "NOV",
+    "prob_up": 0.504,
+    "price": 18.25,
+    "target_return": -0.021315614141277455
   },
   {
     "ticker": "SLB",
-    "prob_up": 0.504,
+    "prob_up": 0.503,
     "price": 45.31999969482422,
-    "target_return": -0.011257598618436006
-  },
-  {
-    "ticker": "ERIC",
-    "prob_up": 0.503,
-    "price": 11.470000267028809,
-    "target_return": -0.013535138997708583
-  },
-  {
-    "ticker": "BTU",
-    "prob_up": 0.503,
-    "price": 36.2599983215332,
-    "target_return": -0.02922867468037443
+    "target_return": -0.01203895476926067
   },
   {
     "ticker": "DLTR",
@@ -829,15 +847,9 @@
   },
   {
     "ticker": "EMR",
-    "prob_up": 0.503,
+    "prob_up": 0.502,
     "price": 129.8800048828125,
     "target_return": 0.005857839776800484
-  },
-  {
-    "ticker": "NOV",
-    "prob_up": 0.502,
-    "price": 18.25,
-    "target_return": -0.020880554060128752
   },
   {
     "ticker": "ADBE",
@@ -849,43 +861,37 @@
     "ticker": "GILD",
     "prob_up": 0.501,
     "price": 141.2899932861328,
-    "target_return": 0.018626536466948184
-  },
-  {
-    "ticker": "APA",
-    "prob_up": 0.501,
-    "price": 36.61000061035156,
-    "target_return": -0.005241325596360264
+    "target_return": 0.018373248680137174
   },
   {
     "ticker": "EA",
-    "prob_up": 0.5,
+    "prob_up": 0.501,
     "price": 200.61000061035156,
-    "target_return": 0.005281575385934116
+    "target_return": 0.004292855364652439
+  },
+  {
+    "ticker": "APA",
+    "prob_up": 0.5,
+    "price": 36.61000061035156,
+    "target_return": -0.005102758918511428
   },
   {
     "ticker": "DVN",
     "prob_up": 0.499,
     "price": 48.15999984741211,
-    "target_return": -0.009510959841887191
+    "target_return": -0.010144984138592507
   },
   {
     "ticker": "AAP",
-    "prob_up": 0.498,
-    "price": 49.36000061035156,
-    "target_return": 0.0015479645925687258
-  },
-  {
-    "ticker": "HCA",
     "prob_up": 0.497,
-    "price": 502.04998779296875,
-    "target_return": 0.008587878856804317
+    "price": 49.36000061035156,
+    "target_return": 0.0013670613533044687
   },
   {
     "ticker": "WYNN",
     "prob_up": 0.496,
     "price": 101.62000274658203,
-    "target_return": -0.00347120591072309
+    "target_return": -0.003471205910723091
   },
   {
     "ticker": "NOW",
@@ -897,7 +903,7 @@
     "ticker": "IR",
     "prob_up": 0.494,
     "price": 82.02999877929688,
-    "target_return": 0.02044536100079761
+    "target_return": 0.01967498461736188
   },
   {
     "ticker": "ORLY",
@@ -906,16 +912,10 @@
     "target_return": -0.007911555359275088
   },
   {
-    "ticker": "KHC",
-    "prob_up": 0.492,
-    "price": 22.079999923706055,
-    "target_return": 0.01574763319535549
-  },
-  {
     "ticker": "AAL",
     "prob_up": 0.492,
     "price": 10.800000190734863,
-    "target_return": -0.025131255057150064
+    "target_return": -0.025649508426700406
   },
   {
     "ticker": "FSLR",
@@ -927,19 +927,19 @@
     "ticker": "TXRH",
     "prob_up": 0.489,
     "price": 168.60000610351562,
-    "target_return": 0.0019379673302072633
-  },
-  {
-    "ticker": "DEO",
-    "prob_up": 0.485,
-    "price": 75.19000244140625,
-    "target_return": -0.009962686520644323
+    "target_return": 0.0016936352250218826
   },
   {
     "ticker": "DD",
-    "prob_up": 0.484,
+    "prob_up": 0.485,
     "price": 44.0,
-    "target_return": 0.001659788931747165
+    "target_return": 0.0013256137430583599
+  },
+  {
+    "ticker": "DEO",
+    "prob_up": 0.484,
+    "price": 75.19000244140625,
+    "target_return": -0.008549570292494568
   },
   {
     "ticker": "AMD",
@@ -951,13 +951,13 @@
     "ticker": "TAP",
     "prob_up": 0.48,
     "price": 41.900001525878906,
-    "target_return": -0.0071271913118343385
+    "target_return": -0.00758017530967751
   },
   {
     "ticker": "BEN",
-    "prob_up": 0.48,
+    "prob_up": 0.478,
     "price": 23.670000076293945,
-    "target_return": -0.012444144781695572
+    "target_return": -0.012037707144545502
   },
   {
     "ticker": "LI",
@@ -967,9 +967,9 @@
   },
   {
     "ticker": "CCL",
-    "prob_up": 0.475,
+    "prob_up": 0.474,
     "price": 24.15999984741211,
-    "target_return": 0.021686206367536837
+    "target_return": 0.021141373797479535
   },
   {
     "ticker": "DASH",
@@ -978,52 +978,58 @@
     "target_return": -0.02402159471912284
   },
   {
-    "ticker": "NVDA",
-    "prob_up": 0.472,
-    "price": 180.39999389648438,
-    "target_return": 0.020682427164777088
+    "ticker": "MCD",
+    "prob_up": 0.471,
+    "price": 315.7300109863281,
+    "target_return": -0.004553079564064226
   },
   {
-    "ticker": "MCD",
-    "prob_up": 0.472,
-    "price": 315.7300109863281,
-    "target_return": -0.0041848372418560814
+    "ticker": "NVDA",
+    "prob_up": 0.471,
+    "price": 180.39999389648438,
+    "target_return": 0.021143593541031624
   },
   {
     "ticker": "MDLZ",
     "prob_up": 0.471,
     "price": 56.470001220703125,
-    "target_return": 0.010729146664053496
+    "target_return": 0.010987435894934922
   },
   {
     "ticker": "CVS",
     "prob_up": 0.47,
     "price": 73.0199966430664,
-    "target_return": 0.0039359116894245
+    "target_return": 0.003641386138308933
+  },
+  {
+    "ticker": "DG",
+    "prob_up": 0.468,
+    "price": 126.66999816894531,
+    "target_return": 0.0023330833472246367
   },
   {
     "ticker": "LOW",
     "prob_up": 0.467,
     "price": 231.08999633789062,
-    "target_return": -0.016532983676453086
+    "target_return": -0.01653505026966032
   },
   {
     "ticker": "MS",
-    "prob_up": 0.467,
+    "prob_up": 0.466,
     "price": 158.92999267578125,
     "target_return": 0.018077580279605612
   },
   {
-    "ticker": "DG",
-    "prob_up": 0.466,
-    "price": 126.66999816894531,
-    "target_return": 0.0013841226509489148
+    "ticker": "AVGO",
+    "prob_up": 0.459,
+    "price": 315.92999267578125,
+    "target_return": 0.07610512102741002
   },
   {
     "ticker": "LVS",
     "prob_up": 0.459,
     "price": 53.93000030517578,
-    "target_return": -0.021295349944241527
+    "target_return": -0.021599165595437127
   },
   {
     "ticker": "UBER",
@@ -1035,31 +1041,19 @@
     "ticker": "TFC",
     "prob_up": 0.456,
     "price": 43.849998474121094,
-    "target_return": 0.016761570660800397
+    "target_return": 0.01784571075234235
   },
   {
     "ticker": "GS",
-    "prob_up": 0.456,
+    "prob_up": 0.454,
     "price": 805.47998046875,
     "target_return": 0.023061927316775692
-  },
-  {
-    "ticker": "ZTS",
-    "prob_up": 0.455,
-    "price": 117.3499984741211,
-    "target_return": 0.014110617885297909
-  },
-  {
-    "ticker": "AVGO",
-    "prob_up": 0.455,
-    "price": 315.92999267578125,
-    "target_return": 0.07610512102741002
   },
   {
     "ticker": "QS",
     "prob_up": 0.454,
     "price": 6.849999904632568,
-    "target_return": 0.017395643205177426
+    "target_return": 0.017395643205177422
   },
   {
     "ticker": "TTWO",
@@ -1069,9 +1063,9 @@
   },
   {
     "ticker": "MAR",
-    "prob_up": 0.453,
+    "prob_up": 0.452,
     "price": 322.5199890136719,
-    "target_return": -0.005325635512086541
+    "target_return": -0.005547856558262934
   },
   {
     "ticker": "UHS",
@@ -1080,10 +1074,16 @@
     "target_return": 0.008905763318992564
   },
   {
+    "ticker": "ZTS",
+    "prob_up": 0.451,
+    "price": 117.3499984741211,
+    "target_return": 0.014110617885297909
+  },
+  {
     "ticker": "SNOW",
     "prob_up": 0.45,
     "price": 173.25,
-    "target_return": -0.031733344542159626
+    "target_return": -0.03173334454215963
   },
   {
     "ticker": "BA",
@@ -1095,19 +1095,19 @@
     "ticker": "MGM",
     "prob_up": 0.445,
     "price": 36.369998931884766,
-    "target_return": 0.0040640702310185736
+    "target_return": 0.0032163215817002547
   },
   {
     "ticker": "AXP",
-    "prob_up": 0.445,
+    "prob_up": 0.444,
     "price": 294.3900146484375,
-    "target_return": -0.006160932215531356
+    "target_return": -0.005980401632747863
   },
   {
     "ticker": "OXY",
     "prob_up": 0.443,
     "price": 58.380001068115234,
-    "target_return": -0.011417705202900476
+    "target_return": -0.010975248160842886
   },
   {
     "ticker": "PINS",
@@ -1129,15 +1129,15 @@
   },
   {
     "ticker": "TROW",
-    "prob_up": 0.435,
+    "prob_up": 0.436,
     "price": 87.51000213623047,
-    "target_return": -0.04098736077994884
+    "target_return": -0.04138895626230325
   },
   {
     "ticker": "F",
     "prob_up": 0.433,
     "price": 11.789999961853027,
-    "target_return": -0.012882514111799593
+    "target_return": -0.012619043868581044
   },
   {
     "ticker": "LLY",
@@ -1147,9 +1147,9 @@
   },
   {
     "ticker": "ZS",
-    "prob_up": 0.429,
+    "prob_up": 0.431,
     "price": 155.99000549316406,
-    "target_return": 0.009085272570033127
+    "target_return": 0.009085272570033122
   },
   {
     "ticker": "SNPS",
@@ -1161,25 +1161,25 @@
     "ticker": "SAP",
     "prob_up": 0.428,
     "price": 183.74000549316406,
-    "target_return": -0.0059198195491494635
+    "target_return": -0.005919819549149461
   },
   {
     "ticker": "QCOM",
     "prob_up": 0.427,
     "price": 130.47000122070312,
-    "target_return": -0.005427878059786636
+    "target_return": -0.005338192007151011
   },
   {
     "ticker": "GD",
     "prob_up": 0.425,
     "price": 353.3599853515625,
-    "target_return": 0.00896334715933165
+    "target_return": 0.009123096047353257
   },
   {
     "ticker": "MSFT",
     "prob_up": 0.425,
     "price": 391.7900085449219,
-    "target_return": -0.012189583964835216
+    "target_return": -0.01239579688291302
   },
   {
     "ticker": "AMZN",
@@ -1191,7 +1191,7 @@
     "ticker": "AR",
     "prob_up": 0.418,
     "price": 41.5,
-    "target_return": 0.015466857407370034
+    "target_return": 0.01546685740737003
   },
   {
     "ticker": "RIVN",
@@ -1203,17 +1203,17 @@
     "ticker": "MSCI",
     "prob_up": 0.417,
     "price": 556.739990234375,
-    "target_return": -0.04233688440962482
+    "target_return": -0.043140987968062136
   },
   {
     "ticker": "LIN",
     "prob_up": 0.414,
     "price": 488.57000732421875,
-    "target_return": -0.01032673645625804
+    "target_return": -0.010326736456258041
   },
   {
     "ticker": "CBOE",
-    "prob_up": 0.413,
+    "prob_up": 0.412,
     "price": 286.9700012207031,
     "target_return": 0.01935791154041513
   },
@@ -1221,11 +1221,11 @@
     "ticker": "PNR",
     "prob_up": 0.411,
     "price": 88.2699966430664,
-    "target_return": 0.0008615224516950788
+    "target_return": 0.0006338439795084236
   },
   {
     "ticker": "LYB",
-    "prob_up": 0.41,
+    "prob_up": 0.408,
     "price": 75.19999694824219,
     "target_return": 0.020914678933180154
   },
@@ -1233,23 +1233,23 @@
     "ticker": "ITW",
     "prob_up": 0.408,
     "price": 260.739990234375,
-    "target_return": -0.019954497128213917
+    "target_return": -0.018885054139596284
   },
   {
     "ticker": "ABBV",
     "prob_up": 0.406,
     "price": 208.33999633789062,
-    "target_return": -0.0047490184757616825
+    "target_return": -0.004925877565087154
   },
   {
     "ticker": "GOOGL",
     "prob_up": 0.403,
     "price": 307.69000244140625,
-    "target_return": -0.012613972688793789
+    "target_return": -0.012368252215274978
   },
   {
     "ticker": "LRCX",
-    "prob_up": 0.4,
+    "prob_up": 0.399,
     "price": 224.7100067138672,
     "target_return": 0.056344045630107656
   },
@@ -1266,16 +1266,22 @@
     "target_return": -0.0042157947387393676
   },
   {
+    "ticker": "DOV",
+    "prob_up": 0.393,
+    "price": 212.22999572753906,
+    "target_return": 0.014070755714106622
+  },
+  {
     "ticker": "VZ",
     "prob_up": 0.392,
     "price": 49.59000015258789,
-    "target_return": -0.012610406213098927
+    "target_return": -0.011985888056228225
   },
   {
-    "ticker": "DOV",
+    "ticker": "GIS",
     "prob_up": 0.392,
-    "price": 212.22999572753906,
-    "target_return": 0.014070755714106622
+    "price": 37.59000015258789,
+    "target_return": 0.010158532910276493
   },
   {
     "ticker": "NIO",
@@ -1290,40 +1296,34 @@
     "target_return": 0.06885718693566092
   },
   {
-    "ticker": "GIS",
-    "prob_up": 0.386,
-    "price": 37.59000015258789,
-    "target_return": 0.010500158867321545
-  },
-  {
     "ticker": "ENTG",
-    "prob_up": 0.383,
+    "prob_up": 0.384,
     "price": 115.58000183105469,
-    "target_return": -0.005132316198775231
+    "target_return": -0.0066798645366616454
   },
   {
     "ticker": "NOK",
-    "prob_up": 0.38,
+    "prob_up": 0.378,
     "price": 8.359999656677246,
-    "target_return": 0.03735512074571736
+    "target_return": 0.03479575798587209
   },
   {
     "ticker": "CP",
-    "prob_up": 0.377,
+    "prob_up": 0.376,
     "price": 79.94000244140625,
-    "target_return": -0.03306076242307465
+    "target_return": -0.03359274421187232
   },
   {
     "ticker": "DAL",
-    "prob_up": 0.373,
+    "prob_up": 0.374,
     "price": 63.810001373291016,
-    "target_return": -0.11755571167007679
+    "target_return": -0.1194481105826885
   },
   {
     "ticker": "BBY",
     "prob_up": 0.369,
     "price": 62.869998931884766,
-    "target_return": -0.004507325121047888
+    "target_return": -0.004532213881891427
   },
   {
     "ticker": "IDXX",
@@ -1333,27 +1333,21 @@
   },
   {
     "ticker": "TER",
-    "prob_up": 0.367,
+    "prob_up": 0.368,
     "price": 300.07000732421875,
-    "target_return": 0.07227079037838749
+    "target_return": 0.07190115540328543
+  },
+  {
+    "ticker": "UNP",
+    "prob_up": 0.367,
+    "price": 236.57000732421875,
+    "target_return": -0.043611070394341
   },
   {
     "ticker": "FTNT",
     "prob_up": 0.366,
     "price": 83.38999938964844,
-    "target_return": -0.010240646655409325
-  },
-  {
-    "ticker": "UNP",
-    "prob_up": 0.366,
-    "price": 236.57000732421875,
-    "target_return": -0.043306351454308466
-  },
-  {
-    "ticker": "EOG",
-    "prob_up": 0.366,
-    "price": 137.52000427246094,
-    "target_return": -0.023397558078273442
+    "target_return": -0.010240646655409327
   },
   {
     "ticker": "SHOP",
@@ -1362,32 +1356,38 @@
     "target_return": -0.05957442329544919
   },
   {
+    "ticker": "EOG",
+    "prob_up": 0.365,
+    "price": 137.52000427246094,
+    "target_return": -0.02366859552959388
+  },
+  {
     "ticker": "INTU",
-    "prob_up": 0.364,
+    "prob_up": 0.363,
     "price": 446.7900085449219,
-    "target_return": -0.03990153082001381
+    "target_return": -0.039429836287408614
   },
   {
     "ticker": "ROK",
-    "prob_up": 0.363,
+    "prob_up": 0.362,
     "price": 355.1099853515625,
-    "target_return": 0.016922060154005283
+    "target_return": 0.017624765799463038
   },
   {
     "ticker": "HD",
     "prob_up": 0.36,
     "price": 330.92999267578125,
-    "target_return": -0.020162863305630146
+    "target_return": -0.020046353612651446
   },
   {
     "ticker": "AMGN",
-    "prob_up": 0.357,
+    "prob_up": 0.358,
     "price": 351.4800109863281,
-    "target_return": -0.0070371194196874355
+    "target_return": -0.006844956428209706
   },
   {
     "ticker": "SHW",
-    "prob_up": 0.356,
+    "prob_up": 0.357,
     "price": 312.1199951171875,
     "target_return": -0.005691253755067585
   },
@@ -1395,7 +1395,7 @@
     "ticker": "PG",
     "prob_up": 0.352,
     "price": 146.7100067138672,
-    "target_return": 0.006648119852382321
+    "target_return": 0.006225382605144276
   },
   {
     "ticker": "RCL",
@@ -1407,37 +1407,37 @@
     "ticker": "CAT",
     "prob_up": 0.342,
     "price": 693.6199951171875,
-    "target_return": 0.035710421051143255
+    "target_return": 0.03617208856755158
   },
   {
     "ticker": "NSC",
     "prob_up": 0.333,
     "price": 284.3599853515625,
-    "target_return": -0.03989489003873
+    "target_return": -0.03989489003873001
   },
   {
     "ticker": "MO",
-    "prob_up": 0.321,
+    "prob_up": 0.322,
     "price": 65.12999725341797,
-    "target_return": -0.012251516617277157
+    "target_return": -0.012096804653771774
   },
   {
     "ticker": "UNH",
     "prob_up": 0.316,
     "price": 284.3299865722656,
-    "target_return": -0.00958991931090745
+    "target_return": -0.010119427418963656
   },
   {
     "ticker": "GM",
     "prob_up": 0.31,
     "price": 73.52999877929688,
-    "target_return": 0.015270532081046218
+    "target_return": 0.013371582438552831
   },
   {
     "ticker": "DE",
     "prob_up": 0.305,
     "price": 571.02001953125,
-    "target_return": 0.006777997192001787
+    "target_return": 0.00728206253942116
   },
   {
     "ticker": "DDOG",
@@ -1449,25 +1449,25 @@
     "ticker": "LMT",
     "prob_up": 0.296,
     "price": 642.280029296875,
-    "target_return": -0.012361852127621855
+    "target_return": -0.012361852127621857
   },
   {
     "ticker": "CSX",
-    "prob_up": 0.293,
+    "prob_up": 0.294,
     "price": 39.63999938964844,
-    "target_return": -0.0014119035999282667
+    "target_return": -0.0011538834894976476
   },
   {
     "ticker": "NOC",
     "prob_up": 0.291,
     "price": 724.8400268554688,
-    "target_return": 0.031126426964148614
+    "target_return": 0.03048653930990153
   },
   {
     "ticker": "JKHY",
     "prob_up": 0.288,
     "price": 165.14999389648438,
-    "target_return": -0.0041412974757081954
+    "target_return": -0.005785309821333187
   },
   {
     "ticker": "FDX",
