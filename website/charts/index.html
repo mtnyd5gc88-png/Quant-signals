@@ -2,381 +2,188 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Quanty</title>
+<title>Quanty Signals</title>
 
 <style>
 body{
-  background:#f8fafc;
-  color:#0f172a;
+  background:#0b1220;
+  color:#e2e8f0;
   font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-  margin:0;
+  padding:40px;
 }
 
-/* HEADER */
-.header{
-  padding:20px 40px;
-  border-bottom:1px solid #e2e8f0;
-  background:white;
+h1{
+  font-size:32px;
+  margin-bottom:5px;
 }
 
-.title{
-  font-size:26px;
-  font-weight:700;
+.sub{
+  color:#94a3b8;
+  margin-bottom:20px;
 }
 
-.subtitle{
-  color:#64748b;
+#status{
   font-size:13px;
+  color:#94a3b8;
+  margin-bottom:30px;
 }
 
-/* STATUS BAR */
-.status{
+/* TOP SIGNALS */
+.top-container{
   display:flex;
-  gap:25px;
-  margin-top:10px;
-  font-size:13px;
-  color:#475569;
+  gap:20px;
+  margin-bottom:40px;
 }
 
-/* SECTION */
-.section{
-  padding:30px 40px;
+.top-card{
+  flex:1;
+  background:#111827;
+  padding:20px;
+  border-radius:12px;
+  border:1px solid #16c784;
 }
 
-/* BUTTON */
-button{
-  padding:10px 16px;
-  margin-right:10px;
-  border-radius:8px;
-  border:none;
-  background:#2563eb;
-  color:white;
-  cursor:pointer;
-  font-weight:600;
-}
-
-/* SEARCH */
-.search{
-  padding:12px;
-  width:260px;
-  border-radius:10px;
-  border:1px solid #e2e8f0;
-}
-
-/* GRID */
-.grid{
+/* ALL SIGNALS */
+.container{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:20px;
+  gap:15px;
 }
 
-/* CARD */
 .card{
-  padding:18px;
-  border-radius:14px;
-  cursor:pointer;
-  background:white;
-  border:1px solid #e2e8f0;
+  padding:15px;
+  border-radius:12px;
+  background:#111827;
   transition:0.2s;
 }
 
 .card:hover{
   transform:translateY(-4px);
-  box-shadow:0 10px 25px rgba(0,0,0,0.05);
 }
 
-/* TOP CARD */
-.top-card{
-  padding:24px;
-  border-radius:16px;
-  background:white;
-  border:1px solid #e2e8f0;
+/* SIGNAL */
+.badge{
+  padding:3px 8px;
+  border-radius:6px;
+  font-size:12px;
+  font-weight:600;
 }
 
-.big{
+.buy{background:#16c784;}
+.hold{background:#854d0e;}
+.cash{background:#7f1d1d;}
+
+/* RETURN 강조 */
+.return{
   font-size:22px;
   font-weight:700;
+  margin:10px 0;
 }
 
-.meta{
-  font-size:13px;
-  margin-top:8px;
-  color:#475569;
-  line-height:1.6;
+/* BAR */
+.bar{
+  height:5px;
+  background:#1e293b;
+  border-radius:3px;
+  margin-top:5px;
 }
 
-/* SIGNAL COLORS */
-.buy{color:#16a34a;}
-.hold{color:#ca8a04;}
-.cash{color:#dc2626;}
-
-/* CONFIDENCE */
-.conf-high{color:#16a34a;}
-.conf-mid{color:#ca8a04;}
-.conf-low{color:#dc2626;}
-
-/* MODAL */
-.modal{
-  display:none;
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
+.bar div{
   height:100%;
-  background:rgba(0,0,0,0.7);
-}
-
-.modal-content{
-  background:white;
-  margin:60px auto;
-  padding:25px;
-  width:80%;
-  border-radius:12px;
+  background:#16c784;
 }
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="title">Quanty</div>
-  <div class="subtitle">AI-driven signal engine (5-day horizon)</div>
+<h1>Quanty</h1>
+<div class="sub">AI-driven short-term trading signals</div>
+<div id="status"></div>
 
-  <div class="status">
-    <div>System: ACTIVE</div>
-    <div>Model: LIVE</div>
-    <div id="last-update">Last Update: -</div>
-  </div>
-</div>
+<h2>🔥 Top Opportunities</h2>
+<div class="top-container" id="top"></div>
 
-<!-- BUTTONS -->
-<div class="section">
-  <button onclick="openBacktest()">Backtest</button>
-  <button onclick="openReport()">Report</button>
-  <button onclick="openInfo()">How it works</button>
-</div>
-
-<!-- TOP PICKS -->
-<div class="section">
-  <h2>Top Opportunities</h2>
-  <div class="grid" id="top"></div>
-</div>
-
-<!-- SEARCH -->
-<div class="section">
-  <input id="search" class="search" placeholder="Search ticker (e.g. NVDA)">
-</div>
-
-<!-- ALL -->
-<div class="section">
-  <h2>All Signals</h2>
-  <div class="grid" id="signals"></div>
-</div>
-
-<!-- MODAL -->
-<div id="modal" class="modal" onclick="closeModal()">
-  <div class="modal-content" id="modal-content"></div>
-</div>
+<h2>All Signals</h2>
+<div class="container" id="signals"></div>
 
 <script>
 
-const BASE = "/Quant-signals/website"
-const DATA_URL = `${BASE}/data/predictions.json?nocache=` + Date.now()
+const DATA_URL = "data/predictions.json?nocache=" + Date.now()
 
-let ALL_DATA = []
-
-function getConfidence(prob){
-  if(prob > 0.65) return ["High","conf-high"]
-  if(prob > 0.55) return ["Medium","conf-mid"]
-  return ["Low","conf-low"]
-}
-
-// ===== TOP =====
-function renderTop(data){
-  const container = document.getElementById("top")
-  container.innerHTML = ""
-
-  const filtered = data.filter(s=>s.signal==="BUY")
-
-  filtered.slice(0,3).forEach((stock,i)=>{
-
-    const [conf,confClass] = getConfidence(stock.prob_up)
-    const target = stock.price * (1 + stock.target_return)
-
-    const card = document.createElement("div")
-    card.className="top-card"
-
-    card.onclick=()=>openChart(stock.ticker)
-
-    card.innerHTML=`
-      <div class="big">#${i+1} ${stock.ticker}</div>
-      <div class="buy">BUY</div>
-
-      <div class="meta">
-        Expected: +${(stock.target_return*100).toFixed(2)}%<br>
-        $${stock.price.toFixed(2)} → $${target.toFixed(2)}<br>
-        Confidence: <span class="${confClass}">${conf}</span>
-      </div>
-    `
-
-    container.appendChild(card)
-  })
-}
-
-// ===== ALL =====
-function render(data){
-  const container=document.getElementById("signals")
-  container.innerHTML=""
-
-  data.forEach(stock=>{
-
-    const [conf,confClass] = getConfidence(stock.prob_up)
-    const target = stock.price * (1 + stock.target_return)
-
-    const card=document.createElement("div")
-    card.className="card"
-
-    card.onclick=()=>openChart(stock.ticker)
-
-    card.innerHTML=`
-      <div><b>${stock.ticker}</b></div>
-      <div class="${stock.signal.toLowerCase()}">${stock.signal}</div>
-
-      <div class="meta">
-        Expected: ${(stock.target_return*100).toFixed(2)}%<br>
-        Confidence: <span class="${confClass}">${conf}</span><br>
-        $${stock.price.toFixed(2)} → $${target.toFixed(2)}
-      </div>
-    `
-
-    container.appendChild(card)
-  })
-}
-
-// ===== LOAD =====
 fetch(DATA_URL)
-.then(r=>r.json())
-.then(data=>{
-  ALL_DATA = data
+.then(res => res.json())
+.then(data => {
 
-  document.getElementById("last-update").innerText =
-    "Last Update: " + new Date().toLocaleDateString()
+document.getElementById("status").innerText =
+  `🟢 Live • ${data.length} signals • Updated ${new Date().toLocaleTimeString()}`
 
-  const TOP_DATA = [...data].sort((a,b)=>b.target_return-a.target_return)
+// ===== TOP SIGNALS =====
+const top = data
+  .filter(d => d.signal === "BUY")
+  .sort((a,b)=> b.target_return - a.target_return)
+  .slice(0,3)
 
-  renderTop(TOP_DATA)
-  render(data)
+const topContainer = document.getElementById("top")
+
+top.forEach(stock => {
+
+const targetPrice = stock.price * (1 + stock.target_return)
+
+topContainer.innerHTML += `
+<div class="top-card">
+  <b>${stock.ticker}</b>
+  <span class="badge buy">BUY</span>
+
+  <div class="return">
+    +${(stock.target_return*100).toFixed(1)}%
+  </div>
+
+  <div>
+    Confidence ${(stock.prob_up*100).toFixed(0)}%
+    <div class="bar">
+      <div style="width:${stock.prob_up*100}%"></div>
+    </div>
+  </div>
+
+  <div style="margin-top:8px;">
+    $${stock.price.toFixed(2)} → $${targetPrice.toFixed(2)}
+  </div>
+</div>
+`
 })
 
-// ===== SEARCH =====
-document.getElementById("search").addEventListener("input",e=>{
-  const k=e.target.value.toUpperCase()
+// ===== ALL SIGNALS =====
+const container = document.getElementById("signals")
 
-  if(k===""){
-    render(ALL_DATA)
-    return
-  }
+data.forEach(stock => {
 
-  const f=ALL_DATA.filter(s=>s.ticker===k)
+const targetPrice = stock.price * (1 + stock.target_return)
 
-  if(f.length===0){
-    document.getElementById("signals").innerHTML="No signal found"
-  }else{
-    render(f)
-  }
+container.innerHTML += `
+<div class="card">
+  <b>${stock.ticker}</b>
+  <span class="badge ${stock.signal.toLowerCase()}">${stock.signal}</span>
+
+  <div class="return">
+    ${(stock.target_return*100).toFixed(1)}%
+  </div>
+
+  <div>
+    Confidence ${(stock.prob_up*100).toFixed(0)}%
+    <div class="bar">
+      <div style="width:${stock.prob_up*100}%"></div>
+    </div>
+  </div>
+
+  <div style="margin-top:6px;">
+    $${stock.price.toFixed(2)} → $${targetPrice.toFixed(2)}
+  </div>
+</div>
+`
 })
 
-// ===== INFO =====
-function openInfo(){
-  const modal=document.getElementById("modal")
-  const content=document.getElementById("modal-content")
-
-  modal.style.display="block"
-
-  content.innerHTML=`
-    <h2>How Signals Work</h2>
-    <p>
-    Signals are generated using:
-    <br><br>
-    - Probability model (direction)<br>
-    - Expected return model<br>
-    - Filtering system (removes weak trades)
-    <br><br>
-    BUY = strong probability + strong return<br>
-    HOLD = unclear edge<br>
-    CASH = low probability
-    </p>
-  `
-}
-
-// ===== BACKTEST =====
-function openBacktest(){
-  const modal=document.getElementById("modal")
-  const content=document.getElementById("modal-content")
-
-  modal.style.display="block"
-
-  content.innerHTML=`
-    <h2>Backtest</h2>
-    <img src="${BASE}/charts/equity_curve.png" width="100%"><br><br>
-    <img src="${BASE}/charts/strategy_vs_spy.png" width="100%"><br><br>
-    <img src="${BASE}/charts/drawdown.png" width="100%">
-  `
-}
-
-// ===== REPORT =====
-function openReport(){
-  const modal=document.getElementById("modal")
-  const content=document.getElementById("modal-content")
-
-  modal.style.display="block"
-
-  fetch(`${BASE}/reports/performance_report.txt`)
-  .then(r=>r.text())
-  .then(text=>{
-    content.innerHTML=`<pre>${text}</pre>`
-  })
-}
-
-// ===== CHART =====
-function openChart(ticker){
-  const modal=document.getElementById("modal")
-  const content=document.getElementById("modal-content")
-
-  modal.style.display="block"
-
-  content.innerHTML=`
-    <h2>${ticker}</h2>
-    <div id="tv_chart" style="height:500px;"></div>
-  `
-
-  if(!window.tvLoaded){
-    const s=document.createElement("script")
-    s.src="https://s3.tradingview.com/tv.js"
-    s.onload=()=>createChart(ticker)
-    document.body.appendChild(s)
-    window.tvLoaded=true
-  }else{
-    createChart(ticker)
-  }
-}
-
-function createChart(ticker){
-  new TradingView.widget({
-    container_id:"tv_chart",
-    symbol:"NASDAQ:"+ticker,
-    theme:"light",
-    width:"100%",
-    height:500
-  })
-}
-
-// ===== MODAL =====
-function closeModal(){
-  document.getElementById("modal").style.display="none"
-}
-
+})
 </script>
 
 </body>
