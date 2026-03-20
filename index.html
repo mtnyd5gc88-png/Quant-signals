@@ -1,3 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Quanty</title>
+
+<style>
+body{
+  background:#f8fafc;
+  color:#0f172a;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  margin:0;
+}
+
+/* HEADER */
+.header{
+  padding:20px 40px;
+  border-bottom:1px solid #e2e8f0;
+  background:white;
+}
+
+.title{
+  font-size:26px;
+  font-weight:700;
+}
+
+.subtitle{
+  color:#64748b;
+  font-size:13px;
+}
+
+/* STATUS BAR */
+.status{
+  display:flex;
+  gap:25px;
+  margin-top:10px;
+  font-size:13px;
+  color:#475569;
+}
+
+/* SECTION */
+.section{
+  padding:30px 40px;
+}
+
+/* BUTTON */
+button{
+  padding:10px 16px;
+  margin-right:10px;
+  border-radius:8px;
+  border:none;
+  background:#2563eb;
+  color:white;
+  cursor:pointer;
+  font-weight:600;
+}
+
+/* SEARCH */
+.search{
+  padding:12px;
+  width:260px;
+  border-radius:10px;
+  border:1px solid #e2e8f0;
+}
+
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:20px;
+}
+
+/* CARD */
+.card{
+  padding:18px;
+  border-radius:14px;
+  cursor:pointer;
+  background:white;
+  border:1px solid #e2e8f0;
+  transition:0.2s;
+}
+
+.card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 10px 25px rgba(0,0,0,0.05);
+}
+
+/* TOP CARD */
+.top-card{
+  padding:24px;
+  border-radius:16px;
+  background:white;
+  border:1px solid #e2e8f0;
+}
+
+.big{
+  font-size:22px;
+  font-weight:700;
+}
+
+.meta{
+  font-size:13px;
+  margin-top:8px;
+  color:#475569;
+  line-height:1.6;
+}
+
+/* SIGNAL COLORS */
+.buy{color:#16a34a;}
+.hold{color:#ca8a04;}
+.cash{color:#dc2626;}
+
+/* CONFIDENCE */
+.conf-high{color:#16a34a;}
+.conf-mid{color:#ca8a04;}
+.conf-low{color:#dc2626;}
+
+/* MODAL */
+.modal{
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.7);
+}
+
+.modal-content{
+  background:white;
+  margin:60px auto;
+  padding:25px;
+  width:80%;
+  border-radius:12px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="title">Quanty</div>
+  <div class="subtitle">AI-driven signal engine (5-day horizon)</div>
+
+  <div class="status">
+    <div>System: ACTIVE</div>
+    <div>Model: LIVE</div>
+    <div id="last-update">Last Update: -</div>
+  </div>
+</div>
+
+<!-- BUTTONS -->
+<div class="section">
+  <button onclick="openBacktest()">Backtest</button>
+  <button onclick="openReport()">Report</button>
+  <button onclick="openInfo()">How it works</button>
+</div>
+
+<!-- TOP PICKS -->
+<div class="section">
+  <h2>Top Opportunities</h2>
+  <div class="grid" id="top"></div>
+</div>
+
+<!-- SEARCH -->
+<div class="section">
+  <input id="search" class="search" placeholder="Search ticker (e.g. NVDA)">
+</div>
+
+<!-- ALL -->
+<div class="section">
+  <h2>All Signals</h2>
+  <div class="grid" id="signals"></div>
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="modal" onclick="closeModal()">
+  <div class="modal-content" id="modal-content"></div>
+</div>
+
 <script>
 
 const BASE = "/Quant-signals/website"
@@ -5,17 +186,22 @@ const DATA_URL = `${BASE}/data/predictions.json?nocache=` + Date.now()
 
 let ALL_DATA = []
 
-// ❌ 삭제 (이제 안씀)
-// function getSignal(prob){...}
+function getConfidence(prob){
+  if(prob > 0.65) return ["High","conf-high"]
+  if(prob > 0.55) return ["Medium","conf-mid"]
+  return ["Low","conf-low"]
+}
 
 // ===== TOP =====
 function renderTop(data){
   const container = document.getElementById("top")
   container.innerHTML = ""
 
-  data.forEach((stock,i)=>{
+  const filtered = data.filter(s=>s.signal==="BUY")
 
-    const signal = stock.signal   // 🔥 핵심
+  filtered.slice(0,3).forEach((stock,i)=>{
+
+    const [conf,confClass] = getConfidence(stock.prob_up)
     const target = stock.price * (1 + stock.target_return)
 
     const card = document.createElement("div")
@@ -25,12 +211,12 @@ function renderTop(data){
 
     card.innerHTML=`
       <div class="big">#${i+1} ${stock.ticker}</div>
-      <div class="${signal.toLowerCase()}">${signal}</div>
+      <div class="buy">BUY</div>
 
       <div class="meta">
-        ${(stock.prob_up*100).toFixed(1)}%<br>
+        Expected: +${(stock.target_return*100).toFixed(2)}%<br>
         $${stock.price.toFixed(2)} → $${target.toFixed(2)}<br>
-        ${(stock.target_return*100).toFixed(2)}%
+        Confidence: <span class="${confClass}">${conf}</span>
       </div>
     `
 
@@ -45,7 +231,7 @@ function render(data){
 
   data.forEach(stock=>{
 
-    const signal = stock.signal   // 🔥 핵심
+    const [conf,confClass] = getConfidence(stock.prob_up)
     const target = stock.price * (1 + stock.target_return)
 
     const card=document.createElement("div")
@@ -55,12 +241,12 @@ function render(data){
 
     card.innerHTML=`
       <div><b>${stock.ticker}</b></div>
-      <div class="${signal.toLowerCase()}">${signal}</div>
+      <div class="${stock.signal.toLowerCase()}">${stock.signal}</div>
 
       <div class="meta">
-        ${(stock.prob_up*100).toFixed(1)}%<br>
-        $${stock.price.toFixed(2)} → $${target.toFixed(2)}<br>
-        ${(stock.target_return*100).toFixed(2)}%
+        Expected: ${(stock.target_return*100).toFixed(2)}%<br>
+        Confidence: <span class="${confClass}">${conf}</span><br>
+        $${stock.price.toFixed(2)} → $${target.toFixed(2)}
       </div>
     `
 
@@ -72,18 +258,15 @@ function render(data){
 fetch(DATA_URL)
 .then(r=>r.json())
 .then(data=>{
+  ALL_DATA = data
 
-  // 전체는 prob 기준
-  ALL_DATA = data.sort((a,b)=>b.prob_up-a.prob_up)
+  document.getElementById("last-update").innerText =
+    "Last Update: " + new Date().toLocaleDateString()
 
-  // 🔥 Top = BUY만 + 수익률 기준
-  const TOP_DATA = data
-    .filter(s => s.signal === "BUY")   // 🔥 핵심
-    .sort((a,b)=>b.target_return-a.target_return)
-    .slice(0,3)
+  const TOP_DATA = [...data].sort((a,b)=>b.target_return-a.target_return)
 
   renderTop(TOP_DATA)
-  render(ALL_DATA)
+  render(data)
 })
 
 // ===== SEARCH =====
@@ -103,6 +286,29 @@ document.getElementById("search").addEventListener("input",e=>{
     render(f)
   }
 })
+
+// ===== INFO =====
+function openInfo(){
+  const modal=document.getElementById("modal")
+  const content=document.getElementById("modal-content")
+
+  modal.style.display="block"
+
+  content.innerHTML=`
+    <h2>How Signals Work</h2>
+    <p>
+    Signals are generated using:
+    <br><br>
+    - Probability model (direction)<br>
+    - Expected return model<br>
+    - Filtering system (removes weak trades)
+    <br><br>
+    BUY = strong probability + strong return<br>
+    HOLD = unclear edge<br>
+    CASH = low probability
+    </p>
+  `
+}
 
 // ===== BACKTEST =====
 function openBacktest(){
@@ -172,3 +378,6 @@ function closeModal(){
 }
 
 </script>
+
+</body>
+</html>
