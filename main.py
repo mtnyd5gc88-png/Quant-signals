@@ -1,7 +1,5 @@
 from __future__ import annotations
-
 from pathlib import Path
-
 import pandas as pd
 from sklearn.base import clone
 import shutil
@@ -33,50 +31,131 @@ from visualization import (
 def main() -> None:
 
     import shutil
-    shutil.rmtree("data", ignore_errors=True)
+    shutil.rmtree("data", ignore_errors=True)  # 🔥 캐시 삭제
 
     print("Run time:", datetime.datetime.now())
 
     # --------------------
-    # Settings
+    # User-configurable settings
     # --------------------
     tickers = [
-        "AMD","INTC","MU","QCOM","AMAT","LRCX","KLAC","ADI","NXPI","MCHP"
-    ]
+
+# 0–100 range (100)
+"AMD","INTC","MU","QCOM","AMAT","LRCX","KLAC","ADI","NXPI","MCHP",
+"SWKS","QRVO","TER","ENTG","ON","HPQ","DELL","HPE","WDC","STX",
+"F","GM","T","VZ","CSCO","ORCL","IBM","EBAY","PYPL","SQ",
+"PINS","SNAP","ETSY","LYFT","UBER","DASH","CHWY","CVNA","ROKU","SPOT",
+"EA","TTWO","ATVI","PARA","WBD","NOK","ERIC","BIDU","JD","BABA",
+"NIO","XPEV","LI","RIVN","LCID","QS","PLUG","RUN","ENPH","SEDG",
+"FSLR","XOM","CVX","OXY","HAL","SLB","DVN","EOG","APA","FANG",
+"MRO","NOV","CHK","AR","CNX","BTU","ARCH","CCL","RCL","NCLH",
+"AAL","DAL","UAL","MGM","WYNN","LVS","MAR","HLT","YUM","CMG",
+"KHC","MDLZ","GIS","K","HSY","CL","KMB","PG","MO","PM",
+
+# 100–200 range (100)
+"AAPL","MSFT","GOOGL","META","AMZN","NVDA","AVGO","ADBE","CRM","NOW",
+"SNOW","DDOG","NET","CRWD","ZS","OKTA","MDB","PANW","TEAM","WDAY",
+"HUBS","SHOP","DOCU","TTD","ANET","CDNS","SNPS","FTNT","WDAY","ZS",
+"MA","V","AXP","DFS","COF","ALLY","USB","PNC","BK","TFC",
+"GS","MS","BLK","SCHW","CME","ICE","SPGI","MCO","AON","MMC",
+"UNH","LLY","TMO","ISRG","VRTX","ZTS","HCA","DHR","IDXX","DXCM",
+"REGN","GILD","AMGN","BIIB","BMY","ABBV","PFE","MRK","ELV","CI",
+"CAT","DE","ETN","PH","HON","LMT","RTX","NOC","GD","BA",
+"UPS","FDX","UNP","CSX","NSC","CP","CNI","ODFL","JBHT","CHRW",
+
+# 200–300 range (100)
+"COST","HD","LOW","TGT","WMT","SBUX","MCD","NKE","ADP","PAYX",
+"INTU","FIS","FISV","GPN","JKHY","CTSH","ACN","IBM","ORCL","SAP",
+"LIN","APD","SHW","ECL","PPG","DD","DOW","LYB","IFF","EMN",
+"CLX","CHD","EL","PG","KMB","CL","HSY","MKC","SJM","HRL",
+"DEO","STZ","BF.B","TAP","SAM","YUM","CMG","DPZ","DRI","TXRH",
+"ROST","TJX","BURL","ULTA","ORLY","AZO","AAP","BBY","DG","DLTR",
+"KR","WBA","CVS","CI","ELV","ANTM","HUM","CNC","MOH","UHS",
+"ICE","CBOE","NDAQ","CME","SPGI","MCO","MSCI","BLK","TROW","BEN",
+"PNR","ITW","PH","ROK","EMR","ETN","DOV","SWK","IR","XYL"
+]
 
     BENCHMARK = "SPY"
+    VIX_TICKER = "^VIX"
 
-    START_DATE = "2013-01-01"
+    START_DATE = "2013-01-01"  # 10+ years of daily data
+    END_DATE = None  # or "YYYY-MM-DD"
 
     FEATURE_CFG = FeatureConfig()
+    USE_FACTOR_MODEL = False
+    USE_MARKET_REGIME = False
 
     RECO_THRESH = RecommendationThresholds(buy=0.55, hold_low=0.40, hold_high=0.55)
 
     PORTFOLIO_CFG = PortfolioConfig(initial_capital=100_000.0, top_n=10, max_exposure=0.90)
 
+    WALK_FORWARD_TRAIN_YEARS = 5
+    WALK_FORWARD_STEP_YEARS = 1
+
     OUT_PLOTS = Path("outputs/plots")
     OUT_REPORT = Path("outputs/reports/performance_report.txt")
 
     # --------------------
-    # Load data
+    # Data load
     # --------------------
+    extra_tickers = [BENCHMARK]
+    if USE_MARKET_REGIME:
+        extra_tickers.append(VIX_TICKER)
+
     cfg = DataConfig(
-        tickers=tickers + [BENCHMARK],
+        tickers=tickers + extra_tickers,
         start=START_DATE,
+        end=END_DATE,
         cache_dir=Path("data"),
         use_cache=False
     )
 
     raw = load_data(cfg)
-    spy_df = raw.pop(BENCHMARK)
+    spy_df = raw.pop(BENCHMARK, None)
+    vix_df = raw.pop(VIX_TICKER, None) if USE_MARKET_REGIME else None
+
+    if spy_df is None:
+        raise RuntimeError("Benchmark SPY failed to download.")
+
+    if raw:
+        latest_date = max(df.index[-1] for df in raw.values())
+        print("Latest market data:", latest_date)
+
+    current_regime: str | None = None
+    effective_reco_thresh = RECO_THRESH
+    effective_portfolio_cfg = PORTFOLIO_CFG
+
+    if USE_MARKET_REGIME and vix_df is not None:
+        spy_px_for_regime = spy_df["Adj Close"] if "Adj Close" in spy_df.columns else spy_df["Close"]
+        vix_series = vix_df["Close"]
+        regime_series = compute_market_regime(spy_px_for_regime, vix_series)
+        if not regime_series.empty:
+            current_regime = str(regime_series.iloc[-1])
+            print(f"Current market regime: {current_regime}")
 
     raw = ensure_min_history(raw, min_days=800)
 
     # --------------------
-    # Model
+    # Universe filtering
+    # --------------------
+    filtered_raw: dict[str, pd.DataFrame] = {}
+    for ticker, df in raw.items():
+        if df.empty:
+            continue
+        price = float(df["Close"].iloc[-1])
+        avg_volume = float(df["Volume"].rolling(30).mean().iloc[-1])
+        if price > 3.0 and avg_volume > 500_000:
+            filtered_raw[ticker] = df
+
+    raw = filtered_raw
+
+    if len(raw) < 2:
+        raise RuntimeError("Not enough tickers with sufficient history.")
+
+    # --------------------
+    # Model training
     # --------------------
     feat_cols = feature_columns(FEATURE_CFG)
-
     latest_preds = []
     per_ticker_probs = {}
 
@@ -121,103 +200,34 @@ def main() -> None:
             feats,
             feat_cols,
             model_name=best.name,
-            train_years=5,
-            step_years=1,
+            train_years=WALK_FORWARD_TRAIN_YEARS,
+            step_years=WALK_FORWARD_STEP_YEARS,
         )
-
-        # 🔥 기대수익 낮으면 매수 금지
-        if pred.target_price is not None and pred.target_price < 0.02:
-            probs = probs * 0
 
         per_ticker_probs[ticker] = probs
 
     # --------------------
-    # Recommendations
-    # --------------------
-    print("\nLatest predictions:")
-
-    latest_preds_sorted = sorted(latest_preds, key=lambda p: p.prob_up, reverse=True)
-
-    for p in latest_preds_sorted:
-
-        rec = recommendation_from_probability(p.prob_up, RECO_THRESH)
-
-        expected_return = float(p.target_price) if p.target_price is not None else None
-
-        # 🔥 BUY 기준 강화 (1% → 2%)
-        if expected_return is not None and expected_return <= 0.02:
-            rec = "HOLD"
-
-        if rec == "BUY" and expected_return is not None:
-            target_price = p.current_price * (1.0 + expected_return)
-
-            print(
-                f"- {p.ticker} | BUY | "
-                f"{p.current_price:.2f} → {target_price:.2f} "
-                f"({expected_return*100:+.2f}%) | prob={p.prob_up:.2f}"
-            )
-        else:
-            print(f"- {p.ticker} | {rec} | prob={p.prob_up:.2f}")
-
-    # --------------------
-    # Backtest
-    # --------------------
-    price_by_ticker = {
-        t: df["Close"] for t, df in raw.items()
-    }
-
-    bt = run_portfolio_backtest(
-        price_by_ticker=price_by_ticker,
-        prob_by_ticker=per_ticker_probs,
-        cfg=PORTFOLIO_CFG
-    )
-
-    spy_px = spy_df["Close"].loc[bt.equity_curve.index]
-    strategy_eq = bt.equity_curve.loc[spy_px.index]
-    benchmark_eq = PORTFOLIO_CFG.initial_capital * (spy_px / spy_px.iloc[0])
-
-    report = summarize_performance(strategy_eq, benchmark_eq, bt.trades)
-
-    OUT_REPORT.parent.mkdir(parents=True, exist_ok=True)
-
-    with OUT_REPORT.open("w") as f:
-        f.write(f"Total return: {report.cumulative_return:.2%}\n")
-        f.write(f"Sharpe: {report.sharpe_ratio:.2f}\n")
-        f.write(f"Max DD: {report.max_drawdown:.2%}\n")
-
-    plot_equity_curve(strategy_eq, OUT_PLOTS / "equity_curve.png")
-
-    # --------------------
-    # JSON OUTPUT
+    # Output JSON
     # --------------------
     import json
 
     data = []
 
-    for p in latest_preds_sorted:
-
+    for p in latest_preds:
         rec = recommendation_from_probability(p.prob_up, RECO_THRESH)
-
-        expected_return = float(p.target_price) if p.target_price is not None else 0.0
-
-        # 🔥 단일 기준 유지 (frontend랑 동일)
-        if expected_return < 0.02:
-            rec = "HOLD"
 
         data.append({
             "ticker": p.ticker,
-            "prob_up": round(float(p.prob_up), 3),
-            "price": float(p.current_price),
-            "target_return": float(expected_return),
+            "prob_up": round(p.prob_up,3),
+            "price": p.current_price,
+            "target_return": p.target_price,
             "signal": rec
         })
 
     Path("website/data").mkdir(parents=True, exist_ok=True)
 
-    with open("website/data/predictions.json", "w") as f:
-        json.dump(data, f, indent=2)
-
-    print("\nDone.")
+    with open("website/data/predictions.json","w") as f:
+        json.dump(data,f,indent=2)
 
 
 if __name__ == "__main__":
