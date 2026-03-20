@@ -2,105 +2,120 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Quant Signals</title>
+<title>Quanty</title>
 
 <style>
 body{
-  background:#0b1220;
-  color:#e2e8f0;
+  background:#f8fafc;
+  color:#0f172a;
   font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-  padding:40px;
+  margin:0;
 }
 
-h1{
-  font-size:32px;
+/* HEADER */
+.header{
+  padding:20px 40px;
+  border-bottom:1px solid #e2e8f0;
+  background:white;
+}
+
+.title{
+  font-size:26px;
   font-weight:700;
-  margin-bottom:10px;
 }
 
-.sub{
-  color:#94a3b8;
-  margin-bottom:30px;
-}
-
-/* 버튼 */
-button{
-  padding:10px 18px;
-  margin-right:10px;
-  background:#22c55e;
-  border:none;
-  border-radius:8px;
-  color:white;
-  font-weight:600;
-  cursor:pointer;
-  transition:0.2s;
-}
-
-button:hover{
-  opacity:0.85;
-}
-
-/* 레전드 */
-.legend{
-  display:flex;
-  height:45px;
-  margin-bottom:25px;
-  border-radius:10px;
-  overflow:hidden;
-}
-
-.legend-item{
-  flex:1;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:600;
+.subtitle{
+  color:#64748b;
   font-size:13px;
 }
 
-.red{background:#7f1d1d;}
-.yellow{background:#854d0e;}
-.green{
-  background:linear-gradient(to right, rgb(0,100,80), rgb(0,255,120));
+/* STATUS BAR */
+.status{
+  display:flex;
+  gap:25px;
+  margin-top:10px;
+  font-size:13px;
+  color:#475569;
 }
 
-/* 카드 */
-.container{
+/* SECTION */
+.section{
+  padding:30px 40px;
+}
+
+/* BUTTON */
+button{
+  padding:10px 16px;
+  margin-right:10px;
+  border-radius:8px;
+  border:none;
+  background:#2563eb;
+  color:white;
+  cursor:pointer;
+  font-weight:600;
+}
+
+/* SEARCH */
+.search{
+  padding:12px;
+  width:260px;
+  border-radius:10px;
+  border:1px solid #e2e8f0;
+}
+
+/* GRID */
+.grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
   gap:20px;
 }
 
+/* CARD */
 .card{
-  padding:20px;
+  padding:18px;
   border-radius:14px;
   cursor:pointer;
+  background:white;
+  border:1px solid #e2e8f0;
   transition:0.2s;
-  box-shadow:0 4px 20px rgba(0,0,0,0.4);
 }
 
 .card:hover{
   transform:translateY(-4px);
+  box-shadow:0 10px 25px rgba(0,0,0,0.05);
 }
 
-.ticker{
-  font-size:20px;
+/* TOP CARD */
+.top-card{
+  padding:24px;
+  border-radius:16px;
+  background:white;
+  border:1px solid #e2e8f0;
+}
+
+.big{
+  font-size:22px;
   font-weight:700;
-}
-
-.signal{
-  font-size:14px;
-  font-weight:600;
-  margin-bottom:10px;
 }
 
 .meta{
   font-size:13px;
-  opacity:0.9;
+  margin-top:8px;
+  color:#475569;
   line-height:1.6;
 }
 
-/* 모달 */
+/* SIGNAL COLORS */
+.buy{color:#16a34a;}
+.hold{color:#ca8a04;}
+.cash{color:#dc2626;}
+
+/* CONFIDENCE */
+.conf-high{color:#16a34a;}
+.conf-mid{color:#ca8a04;}
+.conf-low{color:#dc2626;}
+
+/* MODAL */
 .modal{
   display:none;
   position:fixed;
@@ -108,12 +123,11 @@ button:hover{
   left:0;
   width:100%;
   height:100%;
-  background:rgba(0,0,0,0.85);
-  overflow:auto;
+  background:rgba(0,0,0,0.7);
 }
 
 .modal-content{
-  background:#0b1220;
+  background:white;
   margin:60px auto;
   padding:25px;
   width:80%;
@@ -124,119 +138,245 @@ button:hover{
 
 <body>
 
-<h1>Quant Signals</h1>
-<div class="sub">AI-driven probability-based trading signals</div>
+<!-- HEADER -->
+<div class="header">
+  <div class="title">Quanty</div>
+  <div class="subtitle">AI-driven signal engine (5-day horizon)</div>
 
-<button onclick="openBacktest()">📊 Backtest</button>
-<button onclick="openReport()">📄 Report</button>
-
-<div class="legend">
-  <div class="legend-item red">CASH</div>
-  <div class="legend-item yellow">HOLD</div>
-  <div class="legend-item green">BUY (LOW → HIGH)</div>
+  <div class="status">
+    <div>System: ACTIVE</div>
+    <div>Model: LIVE</div>
+    <div id="last-update">Last Update: -</div>
+  </div>
 </div>
 
-<div class="container" id="signals"></div>
+<!-- BUTTONS -->
+<div class="section">
+  <button onclick="openBacktest()">Backtest</button>
+  <button onclick="openReport()">Report</button>
+  <button onclick="openInfo()">How it works</button>
+</div>
 
+<!-- TOP PICKS -->
+<div class="section">
+  <h2>Top Opportunities</h2>
+  <div class="grid" id="top"></div>
+</div>
+
+<!-- SEARCH -->
+<div class="section">
+  <input id="search" class="search" placeholder="Search ticker (e.g. NVDA)">
+</div>
+
+<!-- ALL -->
+<div class="section">
+  <h2>All Signals</h2>
+  <div class="grid" id="signals"></div>
+</div>
+
+<!-- MODAL -->
 <div id="modal" class="modal" onclick="closeModal()">
   <div class="modal-content" id="modal-content"></div>
 </div>
 
 <script>
 
-// ===== 캐시 방지 =====
-const DATA_URL = "data/predictions.json?nocache=" + Date.now()
+const BASE = "/Quant-signals/website"
+const DATA_URL = `${BASE}/data/predictions.json?nocache=` + Date.now()
 
-function getSignal(prob){
-  if(prob >= 0.55) return "BUY"
-  if(prob >= 0.40) return "HOLD"
-  return "CASH"
+let ALL_DATA = []
+
+function getConfidence(prob){
+  if(prob > 0.65) return ["High","conf-high"]
+  if(prob > 0.55) return ["Medium","conf-mid"]
+  return ["Low","conf-low"]
 }
 
-function getColor(signal, target){
-  if(signal === "CASH") return "#7f1d1d"
-  if(signal === "HOLD") return "#854d0e"
+// ===== TOP =====
+function renderTop(data){
+  const container = document.getElementById("top")
+  container.innerHTML = ""
 
-  let intensity = Math.min(Math.max(target, 0), 0.15) / 0.15
-  let green = Math.floor(100 + intensity * 155)
-  return `rgb(0, ${green}, 90)`
-}
+  const filtered = data.filter(s=>s.signal==="BUY")
 
-// ===== 백테스트 =====
-function openBacktest(){
-  const modal = document.getElementById("modal")
-  const content = document.getElementById("modal-content")
+  filtered.slice(0,3).forEach((stock,i)=>{
 
-  modal.style.display = "block"
+    const [conf,confClass] = getConfidence(stock.prob_up)
+    const target = stock.price * (1 + stock.target_return)
 
-  content.innerHTML = `
-    <h2>Backtest Performance</h2>
-    <img src="charts/equity_curve.png" width="100%"><br><br>
-    <img src="charts/strategy_vs_spy.png" width="100%"><br><br>
-    <img src="charts/drawdown.png" width="100%">
-  `
-}
+    const card = document.createElement("div")
+    card.className="top-card"
 
-// ===== 리포트 =====
-function openReport(){
-  const modal = document.getElementById("modal")
-  const content = document.getElementById("modal-content")
+    card.onclick=()=>openChart(stock.ticker)
 
-  modal.style.display = "block"
+    card.innerHTML=`
+      <div class="big">#${i+1} ${stock.ticker}</div>
+      <div class="buy">BUY</div>
 
-  fetch("reports/performance_report.txt?nocache=" + Date.now())
-  .then(res => res.text())
-  .then(text => {
-    content.innerHTML = `
-      <h2>Performance Report</h2>
-      <pre style="white-space:pre-wrap;">${text}</pre>
+      <div class="meta">
+        Expected: +${(stock.target_return*100).toFixed(2)}%<br>
+        $${stock.price.toFixed(2)} → $${target.toFixed(2)}<br>
+        Confidence: <span class="${confClass}">${conf}</span>
+      </div>
     `
+
+    container.appendChild(card)
   })
 }
 
-function closeModal(){
-  document.getElementById("modal").style.display = "none"
+// ===== ALL =====
+function render(data){
+  const container=document.getElementById("signals")
+  container.innerHTML=""
+
+  data.forEach(stock=>{
+
+    const [conf,confClass] = getConfidence(stock.prob_up)
+    const target = stock.price * (1 + stock.target_return)
+
+    const card=document.createElement("div")
+    card.className="card"
+
+    card.onclick=()=>openChart(stock.ticker)
+
+    card.innerHTML=`
+      <div><b>${stock.ticker}</b></div>
+      <div class="${stock.signal.toLowerCase()}">${stock.signal}</div>
+
+      <div class="meta">
+        Expected: ${(stock.target_return*100).toFixed(2)}%<br>
+        Confidence: <span class="${confClass}">${conf}</span><br>
+        $${stock.price.toFixed(2)} → $${target.toFixed(2)}
+      </div>
+    `
+
+    container.appendChild(card)
+  })
 }
 
-// ===== 데이터 로드 =====
+// ===== LOAD =====
 fetch(DATA_URL)
-.then(res => res.json())
-.then(data => {
+.then(r=>r.json())
+.then(data=>{
+  ALL_DATA = data
 
-const container = document.getElementById("signals")
+  document.getElementById("last-update").innerText =
+    "Last Update: " + new Date().toLocaleDateString()
 
-data.forEach(stock => {
+  const TOP_DATA = [...data].sort((a,b)=>b.target_return-a.target_return)
 
-let signal = getSignal(stock.prob_up)
+  renderTop(TOP_DATA)
+  render(data)
+})
 
-// 2차 필터
-if(signal === "BUY" && stock.target_return < 0){
-  signal = "HOLD"
+// ===== SEARCH =====
+document.getElementById("search").addEventListener("input",e=>{
+  const k=e.target.value.toUpperCase()
+
+  if(k===""){
+    render(ALL_DATA)
+    return
+  }
+
+  const f=ALL_DATA.filter(s=>s.ticker===k)
+
+  if(f.length===0){
+    document.getElementById("signals").innerHTML="No signal found"
+  }else{
+    render(f)
+  }
+})
+
+// ===== INFO =====
+function openInfo(){
+  const modal=document.getElementById("modal")
+  const content=document.getElementById("modal-content")
+
+  modal.style.display="block"
+
+  content.innerHTML=`
+    <h2>How Signals Work</h2>
+    <p>
+    Signals are generated using:
+    <br><br>
+    - Probability model (direction)<br>
+    - Expected return model<br>
+    - Filtering system (removes weak trades)
+    <br><br>
+    BUY = strong probability + strong return<br>
+    HOLD = unclear edge<br>
+    CASH = low probability
+    </p>
+  `
 }
 
-const color = getColor(signal, stock.target_return)
-const targetPrice = stock.price * (1 + stock.target_return)
+// ===== BACKTEST =====
+function openBacktest(){
+  const modal=document.getElementById("modal")
+  const content=document.getElementById("modal-content")
 
-const card = document.createElement("div")
-card.className = "card"
-card.style.background = color
+  modal.style.display="block"
 
-card.innerHTML = `
-  <div class="ticker">${stock.ticker}</div>
-  <div class="signal">${signal}</div>
-  <div class="meta">
-    Prob: ${(stock.prob_up*100).toFixed(1)}%<br>
-    Return: ${(stock.target_return*100).toFixed(2)}%<br>
-    Price: $${stock.price.toFixed(2)}<br>
-    Target: $${targetPrice.toFixed(2)}
-  </div>
-`
+  content.innerHTML=`
+    <h2>Backtest</h2>
+    <img src="${BASE}/charts/equity_curve.png" width="100%"><br><br>
+    <img src="${BASE}/charts/strategy_vs_spy.png" width="100%"><br><br>
+    <img src="${BASE}/charts/drawdown.png" width="100%">
+  `
+}
 
-container.appendChild(card)
+// ===== REPORT =====
+function openReport(){
+  const modal=document.getElementById("modal")
+  const content=document.getElementById("modal-content")
 
-})
+  modal.style.display="block"
 
-})
+  fetch(`${BASE}/reports/performance_report.txt`)
+  .then(r=>r.text())
+  .then(text=>{
+    content.innerHTML=`<pre>${text}</pre>`
+  })
+}
+
+// ===== CHART =====
+function openChart(ticker){
+  const modal=document.getElementById("modal")
+  const content=document.getElementById("modal-content")
+
+  modal.style.display="block"
+
+  content.innerHTML=`
+    <h2>${ticker}</h2>
+    <div id="tv_chart" style="height:500px;"></div>
+  `
+
+  if(!window.tvLoaded){
+    const s=document.createElement("script")
+    s.src="https://s3.tradingview.com/tv.js"
+    s.onload=()=>createChart(ticker)
+    document.body.appendChild(s)
+    window.tvLoaded=true
+  }else{
+    createChart(ticker)
+  }
+}
+
+function createChart(ticker){
+  new TradingView.widget({
+    container_id:"tv_chart",
+    symbol:"NASDAQ:"+ticker,
+    theme:"light",
+    width:"100%",
+    height:500
+  })
+}
+
+// ===== MODAL =====
+function closeModal(){
+  document.getElementById("modal").style.display="none"
+}
+
 </script>
 
 </body>
