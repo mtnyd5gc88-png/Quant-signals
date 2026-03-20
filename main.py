@@ -29,6 +29,14 @@ from visualization import (
     plot_strategy_vs_benchmark,
 )
 
+def final_signal(prob, target, thresh):
+        rec = recommendation_from_probability(prob, thresh)
+
+        if target is not None and target < 0.02:
+            return "HOLD"
+        
+        return rec
+
 
 def main() -> None:
 
@@ -371,9 +379,17 @@ def main() -> None:
     for ticker, probs in per_ticker_probs.items():
         p = latest_pred_map.get(ticker)
 
-        if p and p.target_price is not None:
-            if p.target_price < 0.02:
-                per_ticker_probs[ticker] = probs * 0 
+        if p:
+            signal = final_signal(p.prob_up, p.target_price, effective_reco_thresh)
+
+            if signal != "BUY":
+                per_ticker_probs[ticker] = probs * 0
+        
+    bt = run_portfolio_backtest(
+        price_by_ticker=price_by_ticker,
+        prob_by_ticker=per_ticker_probs,
+        cfg=effective_portfolio_cfg,
+    )
 
     # Benchmark equity (SPY buy & hold) on the same backtest dates
     spy_px = spy_df["Adj Close"] if "Adj Close" in spy_df.columns else spy_df["Close"]
@@ -426,24 +442,19 @@ def main() -> None:
 
     import json
 
-    data = []
-
-    for p in latest_preds_sorted:
-
-        rec = recommendation_from_probability(p.prob_up, effective_reco_thresh)
-
-    # 🔥 기대수익 필터
-        if p.target_price is not None:
-            if p.target_price < 0.02:
-                rec = "HOLD"
-
-        data.append({
+    
+    data = [
+        {
             "ticker": p.ticker,
-            "prob_up": round(p.prob_up,3),
+            "prob_up": round(p.prob_up, 3),
             "price": p.current_price,
             "target_return": p.target_price,
-            "signal": rec
-        })
+            "signal": final_signal(p.prob_up, p.target_price, effective_reco_thresh)
+        }
+        for p in latest_preds_sorted
+    ]
+
+    
 
     Path("website/data").mkdir(parents=True, exist_ok=True)
 
