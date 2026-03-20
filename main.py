@@ -337,7 +337,7 @@ def main() -> None:
             expected_return = float(p.target_price)
             target_price = p.current_price * (1.0 + expected_return)
 
-            if expected_return <= 0.01:
+            if expected_return <= 0.02:
                 rec = "HOLD"
 
             if rec == "BUY":
@@ -365,7 +365,15 @@ def main() -> None:
         px = df["Adj Close"] if "Adj Close" in df.columns else df["Close"]
         price_by_ticker[ticker] = px
 
-    bt = run_portfolio_backtest(price_by_ticker=price_by_ticker, prob_by_ticker=per_ticker_probs, cfg=effective_portfolio_cfg)
+    # 🔥 최신 예측 기준 필터 적용
+    latest_pred_map = {p.ticker: p for p in latest_preds}
+
+    for ticker, probs in per_ticker_probs.items():
+        p = latest_pred_map.get(ticker)
+
+        if p and p.target_price is not None:
+            if p.target_price < 0.02:
+                per_ticker_probs[ticker] = probs * 0 
 
     # Benchmark equity (SPY buy & hold) on the same backtest dates
     spy_px = spy_df["Adj Close"] if "Adj Close" in spy_df.columns else spy_df["Close"]
@@ -421,11 +429,20 @@ def main() -> None:
     data = []
 
     for p in latest_preds_sorted:
+
+        rec = recommendation_from_probability(p.prob_up, effective_reco_thresh)
+
+    # 🔥 기대수익 필터
+        if p.target_price is not None:
+            if p.target_price < 0.02:
+                rec = "HOLD"
+
         data.append({
             "ticker": p.ticker,
             "prob_up": round(p.prob_up,3),
             "price": p.current_price,
-            "target_return": p.target_price
+            "target_return": p.target_price,
+            "signal": rec
         })
 
     Path("website/data").mkdir(parents=True, exist_ok=True)
