@@ -451,13 +451,20 @@ def main() -> None:
 
     data = []
 
-    for p in latest_preds_sorted:
-        data.append({
-            "ticker": p.ticker,
-            "prob_up": round(p.prob_up,3),
-            "price": p.current_price,
-            "target_return": p.target_price
-        })
+    # 🔥 신호 확정해서 보내기
+    rec = recommendation_from_probability(p.prob_up, effective_reco_thresh)
+
+    if p.target_price is not None:
+        if p.target_price < 0.02:
+            rec = "HOLD"
+
+    data.append({
+        "ticker": p.ticker,
+        "prob_up": round(p.prob_up,3),
+        "price": p.current_price,
+        "target_return": p.target_price,
+        "signal": rec   # 🔥 핵심 추가
+    })
 
     Path("website/data").mkdir(parents=True, exist_ok=True)
 
