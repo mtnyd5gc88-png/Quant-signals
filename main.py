@@ -451,20 +451,21 @@ def main() -> None:
 
     data = []
 
-    # 🔥 신호 확정해서 보내기
-    rec = recommendation_from_probability(p.prob_up, effective_reco_thresh)
+    for p in latest_preds_sorted:
 
-    if p.target_price is not None:
-        if p.target_price < 0.02:
-            rec = "HOLD"
+        rec = recommendation_from_probability(p.prob_up, effective_reco_thresh)
 
-    data.append({
-        "ticker": p.ticker,
-        "prob_up": round(p.prob_up,3),
-        "price": p.current_price,
-        "target_return": p.target_price,
-        "signal": rec   # 🔥 핵심 추가
-    })
+        if p.target_price is not None:
+            if p.target_price < 0.02:
+                rec = "HOLD"
+
+        data.append({
+            "ticker": p.ticker,
+            "prob_up": round(p.prob_up,3),
+            "price": p.current_price,
+            "target_return": p.target_price,
+            "signal": rec
+        })
 
     Path("website/data").mkdir(parents=True, exist_ok=True)
 
