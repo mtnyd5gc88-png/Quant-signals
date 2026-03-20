@@ -1,162 +1,3 @@
-  <!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Quanty </title>
-
-<style>
-body{
-  background:#f8fafc;
-  color:#0f172a;
-  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-  margin:0;
-}
-
-/* HEADER */
-.header{
-  padding:20px 40px;
-  border-bottom:1px solid #e2e8f0;
-  background:white;
-}
-
-.title{
-  font-size:26px;
-  font-weight:700;
-}
-
-.subtitle{
-  color:#64748b;
-  font-size:13px;
-}
-
-/* SECTION */
-.section{
-  padding:30px 40px;
-}
-
-/* BUTTON */
-button{
-  padding:10px 16px;
-  margin-right:10px;
-  border-radius:8px;
-  border:none;
-  background:#2563eb;
-  color:white;
-  cursor:pointer;
-  font-weight:600;
-}
-
-/* SEARCH */
-.search{
-  padding:12px;
-  width:260px;
-  border-radius:10px;
-  border:1px solid #e2e8f0;
-}
-
-/* GRID */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:20px;
-}
-
-/* CARD */
-.card{
-  padding:18px;
-  border-radius:14px;
-  cursor:pointer;
-  background:white;
-  border:1px solid #e2e8f0;
-  transition:0.2s;
-}
-
-.card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 10px 25px rgba(0,0,0,0.05);
-}
-
-.top-card{
-  padding:22px;
-  border-radius:16px;
-  background:white;
-  border:1px solid #e2e8f0;
-}
-
-.big{
-  font-size:22px;
-  font-weight:700;
-}
-
-.meta{
-  font-size:13px;
-  margin-top:8px;
-  color:#475569;
-  line-height:1.6;
-}
-
-/* SIGNAL COLORS */
-.buy{color:#16a34a;}
-.hold{color:#ca8a04;}
-.cash{color:#dc2626;}
-
-/* MODAL */
-.modal{
-  display:none;
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.7);
-}
-
-.modal-content{
-  background:white;
-  margin:60px auto;
-  padding:25px;
-  width:80%;
-  border-radius:12px;
-}
-</style>
-</head>
-
-<body>
-
-<!-- HEADER -->
-<div class="header">
-  <div class="title">Quanty</div>
-  <div class="subtitle">Probability-based stock ranking engine for 5days</div>
-</div>
-
-<!-- BUTTONS -->
-<div class="section">
-  <button onclick="openBacktest()"> Backtest</button>
-  <button onclick="openReport()"> Report</button>
-</div>
-
-<!-- TOP PICKS -->
-<div class="section">
-  <h2>Top Signals</h2>
-  <div class="grid" id="top"></div>
-</div>
-
-<!-- SEARCH -->
-<div class="section">
-  <input id="search" class="search" placeholder="Search ticker (e.g. NVDA)">
-</div>
-
-<!-- ALL -->
-<div class="section">
-  <h2>All Signals</h2>
-  <div class="grid" id="signals"></div>
-</div>
-
-<!-- MODAL -->
-<div id="modal" class="modal" onclick="closeModal()">
-  <div class="modal-content" id="modal-content"></div>
-</div>
-
 <script>
 
 const BASE = "/Quant-signals/website"
@@ -164,20 +5,17 @@ const DATA_URL = `${BASE}/data/predictions.json?nocache=` + Date.now()
 
 let ALL_DATA = []
 
-function getSignal(prob){
-  if(prob >= 0.55) return "BUY"
-  if(prob >= 0.40) return "HOLD"
-  return "CASH"
-}
+// ❌ 삭제 (이제 안씀)
+// function getSignal(prob){...}
 
 // ===== TOP =====
 function renderTop(data){
   const container = document.getElementById("top")
   container.innerHTML = ""
 
-  data.slice(0,3).forEach((stock,i)=>{
+  data.forEach((stock,i)=>{
 
-    const signal = getSignal(stock.prob_up)
+    const signal = stock.signal   // 🔥 핵심
     const target = stock.price * (1 + stock.target_return)
 
     const card = document.createElement("div")
@@ -207,7 +45,7 @@ function render(data){
 
   data.forEach(stock=>{
 
-    const signal=getSignal(stock.prob_up)
+    const signal = stock.signal   // 🔥 핵심
     const target = stock.price * (1 + stock.target_return)
 
     const card=document.createElement("div")
@@ -234,11 +72,15 @@ function render(data){
 fetch(DATA_URL)
 .then(r=>r.json())
 .then(data=>{
-  // 전체는 prob 기준 유지
+
+  // 전체는 prob 기준
   ALL_DATA = data.sort((a,b)=>b.prob_up-a.prob_up)
 
-// Top만 따로 정렬
-  const TOP_DATA = [...data].sort((a,b)=>b.target_return-a.target_return)
+  // 🔥 Top = BUY만 + 수익률 기준
+  const TOP_DATA = data
+    .filter(s => s.signal === "BUY")   // 🔥 핵심
+    .sort((a,b)=>b.target_return-a.target_return)
+    .slice(0,3)
 
   renderTop(TOP_DATA)
   render(ALL_DATA)
@@ -330,6 +172,3 @@ function closeModal(){
 }
 
 </script>
-
-</body>
-</html>
