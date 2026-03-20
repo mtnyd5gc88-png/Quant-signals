@@ -101,7 +101,7 @@ h1{
 <div class="sub">AI-driven short-term trading signals</div>
 <div id="status"></div>
 
-<h2>🔥 Top Opportunities</h2>
+<h2>Top Opportunities</h2>
 <div class="top-container" id="top"></div>
 
 <h2>All Signals</h2>
@@ -116,7 +116,7 @@ fetch(DATA_URL)
 .then(data => {
 
 document.getElementById("status").innerText =
-  `🟢 Live • ${data.length} signals • Updated ${new Date().toLocaleTimeString()}`
+  `Live • ${data.length} signals • Updated ${new Date().toLocaleTimeString()}`
 
 // ===== TOP SIGNALS =====
 const top = data
