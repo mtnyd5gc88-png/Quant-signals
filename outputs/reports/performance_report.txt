@@ -5,9 +5,9 @@ Tickers: AAL, AAP, AAPL, ABBV, ACN, ADBE, ADI, ADP, ALLY, AMAT, AMD, AMGN, AMZN,
 Benchmark: SPY
 
 Total return: 3.04%
-Annualized return: 3.74%
-Sharpe ratio: 0.294
-Max drawdown: -14.98%
-SPY buy-and-hold return: 13.14%
-Number of trades: 195
-Win rate: 44.10%
+Annualized return: 3.73%
+Sharpe ratio: 0.311
+Max drawdown: -8.61%
+SPY buy-and-hold return: 13.57%
+Number of trades: 219
+Win rate: 42.47%
