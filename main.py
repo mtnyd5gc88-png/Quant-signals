@@ -48,39 +48,56 @@ def main() -> None:
     # --------------------
     tickers = [
 
-# 0–100 range (100)
-"AMD","INTC","MU","QCOM","AMAT","LRCX","KLAC","ADI","NXPI","MCHP",
-"SWKS","QRVO","TER","ENTG","ON","HPQ","DELL","HPE","WDC","STX",
-"F","GM","T","VZ","CSCO","ORCL","IBM","EBAY","PYPL","SQ",
-"PINS","SNAP","ETSY","LYFT","UBER","DASH","CHWY","CVNA","ROKU","SPOT",
-"EA","TTWO","ATVI","PARA","WBD","NOK","ERIC","BIDU","JD","BABA",
-"NIO","XPEV","LI","RIVN","LCID","QS","PLUG","RUN","ENPH","SEDG",
-"FSLR","XOM","CVX","OXY","HAL","SLB","DVN","EOG","APA","FANG",
-"MRO","NOV","CHK","AR","CNX","BTU","ARCH","CCL","RCL","NCLH",
-"AAL","DAL","UAL","MGM","WYNN","LVS","MAR","HLT","YUM","CMG",
-"KHC","MDLZ","GIS","K","HSY","CL","KMB","PG","MO","PM",
+# --- AI / Semiconductor / High-beta Tech ---
+"NVDA","AMD","SMCI","AVGO","TSM","ASML","AMAT","LRCX","KLAC","MU",
+"QCOM","MRVL","ON","NXPI","ADI","MCHP","TER","ENTG","SWKS","QRVO",
+"INTC","CDNS","SNPS","ANET","ARM","MPWR","COHR","LSCC","AEHR","NVMI",
 
-# 100–200 range (100)
+# --- High-growth software / AI infra ---
+"MSFT","GOOGL","META","AMZN","CRM","NOW","SNOW","DDOG","NET","CRWD",
+"ZS","OKTA","MDB","PANW","TEAM","WDAY","HUBS","SHOP","TTD","DOCU",
+"PLTR","AI","C3AI","PATH","ESTC","FSLY","UPST","AFRM","COIN","SQ",
+
+# --- EV / Clean Energy / High volatility ---
+"TSLA","RIVN","LCID","NIO","XPEV","LI","BYDDF","QS","PLUG","RUN",
+"ENPH","SEDG","FSLR","BE","BLDP","FCEL","CHPT","EVGO","ARRY","NEE",
+
+# --- Oil / Commodities (cyclical volatility) ---
+"XOM","CVX","OXY","DVN","EOG","APA","FANG","MRO","SLB","HAL",
+"NOV","CHK","AR","CNX","BTU","ARCH","CEIX","HCC","NUE","STLD",
+
+# --- Biotech (high risk/high return) ---
+"MRNA","BNTX","VRTX","REGN","GILD","AMGN","BIIB","SGEN","ALNY","EXAS",
+"CRSP","NTLA","EDIT","BEAM","BLUE","PACB","ILMN","DNA","RXRX","IONS",
+
+# --- Fintech / High beta finance ---
+"PYPL","SQ","AFRM","SOFI","HOOD","COIN","ALLY","UPST","LC","TREE",
+"OPEN","RKT","COMP","Z","RDFN","LMND","SE","NU","MELI","PAGS",
+
+# --- Consumer high volatility / discretionary ---
+"AMZN","TSLA","NFLX","DIS","ROKU","SPOT","UBER","LYFT","DASH","ABNB",
+"ETSY","PINS","SNAP","CHWY","CVNA","DKNG","PENN","MGM","WYNN","RCL",
+
+# --- Industrial / Robotics / automation ---
+"CAT","DE","ETN","PH","ROK","EMR","DOV","IR","XYL","HON",
+"LMT","RTX","NOC","GD","BA","TDG","HEI","TXT","CW","HII",
+
+# --- China / Emerging volatility ---
+"BABA","JD","PDD","BIDU","TME","NTES","LI","XPEV","NIO","BEKE",
+"DIDIY","IQ","YMM","KC","ZTO","WB","HUYA","DOYU","ATHM","QFIN",
+
+# --- ETFs (volatility / sector exposure) ---
+"ARKK","SOXL","TQQQ","SQQQ","SPXL","SPXS","LABU","LABD","FNGU","FNGD",
+
+# --- 추가 확장 (유동성 + 변동성 필터 통과용) ---
 "AAPL","MSFT","GOOGL","META","AMZN","NVDA","AVGO","ADBE","CRM","NOW",
-"SNOW","DDOG","NET","CRWD","ZS","OKTA","MDB","PANW","TEAM","WDAY",
-"HUBS","SHOP","DOCU","TTD","ANET","CDNS","SNPS","FTNT","WDAY","ZS",
-"MA","V","AXP","DFS","COF","ALLY","USB","PNC","BK","TFC",
-"GS","MS","BLK","SCHW","CME","ICE","SPGI","MCO","AON","MMC",
-"UNH","LLY","TMO","ISRG","VRTX","ZTS","HCA","DHR","IDXX","DXCM",
-"REGN","GILD","AMGN","BIIB","BMY","ABBV","PFE","MRK","ELV","CI",
-"CAT","DE","ETN","PH","HON","LMT","RTX","NOC","GD","BA",
-"UPS","FDX","UNP","CSX","NSC","CP","CNI","ODFL","JBHT","CHRW",
-
-# 200–300 range (100)
-"COST","HD","LOW","TGT","WMT","SBUX","MCD","NKE","ADP","PAYX",
-"INTU","FIS","FISV","GPN","JKHY","CTSH","ACN","IBM","ORCL","SAP",
-"LIN","APD","SHW","ECL","PPG","DD","DOW","LYB","IFF","EMN",
-"CLX","CHD","EL","PG","KMB","CL","HSY","MKC","SJM","HRL",
-"DEO","STZ","BF.B","TAP","SAM","YUM","CMG","DPZ","DRI","TXRH",
-"ROST","TJX","BURL","ULTA","ORLY","AZO","AAP","BBY","DG","DLTR",
-"KR","WBA","CVS","CI","ELV","ANTM","HUM","CNC","MOH","UHS",
-"ICE","CBOE","NDAQ","CME","SPGI","MCO","MSCI","BLK","TROW","BEN",
-"PNR","ITW","PH","ROK","EMR","ETN","DOV","SWK","IR","XYL"
+"INTU","ISRG","ZTS","DXCM","IDXX","TMO","DHR","HCA","UNH","LLY",
+"MA","V","AXP","GS","MS","BLK","SCHW","CME","ICE","SPGI",
+"UPS","FDX","UNP","CSX","NSC","ODFL","JBHT","CHRW","DAL","UAL",
+"HD","LOW","COST","WMT","TGT","NKE","SBUX","MCD","CMG","YUM",
+"PG","KO","PEP","MDLZ","CL","KMB","EL","HSY","GIS","K",
+"LIN","APD","ECL","SHW","PPG","DD","DOW","LYB","IFF","EMN",
+"ITW","PH","ROK","EMR","ETN","DOV","SWK","IR","XYL","PNR"
 ]
   # add/remove tickers here
     BENCHMARK = "SPY"
