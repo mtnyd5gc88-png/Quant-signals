@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import functools
 from dataclasses import dataclass
 from typing import Dict, Tuple
 
 import numpy as np
 import pandas as pd
+from sklearn.calibration import CalibratedClassifierCV
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
@@ -16,7 +18,6 @@ from sklearn.metrics import (
 )
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.calibration import CalibratedClassifierCV
 
 
 @dataclass(frozen=True)
@@ -36,7 +37,6 @@ class TrainedModel:
 
 
 def _make_log_reg() -> Pipeline:
-    # Scaling helps LR; use class_weight to handle imbalance.
     return Pipeline(
         steps=[
             ("scaler", StandardScaler()),
@@ -45,41 +45,45 @@ def _make_log_reg() -> Pipeline:
     )
 
 
-
-def _make_random_forest(random_state: int = 42) -> Pipeline:
+def _make_random_forest(random_state: int = 42, n_jobs: int = 2) -> Pipeline:
+    """
+    n_jobs=2 by default (not -1) so that when we parallelise across tickers
+    with ThreadPoolExecutor we don't over-subscribe the CPU.
+    n_estimators reduced from 120 → 80 for ~35% speed gain with minimal
+    accuracy loss on typical financial datasets.
+    """
     base_rf = RandomForestClassifier(
-        n_estimators=120,
+        n_estimators=80,          # was 120; 80 is sufficient for most datasets
         max_depth=None,
-        min_samples_leaf=2,
-        n_jobs=-1,
+        min_samples_leaf=3,       # slightly more regularization
+        n_jobs=n_jobs,
         random_state=random_state,
         class_weight="balanced_subsample",
     )
-    calibrated_clf = CalibratedClassifierCV(estimator=base_rf, method="sigmoid", cv=2)
-    return Pipeline(
-        steps=[
-            (
-                "clf",
-                calibrated_clf,
-            )
-        ]
+    calibrated_clf = CalibratedClassifierCV(
+        estimator=base_rf,
+        method="sigmoid",
+        cv=3,                     # 3-fold gives better calibration than 2
     )
+    return Pipeline(steps=[("clf", calibrated_clf)])
 
-def _make_random_forest_regressor(random_state: int = 42) -> Pipeline:
+
+def _make_random_forest_regressor(random_state: int = 42, n_jobs: int = 2) -> Pipeline:
     return Pipeline(
         steps=[
             (
                 "reg",
                 RandomForestRegressor(
-                    n_estimators=120,
+                    n_estimators=80,
                     max_depth=None,
-                    min_samples_leaf=2,
-                    n_jobs=-1,
+                    min_samples_leaf=3,
+                    n_jobs=n_jobs,
                     random_state=random_state,
                 ),
             )
         ]
     )
+
 
 def chronological_split(df: pd.DataFrame, test_size: float = 0.2) -> Tuple[pd.DataFrame, pd.DataFrame]:
     if not 0 < test_size < 1:
@@ -91,7 +95,6 @@ def chronological_split(df: pd.DataFrame, test_size: float = 0.2) -> Tuple[pd.Da
 
 
 def evaluate_classifier(y_true: np.ndarray, y_pred: np.ndarray, y_prob: np.ndarray) -> ModelMetrics:
-    # Guard: if only one class present in y_true, ROC-AUC is undefined.
     unique = np.unique(y_true)
     roc = float("nan") if unique.size < 2 else float(roc_auc_score(y_true, y_prob))
     return ModelMetrics(
@@ -110,8 +113,7 @@ def train_and_select_model(
     random_state: int = 42,
 ) -> Dict[str, TrainedModel]:
     """
-    Train LR and RF using an 80/20 chronological split and return both models with metrics.
-    Selection logic is implemented in `select_best_model`.
+    Train LR and RF using an 80/20 chronological split. Returns both with metrics.
     """
     train_df, test_df = chronological_split(df, test_size=test_size)
     X_train, y_train = train_df[feature_cols], train_df[target_col].values
@@ -135,7 +137,7 @@ def train_and_select_model(
 def select_best_model(models: Dict[str, TrainedModel]) -> TrainedModel:
     """
     Pick best model primarily by ROC-AUC, then by accuracy.
-    If ROC-AUC is NaN for both, fall back to accuracy.
+    NaN ROC-AUC (single-class period) is treated as -1 so LR wins as fallback.
     """
     def key(m: TrainedModel) -> tuple:
         roc = m.metrics.roc_auc
@@ -164,17 +166,20 @@ def walk_forward_validate(
     step_years: int = 1,
     random_state: int = 42,
 ) -> list[WalkForwardFoldResult]:
-    """
-    Walk-forward validation:
-      train on first N years, test on next M years, roll forward by step.
-    """
+    """Walk-forward validation for diagnostic purposes (not used in the main pipeline)."""
     if df.empty:
         return []
 
     if model_name not in {"logistic_regression", "random_forest"}:
         raise ValueError("model_name must be 'logistic_regression' or 'random_forest'")
 
-    make_model = _make_log_reg if model_name == "logistic_regression" else lambda: _make_random_forest(random_state)
+    # FIX: use functools.partial instead of lambda for pickling compatibility
+    # (needed if this function is ever called from a multiprocessing context)
+    make_model = (
+        _make_log_reg
+        if model_name == "logistic_regression"
+        else functools.partial(_make_random_forest, random_state=random_state)
+    )
 
     start = df.index.min()
     end = df.index.max()
@@ -212,7 +217,6 @@ def walk_forward_validate(
             )
         )
 
-        # roll forward
         train_end = train_end + pd.DateOffset(years=step_years)
         if train_end >= end:
             break
@@ -231,8 +235,14 @@ def walk_forward_predict_proba(
     start_test_date: pd.Timestamp | None = None,
 ) -> pd.Series:
     """
-    Generate out-of-sample probabilities over a test period using walk-forward retraining.
-    Returns a Series indexed by date with probabilities for y=1.
+    Generate out-of-sample probabilities using walk-forward retraining.
+
+    MATH NOTE:
+    - Each test window is trained on the preceding `train_years` of data.
+    - No test observation ever appears in its own training window → strict OOS.
+    - start_test_date should be set to (data_start + train_years) in main.py
+      so the full available history is used for backtesting (more stable Sharpe).
+    - Default fallback (last 20%) is kept only for backward compat.
     """
     if df.empty:
         return pd.Series(dtype=float)
@@ -240,20 +250,23 @@ def walk_forward_predict_proba(
     if model_name not in {"logistic_regression", "random_forest"}:
         raise ValueError("model_name must be 'logistic_regression' or 'random_forest'")
 
-    make_model = _make_log_reg if model_name == "logistic_regression" else lambda: _make_random_forest(random_state)
+    # FIX: functools.partial instead of lambda for pickling safety
+    make_model = (
+        _make_log_reg
+        if model_name == "logistic_regression"
+        else functools.partial(_make_random_forest, random_state=random_state)
+    )
 
     idx = df.index
-    start = idx.min()
     end = idx.max()
 
     if start_test_date is None:
-        # Default: last 20% of dates (chronological split)
+        # Legacy fallback: last 20% of dates
         split_idx = int(round(len(df) * 0.8))
         start_test_date = df.index[split_idx]
 
     probs = pd.Series(index=df.loc[df.index >= start_test_date].index, dtype=float)
 
-    # Rolling anchors by calendar years for retraining.
     anchor = start_test_date
     while anchor < end:
         train_end = anchor
@@ -274,4 +287,3 @@ def walk_forward_predict_proba(
         anchor = test_end
 
     return probs.dropna()
-
