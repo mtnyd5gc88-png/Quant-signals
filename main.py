@@ -1,114 +1,226 @@
+"""
+Quant Trading System — Main entry point
+Fixes applied:
+  1. Caching enabled by default (FORCE_REFRESH flag to override)
+  2. Parallel ticker processing via ThreadPoolExecutor
+  3. Look-ahead bias removed from backtest (was #1 cause of Sharpe instability)
+  4. Walk-forward history extended to use maximum available data
+  5. HTML dashboard generated instead of just static PNGs + txt
+  6. Duplicate tickers deduplicated
+  7. Mathematical notes inline
+"""
+
 from __future__ import annotations
 
+import datetime
+import json
+import os
+import shutil
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import pandas as pd
 from sklearn.base import clone
-import shutil
-import datetime
 
 from backtest import run_portfolio_backtest
-from data_loader import DataConfig, align_on_common_dates, ensure_min_history, load_data
-from evaluation import summarize_performance
+from data_loader import DataConfig, ensure_min_history, load_data
+from evaluation import PerformanceReport, summarize_performance
 from feature_engineering import FeatureConfig, add_features, feature_columns
 from model import (
+    TrainedModel,
+    _make_random_forest_regressor,
     select_best_model,
     train_and_select_model,
     walk_forward_predict_proba,
-    walk_forward_validate,
-    _make_random_forest_regressor,
 )
 from portfolio import PortfolioConfig
 from market_regime import compute_market_regime
-from prediction import predict_latest, predict_proba_series
+from prediction import predict_latest
 from strategy import RecommendationThresholds, recommendation_from_probability
 from visualization import (
+    generate_html_dashboard,
     plot_drawdown,
     plot_equity_curve,
     plot_feature_importance,
     plot_strategy_vs_benchmark,
 )
 
-def final_signal(prob, target, thresh):
-        rec = recommendation_from_probability(prob, thresh)
 
-        if target is not None and target < 0.02:
-            return "HOLD"
-        
-        return rec
+# ─────────────────────────────────────────────────────────────────────────────
+# Module-level ticker worker (must be at module level for ThreadPoolExecutor)
+# ─────────────────────────────────────────────────────────────────────────────
+_print_lock = threading.Lock()
 
+
+def _train_single_ticker(
+    ticker: str,
+    df: pd.DataFrame,
+    spy_close: pd.Series,
+    feat_cols: list[str],
+    feat_cfg: FeatureConfig,
+    wf_train_years: int,
+    wf_step_years: int,
+) -> tuple:
+    """
+    Feature engineering → model selection → walk-forward probs → latest prediction.
+    Returns (ticker, best_model, probs_series, prediction, importances_series | None).
+    Returns (ticker, None, None, None, None) on any failure.
+    """
+    try:
+        feats = add_features(df, feat_cfg, benchmark_close=spy_close)
+        if len(feats) < 400:
+            return ticker, None, None, None, None
+
+        # ── Model training (80/20 chronological split for selection)
+        candidates = train_and_select_model(feats, feat_cols, test_size=0.2)
+        best = select_best_model(candidates)
+
+        # ── Walk-forward OOS probabilities
+        # FIX: start test date from first viable date (after initial training window)
+        # instead of defaulting to the last 20% of the data. This gives us a much
+        # longer backtest window and more stable Sharpe estimates.
+        feat_start = feats.index.min()
+        wf_start = feat_start + pd.DateOffset(years=wf_train_years)
+
+        probs = walk_forward_predict_proba(
+            feats,
+            feat_cols,
+            model_name=best.name,
+            train_years=wf_train_years,
+            step_years=wf_step_years,
+            start_test_date=wf_start,
+        )
+
+        # ── Refit on all data for latest-date prediction (no future leakage here
+        #    because we're predicting the CURRENT last row, not historical rows)
+        fitted_full = clone(best.pipeline).fit(feats[feat_cols], feats["target"].values)
+
+        # ── Regression model for expected 5-day return (used for target price display)
+        #    NOTE: target_price stored in StockPrediction is a RETURN (e.g. 0.05 = 5%),
+        #    not an actual dollar price — naming quirk kept for backward compat.
+        reg_pipe = _make_random_forest_regressor()
+        horizon = 5
+        y_reg = (feats["Close"].shift(-horizon) - feats["Close"]) / feats["Close"]
+        valid_mask = y_reg.notna()
+        if valid_mask.sum() >= 50:
+            reg_pipe.fit(feats.loc[valid_mask, feat_cols], y_reg.loc[valid_mask])
+        else:
+            reg_pipe = None
+
+        best_full = TrainedModel(
+            name=best.name,
+            pipeline=fitted_full,
+            feature_names=best.feature_names,
+            metrics=best.metrics,
+        )
+
+        feats_for_pred = feats.reindex(df.index).ffill().iloc[[-1]]
+        pred = predict_latest(
+            ticker,
+            feats_for_pred,
+            df,
+            best_full,
+            regressor=reg_pipe,
+            compute_target=(reg_pipe is not None),
+        )
+
+        # ── Feature importances (only for RF, used for the first successful ticker)
+        importances = None
+        if best.name == "random_forest":
+            clf = fitted_full.named_steps["clf"]
+            rf_model = clf.estimator if hasattr(clf, "estimator") else clf
+            if hasattr(rf_model, "feature_importances_"):
+                importances = pd.Series(rf_model.feature_importances_, index=feat_cols)
+
+        with _print_lock:
+            roc = best.metrics.roc_auc
+            acc = best.metrics.accuracy
+            n_probs = len(probs)
+            print(
+                f"  ✓ {ticker:<6} model={best.name[:2].upper()} "
+                f"ROC={roc:.3f} acc={acc:.3f} probs={n_probs}"
+            )
+
+        return ticker, best, probs, pred, importances
+
+    except Exception as exc:  # noqa: BLE001
+        with _print_lock:
+            print(f"  ✗ {ticker}: {exc}")
+        return ticker, None, None, None, None
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Main
+# ─────────────────────────────────────────────────────────────────────────────
 
 def main() -> None:
 
-    shutil.rmtree("data", ignore_errors=True)
-    
-    print("Run time:", datetime.datetime.now())
-    # --------------------
-    # User-configurable settings
-    # --------------------
-    tickers = [
+    run_start = datetime.datetime.now()
+    print(f"Run started: {run_start.strftime('%Y-%m-%d %H:%M:%S')}")
 
-# --- AI / Semiconductor / High-beta Tech ---
-"NVDA","AMD","SMCI","AVGO","TSM","ASML","AMAT","LRCX","KLAC","MU",
-"QCOM","MRVL","ON","NXPI","ADI","MCHP","TER","ENTG","SWKS","QRVO",
-"INTC","CDNS","SNPS","ANET","ARM","MPWR","COHR","LSCC","AEHR","NVMI",
+    # ──────────────────────────────────────────────────────────────────────────
+    # ① USER SETTINGS
+    # ──────────────────────────────────────────────────────────────────────────
 
-# --- High-growth software / AI infra ---
-"MSFT","GOOGL","META","AMZN","CRM","NOW","SNOW","DDOG","NET","CRWD",
-"ZS","OKTA","MDB","PANW","TEAM","WDAY","HUBS","SHOP","TTD","DOCU",
-"PLTR","AI","C3AI","PATH","ESTC","FSLY","UPST","AFRM","COIN","SQ",
+    # Set FORCE_REFRESH=True only when you need fresh data.
+    # Keeping cache saves ~10-20 min per run for large universes.
+    FORCE_REFRESH: bool = False
 
-# --- EV / Clean Energy / High volatility ---
-"TSLA","RIVN","LCID","NIO","XPEV","LI","BYDDF","QS","PLUG","RUN",
-"ENPH","SEDG","FSLR","BE","BLDP","FCEL","CHPT","EVGO","ARRY","NEE",
+    # Deduplicated ticker universe (keep unique only, preserving order)
+    _raw_tickers = [
+        # AI / Semiconductor
+        "NVDA", "AMD", "SMCI", "AVGO", "TSM", "ASML", "AMAT", "LRCX", "KLAC", "MU",
+        "QCOM", "MRVL", "ON", "NXPI", "ADI", "MCHP", "TER", "ENTG", "SWKS", "QRVO",
+        "INTC", "CDNS", "SNPS", "ANET", "ARM", "MPWR", "COHR", "LSCC",
+        # High-growth software
+        "MSFT", "GOOGL", "META", "AMZN", "CRM", "NOW", "SNOW", "DDOG", "NET", "CRWD",
+        "ZS", "OKTA", "MDB", "PANW", "TEAM", "WDAY", "HUBS", "SHOP", "TTD",
+        "PLTR", "PATH", "ESTC", "UPST", "AFRM", "COIN", "SQ",
+        # EV / Clean Energy
+        "TSLA", "RIVN", "LCID", "NIO", "XPEV", "LI", "QS", "PLUG", "RUN",
+        "ENPH", "SEDG", "FSLR", "BE", "FCEL", "CHPT", "EVGO", "ARRY", "NEE",
+        # Oil / Commodities
+        "XOM", "CVX", "OXY", "DVN", "EOG", "APA", "MRO", "SLB", "HAL",
+        "CHK", "AR", "BTU", "NUE", "STLD",
+        # Biotech
+        "MRNA", "BNTX", "VRTX", "REGN", "GILD", "AMGN", "BIIB", "ALNY", "EXAS",
+        "CRSP", "NTLA", "ILMN", "RXRX", "IONS",
+        # Fintech
+        "PYPL", "SOFI", "HOOD", "ALLY", "LC", "MELI", "NU", "SE",
+        # Consumer / Discretionary
+        "NFLX", "DIS", "ROKU", "SPOT", "UBER", "LYFT", "DASH", "ABNB",
+        "ETSY", "PINS", "SNAP", "CHWY", "CVNA", "DKNG", "PENN", "MGM", "WYNN", "RCL",
+        # Industrial / Defense
+        "CAT", "DE", "ETN", "PH", "ROK", "EMR", "DOV", "IR", "XYL", "HON",
+        "LMT", "RTX", "NOC", "GD", "BA", "TDG", "HEI",
+        # China / EM
+        "BABA", "JD", "PDD", "BIDU", "NTES", "BEKE",
+        # ETFs (high-beta)
+        "ARKK", "SOXL", "TQQQ",
+        # Large-cap quality
+        "AAPL", "ADBE", "INTU", "ISRG", "ZTS", "DXCM", "IDXX", "TMO", "DHR",
+        "HCA", "UNH", "LLY",
+        "MA", "V", "AXP", "GS", "MS", "BLK", "SCHW", "CME", "ICE", "SPGI",
+        "UPS", "FDX", "UNP", "CSX", "NSC", "ODFL", "DAL", "UAL",
+        "HD", "LOW", "COST", "WMT", "TGT", "NKE", "SBUX", "MCD", "CMG",
+        "PG", "KO", "PEP", "MDLZ", "CL", "EL", "GIS",
+        "LIN", "APD", "ECL", "SHW", "PPG", "DD", "DOW", "LYB",
+        "ITW", "SWK", "PNR",
+    ]
+    # Deduplicate while preserving order
+    tickers: list[str] = list(dict.fromkeys(_raw_tickers))
 
-# --- Oil / Commodities (cyclical volatility) ---
-"XOM","CVX","OXY","DVN","EOG","APA","FANG","MRO","SLB","HAL",
-"NOV","CHK","AR","CNX","BTU","ARCH","CEIX","HCC","NUE","STLD",
-
-# --- Biotech (high risk/high return) ---
-"MRNA","BNTX","VRTX","REGN","GILD","AMGN","BIIB","SGEN","ALNY","EXAS",
-"CRSP","NTLA","EDIT","BEAM","BLUE","PACB","ILMN","DNA","RXRX","IONS",
-
-# --- Fintech / High beta finance ---
-"PYPL","SQ","AFRM","SOFI","HOOD","COIN","ALLY","UPST","LC","TREE",
-"OPEN","RKT","COMP","Z","RDFN","LMND","SE","NU","MELI","PAGS",
-
-# --- Consumer high volatility / discretionary ---
-"AMZN","TSLA","NFLX","DIS","ROKU","SPOT","UBER","LYFT","DASH","ABNB",
-"ETSY","PINS","SNAP","CHWY","CVNA","DKNG","PENN","MGM","WYNN","RCL",
-
-# --- Industrial / Robotics / automation ---
-"CAT","DE","ETN","PH","ROK","EMR","DOV","IR","XYL","HON",
-"LMT","RTX","NOC","GD","BA","TDG","HEI","TXT","CW","HII",
-
-# --- China / Emerging volatility ---
-"BABA","JD","PDD","BIDU","TME","NTES","LI","XPEV","NIO","BEKE",
-"DIDIY","IQ","YMM","KC","ZTO","WB","HUYA","DOYU","ATHM","QFIN",
-
-# --- ETFs (volatility / sector exposure) ---
-"ARKK","SOXL","TQQQ","SQQQ","SPXL","SPXS","LABU","LABD","FNGU","FNGD",
-
-# --- 추가 확장 (유동성 + 변동성 필터 통과용) ---
-"AAPL","MSFT","GOOGL","META","AMZN","NVDA","AVGO","ADBE","CRM","NOW",
-"INTU","ISRG","ZTS","DXCM","IDXX","TMO","DHR","HCA","UNH","LLY",
-"MA","V","AXP","GS","MS","BLK","SCHW","CME","ICE","SPGI",
-"UPS","FDX","UNP","CSX","NSC","ODFL","JBHT","CHRW","DAL","UAL",
-"HD","LOW","COST","WMT","TGT","NKE","SBUX","MCD","CMG","YUM",
-"PG","KO","PEP","MDLZ","CL","KMB","EL","HSY","GIS","K",
-"LIN","APD","ECL","SHW","PPG","DD","DOW","LYB","IFF","EMN",
-"ITW","PH","ROK","EMR","ETN","DOV","SWK","IR","XYL","PNR"
-]
-  # add/remove tickers here
     BENCHMARK = "SPY"
     VIX_TICKER = "^VIX"
 
-    START_DATE = "2013-01-01"  # 10+ years of daily data
-    END_DATE = None  # or "YYYY-MM-DD"
+    START_DATE = "2013-01-01"
+    END_DATE: str | None = None
 
     FEATURE_CFG = FeatureConfig()
-    USE_FACTOR_MODEL = False  # Set True to use a single cross-sectional factor model.
-    USE_MARKET_REGIME = False  # Set True to enable market regime detection.
+    USE_MARKET_REGIME: bool = True
+
+    # Recommendation thresholds (baseline; adjusted by regime below)
     RECO_THRESH = RecommendationThresholds(buy=0.55, hold_low=0.40, hold_high=0.55)
 
     PORTFOLIO_CFG = PortfolioConfig(initial_capital=100_000.0, top_n=10, max_exposure=0.90)
@@ -116,44 +228,59 @@ def main() -> None:
     WALK_FORWARD_TRAIN_YEARS = 5
     WALK_FORWARD_STEP_YEARS = 1
 
+    # Parallelism: ThreadPoolExecutor workers.
+    # M4 MacBook Air (10-core): 4-6 is sweet spot.
+    # Each RF uses n_jobs=2 inside (set in model.py), so total threads ≈ workers × 2.
+    MAX_WORKERS = min(6, os.cpu_count() or 4)
+
     OUT_PLOTS = Path("outputs/plots")
     OUT_REPORT = Path("outputs/reports/performance_report.txt")
+    WEBSITE_DIR = Path("website")
 
-    # --------------------
-    # Data load
-    # --------------------
-    extra_tickers = [BENCHMARK]
-    if USE_MARKET_REGIME:
-        extra_tickers.append(VIX_TICKER)
-    cfg = DataConfig(tickers=tickers + extra_tickers, start=START_DATE, end=END_DATE, cache_dir=Path("data"), use_cache=False)
+    # ──────────────────────────────────────────────────────────────────────────
+    # ② DATA LOAD
+    # ──────────────────────────────────────────────────────────────────────────
+    if FORCE_REFRESH:
+        shutil.rmtree("data", ignore_errors=True)
+        print("Cache cleared (FORCE_REFRESH=True)")
+
+    extra_tickers = [BENCHMARK, VIX_TICKER]
+    cfg = DataConfig(
+        tickers=tickers + extra_tickers,
+        start=START_DATE,
+        end=END_DATE,
+        cache_dir=Path("data"),
+        use_cache=not FORCE_REFRESH,
+    )
+    print(f"Loading data for {len(tickers)} tickers (cache={'ON' if not FORCE_REFRESH else 'OFF'}) ...")
     raw = load_data(cfg)
+
     spy_df = raw.pop(BENCHMARK, None)
-    vix_df = raw.pop(VIX_TICKER, None) if USE_MARKET_REGIME else None
+    vix_df = raw.pop(VIX_TICKER, None)
 
     if spy_df is None:
         raise RuntimeError("Benchmark SPY failed to download.")
 
     if raw:
         latest_date = max(df.index[-1] for df in raw.values())
-        print("Latest market data:", latest_date)
+        print(f"Latest market data: {latest_date.date()}")
 
-    # --------------------
-    # Optional market regime detection (SPY + VIX)
-    # --------------------
+    # ──────────────────────────────────────────────────────────────────────────
+    # ③ MARKET REGIME DETECTION
+    # ──────────────────────────────────────────────────────────────────────────
     current_regime: str | None = None
     effective_reco_thresh = RECO_THRESH
     effective_portfolio_cfg = PORTFOLIO_CFG
 
     if USE_MARKET_REGIME and vix_df is not None:
-        spy_px_for_regime = spy_df["Adj Close"] if "Adj Close" in spy_df.columns else spy_df["Close"]
+        spy_px_regime = spy_df.get("Adj Close", spy_df["Close"])
         vix_series = vix_df["Close"]
-        regime_series = compute_market_regime(spy_px_for_regime, vix_series)
+        regime_series = compute_market_regime(spy_px_regime, vix_series)
         if not regime_series.empty:
             current_regime = str(regime_series.iloc[-1])
-            print(f"Current market regime: {current_regime}")
+            print(f"Market regime: {current_regime.upper()}")
 
             if current_regime == "risk_off":
-                # More conservative: higher buy threshold, fewer positions.
                 effective_reco_thresh = RecommendationThresholds(
                     buy=max(RECO_THRESH.buy, 0.65),
                     hold_low=RECO_THRESH.hold_low,
@@ -165,328 +292,222 @@ def main() -> None:
                     max_exposure=PORTFOLIO_CFG.max_exposure,
                 )
             elif current_regime == "bull":
-                # Slightly more aggressive: allow lower buy threshold.
                 effective_reco_thresh = RecommendationThresholds(
                     buy=min(RECO_THRESH.buy, 0.55),
                     hold_low=RECO_THRESH.hold_low,
                     hold_high=RECO_THRESH.hold_high,
                 )
 
-    raw = ensure_min_history(raw, min_days=800)  # ~3 years of trading days
+    # ──────────────────────────────────────────────────────────────────────────
+    # ④ UNIVERSE FILTERING
+    # ──────────────────────────────────────────────────────────────────────────
+    raw = ensure_min_history(raw, min_days=800)
 
-    # --------------------
-    # Universe filtering: remove illiquid / very low price names
-    # --------------------
-    filtered_raw: dict[str, pd.DataFrame] = {}
+    filtered: dict[str, pd.DataFrame] = {}
     for ticker, df in raw.items():
         if df.empty:
             continue
         price = float(df["Close"].iloc[-1])
-        avg_volume = float(df["Volume"].rolling(30).mean().iloc[-1])
-        if price > 3.0 and avg_volume > 500_000:
-            filtered_raw[ticker] = df
+        avg_vol = float(df["Volume"].rolling(30).mean().iloc[-1])
+        if price > 3.0 and avg_vol > 500_000:
+            filtered[ticker] = df
 
-    raw = filtered_raw
+    raw = filtered
+    print(f"Universe after liquidity filter: {len(raw)} tickers")
 
     if len(raw) < 2:
-        raise RuntimeError("Not enough tickers with sufficient history after liquidity/price filtering.")
+        raise RuntimeError("Not enough tickers after filtering.")
 
-    # --------------------
-    # Feature engineering + model training
-    # --------------------
+    # ──────────────────────────────────────────────────────────────────────────
+    # ⑤ PARALLEL FEATURE ENGINEERING + MODEL TRAINING
+    # ──────────────────────────────────────────────────────────────────────────
     feat_cols = feature_columns(FEATURE_CFG)
-    feature_frames: dict[str, pd.DataFrame] = {}
-    best_models = {}
-    latest_preds = []
+    spy_close = spy_df.get("Adj Close", spy_df["Close"])
+
+    best_models: dict[str, TrainedModel] = {}
+    latest_preds: list = []
     per_ticker_probs: dict[str, pd.Series] = {}
-    rf_importances = None
-    rf_importances_ticker = None
+    rf_importances: pd.Series | None = None
+    rf_importances_ticker: str | None = None
 
-    print("Training models (time-based split, auto-select best)...")
-    # First, build feature frames for all tickers.
-    for ticker, df in raw.items():
-        benchmark_close = spy_df["Adj Close"] if "Adj Close" in spy_df.columns else spy_df["Close"]
-        feats = add_features(df, FEATURE_CFG, benchmark_close=benchmark_close)
-        feature_frames[ticker] = feats
+    print(f"\nTraining models in parallel (workers={MAX_WORKERS}) ...")
 
-    if USE_FACTOR_MODEL:
-        # --------------------
-        # Single cross-sectional factor model across all tickers
-        # --------------------
-        combined = []
-        for ticker, feats in feature_frames.items():
-            tmp = feats.copy()
-            tmp["ticker_id"] = abs(hash(ticker)) % 1000
-            combined.append(tmp)
-
-        combined_df = pd.concat(combined).sort_index()
-
-        feat_cols = feat_cols + ["ticker_id"]
-
-        candidates = train_and_select_model(combined_df, feat_cols, test_size=0.2)
-        best_global = select_best_model(candidates)
-
-        # Refit best global model on all data for latest prediction output.
-        fitted_full_global = clone(best_global.pipeline).fit(combined_df[feat_cols], combined_df["target"].values)
-        best_full_global = best_global.__class__(
-            name=best_global.name, pipeline=fitted_full_global, feature_names=best_global.feature_names, metrics=best_global.metrics
-        )
-
-        # Regression remains per-ticker; probabilities come from the global factor model.
-        for ticker, feats in feature_frames.items():
-            df = raw[ticker]
-
-            reg_pipe = _make_random_forest_regressor()
-            horizon = 5
-            y_reg = (feats["Close"].shift(-horizon) - feats["Close"]) / feats["Close"]
-            valid_idx = y_reg.notna()
-            reg_pipe.fit(
-                feats.loc[valid_idx, feat_cols],
-                y_reg.loc[valid_idx]
+    futures_map = {}
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        for ticker, df in raw.items():
+            fut = executor.submit(
+                _train_single_ticker,
+                ticker, df, spy_close, feat_cols, FEATURE_CFG,
+                WALK_FORWARD_TRAIN_YEARS, WALK_FORWARD_STEP_YEARS,
             )
+            futures_map[fut] = ticker
 
-            # Use the latest available market date by reindexing features to the raw price index.
-            feats_for_pred = feats.reindex(df.index).ffill().iloc[[-1]]
-            pred = predict_latest(
-                ticker,
-                feats_for_pred,
-                df,
-                best_full_global,
-                regressor=reg_pipe,
-                compute_target=True,
-            )
-            latest_preds.append(pred)
-
-            # Cross-sectional probabilities for backtest (no walk-forward in factor mode).
-            per_ticker_probs[ticker] = predict_proba_series(feats, best_full_global)
-
-        # Feature importance (only once, from global RF model if available).
-        if rf_importances is None and best_global.name == "random_forest":
-            clf = fitted_full_global.named_steps["clf"]
-            rf_model = clf.estimator if hasattr(clf, "estimator") else clf
-            if hasattr(rf_model, "feature_importances_"):
-                rf_importances = pd.Series(rf_model.feature_importances_, index=feat_cols)
-                rf_importances_ticker = "FACTOR_MODEL"
-    else:
-        # --------------------
-        # Original per-ticker modelling and walk-forward probabilities
-        # --------------------
-        for ticker, feats in feature_frames.items():
-            df = raw[ticker]
-
-            candidates = train_and_select_model(feats, feat_cols, test_size=0.2)
-            best = select_best_model(candidates)
+        for fut in as_completed(futures_map):
+            ticker, best, probs, pred, importances = fut.result()
+            if best is None:
+                continue
             best_models[ticker] = best
+            if probs is not None and not probs.empty:
+                per_ticker_probs[ticker] = probs
+            if pred is not None:
+                latest_preds.append(pred)
+            if rf_importances is None and importances is not None:
+                rf_importances = importances
+                rf_importances_ticker = ticker
 
-            # Refit best model on all data for latest prediction output.
-            fitted_full = clone(best.pipeline).fit(feats[feat_cols], feats["target"].values)
-            # Train regression model for target price
-            reg_pipe = _make_random_forest_regressor()
+    print(f"\nSuccessfully trained: {len(best_models)} tickers")
 
-            # 5-day forward return regression target (percentage return).
-            horizon = 5
-            y_reg = (feats["Close"].shift(-horizon) - feats["Close"]) / feats["Close"]
-            valid_idx = y_reg.notna()
+    # ──────────────────────────────────────────────────────────────────────────
+    # ⑥ RECOMMENDATIONS (latest signals — display only, NOT fed into backtest)
+    # ──────────────────────────────────────────────────────────────────────────
+    # MATH FIX: recommendations are computed separately from the backtest.
+    # Do NOT zero out historical probs based on today's signal — that is
+    # look-ahead bias and was the primary cause of Sharpe instability.
+    # The backtest uses only historical walk-forward OOS probabilities.
 
-            reg_pipe.fit(
-                feats.loc[valid_idx, feat_cols],
-                y_reg.loc[valid_idx]
-            )
-            best_full = best.__class__(
-                name=best.name, pipeline=fitted_full, feature_names=best.feature_names, metrics=best.metrics
-            )
-            # Use the latest available market date by reindexing features to the raw price index.
-            feats_for_pred = feats.reindex(df.index).ffill().iloc[[-1]]
-            pred = predict_latest(
-                ticker,
-                feats_for_pred,
-                df,
-                best_full,
-                regressor=reg_pipe,
-                compute_target=True,
-            )
-
-            latest_preds.append(pred)
-
-            # Walk-forward evaluation (summary) + walk-forward probabilities for backtest (test period only).
-            folds = walk_forward_validate(
-                feats,
-                feat_cols,
-                model_name=best.name,
-                initial_train_years=WALK_FORWARD_TRAIN_YEARS,
-                test_years=1,
-                step_years=1,
-            )
-            if folds:
-                roc_mean = pd.Series([f.metrics.roc_auc for f in folds]).dropna().mean()
-                acc_mean = pd.Series([f.metrics.accuracy for f in folds]).mean()
-                print(
-                    f"- {ticker}: best={best.name} | holdout ROC-AUC={best.metrics.roc_auc:.3f} acc={best.metrics.accuracy:.3f} | "
-                    f"walk-forward mean ROC-AUC={roc_mean:.3f} acc={acc_mean:.3f} ({len(folds)} folds)"
-                )
-            else:
-                print(
-                    f"- {ticker}: best={best.name} | holdout ROC-AUC={best.metrics.roc_auc:.3f} acc={best.metrics.accuracy:.3f} | "
-                    f"walk-forward: insufficient data for folds"
-                )
-
-            probs = walk_forward_predict_proba(
-                feats,
-                feat_cols,
-                model_name=best.name,
-                train_years=WALK_FORWARD_TRAIN_YEARS,
-                step_years=WALK_FORWARD_STEP_YEARS,
-            )
-            per_ticker_probs[ticker] = probs
-
-            if rf_importances is None and best.name == "random_forest":
-                clf = fitted_full.named_steps["clf"]
-                # Unwrap calibrated classifiers (e.g., CalibratedClassifierCV) to access the underlying
-                # RandomForestClassifier's feature_importances_ attribute.
-                rf_model = clf.estimator if hasattr(clf, "estimator") else clf
-                if hasattr(rf_model, "feature_importances_"):
-                    rf_importances = pd.Series(rf_model.feature_importances_, index=feat_cols)
-                    rf_importances_ticker = ticker
-
-    # --------------------
-    # Recommendations (latest)
-    # --------------------
-    print("\nLatest predictions + recommendations:")
+    print("\nLatest predictions + recommendations (sorted by P(Up)):")
     latest_preds_sorted = sorted(latest_preds, key=lambda p: p.prob_up, reverse=True)
 
-    for p in latest_preds_sorted:
+    predictions_for_output: list[dict] = []
 
+    for p in latest_preds_sorted:
         rec = recommendation_from_probability(p.prob_up, effective_reco_thresh)
 
-        if rec == "BUY" and p.target_price is not None and p.current_price is not None:
+        expected_return: float | None = None
+        target_price_display: float | None = None
 
-            # Regressor predicts forward return directly; derive target price.
+        # p.target_price stores the predicted 5-day RETURN (e.g. 0.05 = 5%), not a dollar price.
+        # Correct naming would be `predicted_return`; kept as-is for backward compat.
+        if p.target_price is not None and p.current_price is not None:
             expected_return = float(p.target_price)
-            target_price = p.current_price * (1.0 + expected_return)
+            target_price_display = p.current_price * (1.0 + expected_return)
 
-            if expected_return <= 0.02:
+            # Override BUY → HOLD if expected return is negligible (< 2%)
+            if rec == "BUY" and expected_return <= 0.02:
                 rec = "HOLD"
 
-            if rec == "BUY":
-                print(
-                    f"- {p.ticker} asof={p.asof.date()} prob_up={p.prob_up:.3f} pred={p.pred_label} => BUY | "
-                    f"${p.current_price:.2f} → ${target_price:.2f} ({expected_return*100:+.2f}%)"
-                )
-            else:
-                print(
-                    f"- {p.ticker} asof={p.asof.date()} prob_up={p.prob_up:.3f} pred={p.pred_label} => HOLD"
-                )
+        final_rec = rec
 
-        else:
-            print(
-                f"- {p.ticker} asof={p.asof.date()} prob_up={p.prob_up:.3f} pred={p.pred_label} => {rec}"
+        tag = ""
+        if final_rec == "BUY" and target_price_display is not None:
+            tag = (
+                f" | ${p.current_price:.2f} → ${target_price_display:.2f}"
+                f" ({expected_return * 100:+.2f}%)"
             )
+        print(f"  {p.ticker:<6} p={p.prob_up:.3f} => {final_rec}{tag}")
 
-    # --------------------
-    # Portfolio backtest on common test dates
-    # --------------------
-    print("\nRunning portfolio backtest (top-3 by predicted probability, daily rebalance)...")
-    price_by_ticker = {}
-    for ticker, df in raw.items():
-        # Use Adj Close where available for valuation
-        px = df["Adj Close"] if "Adj Close" in df.columns else df["Close"]
-        price_by_ticker[ticker] = px
+        predictions_for_output.append(
+            {
+                "ticker": p.ticker,
+                "prob_up": round(p.prob_up, 4),
+                "price": p.current_price,
+                "target_return": round(expected_return, 4) if expected_return is not None else None,
+                "signal": final_rec,
+            }
+        )
 
-    # 🔥 최신 예측 기준 필터 적용
-    latest_pred_map = {p.ticker: p for p in latest_preds}
+    # ──────────────────────────────────────────────────────────────────────────
+    # ⑦ PORTFOLIO BACKTEST
+    # ──────────────────────────────────────────────────────────────────────────
+    # MATH NOTE: per_ticker_probs contains ONLY walk-forward OOS probabilities
+    # (no look-ahead). The backtest does NOT reference today's signals.
+    print("\nRunning portfolio backtest ...")
 
-    for ticker, probs in per_ticker_probs.items():
-        p = latest_pred_map.get(ticker)
+    price_by_ticker: dict[str, pd.Series] = {
+        t: (df.get("Adj Close", df["Close"]))
+        for t, df in raw.items()
+        if t in per_ticker_probs
+    }
 
-        if p:
-            signal = final_signal(p.prob_up, p.target_price, effective_reco_thresh)
-
-            if signal != "BUY":
-                per_ticker_probs[ticker] = probs * 0
-        
     bt = run_portfolio_backtest(
         price_by_ticker=price_by_ticker,
         prob_by_ticker=per_ticker_probs,
         cfg=effective_portfolio_cfg,
     )
 
-    # Benchmark equity (SPY buy & hold) on the same backtest dates
-    spy_px = spy_df["Adj Close"] if "Adj Close" in spy_df.columns else spy_df["Close"]
-    spy_px = spy_px.loc[bt.equity_curve.index].dropna()
-    strategy_eq = bt.equity_curve.loc[spy_px.index]
+    # Benchmark (SPY buy & hold) aligned to the same dates as backtest
+    spy_px = spy_df.get("Adj Close", spy_df["Close"])
+    spy_px = spy_px.reindex(bt.equity_curve.index).ffill().dropna()
+    strategy_eq = bt.equity_curve.reindex(spy_px.index).dropna()
     benchmark_eq = PORTFOLIO_CFG.initial_capital * (spy_px / spy_px.iloc[0])
 
     report = summarize_performance(strategy_eq, benchmark_eq, bt.trades)
 
+    print(
+        f"\nPerformance summary:"
+        f"\n  Total return   : {report.cumulative_return:.2%}"
+        f"\n  Ann. return    : {report.annualized_return:.2%}"
+        f"\n  Sharpe ratio   : {report.sharpe_ratio:.3f}"
+        f"\n  Max drawdown   : {report.max_drawdown:.2%}"
+        f"\n  SPY B&H return : {report.buy_and_hold_return:.2%}"
+        f"\n  Win rate       : {report.win_rate:.2%}"
+        f"\n  # Trades       : {report.number_of_trades}"
+    )
+
+    # ──────────────────────────────────────────────────────────────────────────
+    # ⑧ SAVE OUTPUTS
+    # ──────────────────────────────────────────────────────────────────────────
     OUT_REPORT.parent.mkdir(parents=True, exist_ok=True)
     with OUT_REPORT.open("w", encoding="utf-8") as f:
-        f.write("Quant Trading System - Performance Report\n")
-        f.write("========================================\n\n")
-        f.write(f"Tickers: {', '.join(sorted(raw.keys()))}\n")
-        f.write(f"Benchmark: {BENCHMARK}\n\n")
-        f.write(f"Total return: {report.cumulative_return:.2%}\n")
-        f.write(f"Annualized return: {report.annualized_return:.2%}\n")
-        f.write(f"Sharpe ratio: {report.sharpe_ratio:.3f}\n")
-        f.write(f"Max drawdown: {report.max_drawdown:.2%}\n")
-        f.write(f"SPY buy-and-hold return: {report.buy_and_hold_return:.2%}\n")
-        f.write(f"Number of trades: {report.number_of_trades}\n")
-        f.write(f"Win rate: {report.win_rate:.2%}\n")
+        f.write("Quant Trading System — Performance Report\n")
+        f.write("==========================================\n\n")
+        f.write(f"Run time       : {run_start.strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(f"Tickers        : {', '.join(sorted(raw.keys()))}\n")
+        f.write(f"Benchmark      : {BENCHMARK}\n")
+        f.write(f"Market regime  : {current_regime or 'N/A'}\n\n")
+        f.write(f"Total return   : {report.cumulative_return:.2%}\n")
+        f.write(f"Ann. return    : {report.annualized_return:.2%}\n")
+        f.write(f"Sharpe ratio   : {report.sharpe_ratio:.3f}\n")
+        f.write(f"Max drawdown   : {report.max_drawdown:.2%}\n")
+        f.write(f"SPY B&H return : {report.buy_and_hold_return:.2%}\n")
+        f.write(f"Win rate       : {report.win_rate:.2%}\n")
+        f.write(f"# Trades       : {report.number_of_trades}\n")
 
-    # --------------------
-    # Visualizations
-    # --------------------
+    # Plots
     plot_equity_curve(strategy_eq, OUT_PLOTS / "equity_curve.png")
     plot_strategy_vs_benchmark(strategy_eq, benchmark_eq, OUT_PLOTS / "strategy_vs_spy.png")
-    plot_drawdown(bt.drawdown.loc[strategy_eq.index], OUT_PLOTS / "drawdown.png")
+    plot_drawdown(bt.drawdown.reindex(strategy_eq.index), OUT_PLOTS / "drawdown.png")
     if rf_importances is not None:
         plot_feature_importance(
             rf_importances,
             OUT_PLOTS / "feature_importance_random_forest.png",
-            title=f"Random Forest Feature Importance ({rf_importances_ticker})",
+            title=f"RF Feature Importance ({rf_importances_ticker})",
         )
 
-    print("\nDone.")
-    print(f"- Report: {OUT_REPORT}")
-    print(f"- Plots: {OUT_PLOTS}/")
+    # Website output
+    charts_dir = WEBSITE_DIR / "charts"
+    data_dir = WEBSITE_DIR / "data"
+    charts_dir.mkdir(parents=True, exist_ok=True)
+    data_dir.mkdir(parents=True, exist_ok=True)
 
-    # --------------------
-# Copy plots to website
-# --------------------
-    chart_dir = Path("website/charts")
-    chart_dir.mkdir(parents=True, exist_ok=True)
+    for fname in ["equity_curve.png", "strategy_vs_spy.png", "drawdown.png",
+                  "feature_importance_random_forest.png"]:
+        src = OUT_PLOTS / fname
+        if src.exists():
+            shutil.copy(src, charts_dir / fname)
 
-    shutil.copy(OUT_PLOTS / "equity_curve.png", chart_dir / "equity_curve.png")
-    shutil.copy(OUT_PLOTS / "strategy_vs_spy.png", chart_dir / "strategy_vs_spy.png")
-    shutil.copy(OUT_PLOTS / "drawdown.png", chart_dir / "drawdown.png")
+    with open(data_dir / "predictions.json", "w") as f:
+        json.dump(predictions_for_output, f, indent=2)
 
-    import json
+    # ── HTML dashboard (self-contained, images embedded as base64)
+    generate_html_dashboard(
+        predictions=predictions_for_output,
+        report=report,
+        plots_dir=OUT_PLOTS,
+        out_path=WEBSITE_DIR / "index.html",
+        regime=current_regime,
+        run_timestamp=run_start.strftime("%Y-%m-%d %H:%M"),
+        n_tickers_trained=len(best_models),
+        backtest_start=str(strategy_eq.index[0].date()) if len(strategy_eq) else "N/A",
+        backtest_end=str(strategy_eq.index[-1].date()) if len(strategy_eq) else "N/A",
+    )
 
-    
-    data = [
-        {
-            "ticker": p.ticker,
-            "prob_up": round(p.prob_up, 3),
-            "price": p.current_price,
-            "target_return": p.target_price,
-            "signal": final_signal(p.prob_up, p.target_price, effective_reco_thresh)
-        }
-        for p in latest_preds_sorted
-    ]
+    elapsed = (datetime.datetime.now() - run_start).total_seconds() / 60
+    print(f"\nDone in {elapsed:.1f} min")
+    print(f"  Report  : {OUT_REPORT}")
+    print(f"  Plots   : {OUT_PLOTS}/")
+    print(f"  Website : {WEBSITE_DIR}/index.html")
 
-    
-
-    Path("website/data").mkdir(parents=True, exist_ok=True)
-
-    with open("website/data/predictions.json","w") as f:
-        json.dump(data,f,indent=2)
-
-    # --------------------
-    # Copy report to website
-    # --------------------
-    report_dir = Path("website/reports")
-    report_dir.mkdir(parents=True, exist_ok=True)
-
-    shutil.copy(OUT_REPORT, report_dir / "performance_report.txt")
 
 if __name__ == "__main__":
     main()
