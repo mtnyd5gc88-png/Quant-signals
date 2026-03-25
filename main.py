@@ -169,45 +169,41 @@ def main() -> None:
 
     # Deduplicated ticker universe (keep unique only, preserving order)
     _raw_tickers = [
-        # AI / Semiconductor
-        "NVDA", "AMD", "SMCI", "AVGO", "TSM", "ASML", "AMAT", "LRCX", "KLAC", "MU",
-        "QCOM", "MRVL", "ON", "NXPI", "ADI", "MCHP", "TER", "ENTG", "SWKS", "QRVO",
-        "INTC", "CDNS", "SNPS", "ANET", "ARM", "MPWR", "COHR", "LSCC",
-        # High-growth software
-        "MSFT", "GOOGL", "META", "AMZN", "CRM", "NOW", "SNOW", "DDOG", "NET", "CRWD",
-        "ZS", "OKTA", "MDB", "PANW", "TEAM", "WDAY", "HUBS", "SHOP", "TTD",
-        "PLTR", "PATH", "ESTC", "UPST", "AFRM", "COIN", "SQ",
-        # EV / Clean Energy
-        "TSLA", "RIVN", "LCID", "NIO", "XPEV", "LI", "QS", "PLUG", "RUN",
-        "ENPH", "SEDG", "FSLR", "BE", "FCEL", "CHPT", "EVGO", "ARRY", "NEE",
-        # Oil / Commodities
-        "XOM", "CVX", "OXY", "DVN", "EOG", "APA", "MRO", "SLB", "HAL",
-        "CHK", "AR", "BTU", "NUE", "STLD",
-        # Biotech
-        "MRNA", "BNTX", "VRTX", "REGN", "GILD", "AMGN", "BIIB", "ALNY", "EXAS",
-        "CRSP", "NTLA", "ILMN", "RXRX", "IONS",
-        # Fintech
-        "PYPL", "SOFI", "HOOD", "ALLY", "LC", "MELI", "NU", "SE",
-        # Consumer / Discretionary
-        "NFLX", "DIS", "ROKU", "SPOT", "UBER", "LYFT", "DASH", "ABNB",
-        "ETSY", "PINS", "SNAP", "CHWY", "CVNA", "DKNG", "PENN", "MGM", "WYNN", "RCL",
-        # Industrial / Defense
-        "CAT", "DE", "ETN", "PH", "ROK", "EMR", "DOV", "IR", "XYL", "HON",
-        "LMT", "RTX", "NOC", "GD", "BA", "TDG", "HEI",
-        # China / EM
-        "BABA", "JD", "PDD", "BIDU", "NTES", "BEKE",
-        # ETFs (high-beta)
-        "ARKK", "SOXL", "TQQQ",
-        # Large-cap quality
-        "AAPL", "ADBE", "INTU", "ISRG", "ZTS", "DXCM", "IDXX", "TMO", "DHR",
-        "HCA", "UNH", "LLY",
-        "MA", "V", "AXP", "GS", "MS", "BLK", "SCHW", "CME", "ICE", "SPGI",
-        "UPS", "FDX", "UNP", "CSX", "NSC", "ODFL", "DAL", "UAL",
-        "HD", "LOW", "COST", "WMT", "TGT", "NKE", "SBUX", "MCD", "CMG",
-        "PG", "KO", "PEP", "MDLZ", "CL", "EL", "GIS",
-        "LIN", "APD", "ECL", "SHW", "PPG", "DD", "DOW", "LYB",
-        "ITW", "SWK", "PNR",
-    ]
+"AAPL","MSFT","GOOGL","META","AMZN","NVDA","TSLA","AVGO","ASML","TSM",
+"AMD","QCOM","INTC","ADBE","CRM","ORCL","IBM","CSCO","NOW","SNOW",
+"DDOG","NET","CRWD","ZS","MDB","PANW","TEAM","WDAY","SHOP","TTD",
+"PLTR","PATH","ESTC","AFRM","COIN","SQ","PYPL","SOFI","HOOD","ALLY",
+"MA","V","AXP","GS","MS","BLK","SCHW","CME","ICE","SPGI",
+"UNH","LLY","JNJ","PFE","MRK","AMGN","GILD","VRTX","REGN","BIIB",
+"HD","LOW","COST","WMT","TGT","NKE","SBUX","MCD","CMG","DIS",
+"NFLX","ROKU","SPOT","UBER","LYFT","DASH","ABNB","ETSY","PINS","SNAP",
+"CAT","DE","HON","GE","LMT","RTX","NOC","BA","GD","ETN",
+"LIN","APD","ECL","SHW","PPG","DD","DOW","LYB",
+"UPS","FDX","UNP","CSX","NSC","DAL","UAL",
+
+"RIVN","LCID","NIO","XPEV","LI",
+"PLUG","RUN","ENPH","SEDG","FSLR","BE","FCEL","CHPT","EVGO",
+"UPST","CVNA","DKNG","PENN","MGM","WYNN","RCL",
+"FSLY","DOCN","AKAM","U","RBLX",
+"WOLF","LITE","ONTO","FORM","AEHR","AMKR","COHU",
+"MPWR","COHR","LSCC","SWKS","QRVO","NXPI","ADI",
+"TER","ENTG","MCHP","ON","MRVL",
+"ALNY","EXAS","CRSP","NTLA","RXRX","IONS",
+"MELI","NU","SE","BABA","JD","PDD","BIDU","NTES",
+"HUBS",
+
+"SPY","QQQ","IWM","DIA",
+"TQQQ","SQQQ","SOXL","SOXS","UPRO","SPXL",
+"ARKK","ARKG","ARKW",
+"XLF","XLE","XOP","XBI","XLK","XLY","XLI","XLV",
+"KRE","TNA",
+"URA","GLD","SLV","USO",
+"BITO","MSTR",
+
+"GME","AMC","RIOT","MARA","HUT",
+"LC","OPEN","AI","BBAI","IONQ","QS","NKLA","HYLN",
+"BLNK","APP","DUOL"
+]
     # Deduplicate while preserving order
     tickers: list[str] = list(dict.fromkeys(_raw_tickers))
 
