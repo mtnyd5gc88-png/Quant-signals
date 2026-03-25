@@ -301,7 +301,7 @@ def main() -> None:
     # ──────────────────────────────────────────────────────────────────────────
     # ④ UNIVERSE FILTERING
     # ──────────────────────────────────────────────────────────────────────────
-    raw = ensure_min_history(raw, min_days=800)
+    raw = ensure_min_history(raw, min_days=1800)
 
     filtered: dict[str, pd.DataFrame] = {}
     for ticker, df in raw.items():
@@ -406,18 +406,27 @@ def main() -> None:
             }
         )
 
-    # ──────────────────────────────────────────────────────────────────────────
-    # ⑦ PORTFOLIO BACKTEST
-    # ──────────────────────────────────────────────────────────────────────────
-    # MATH NOTE: per_ticker_probs contains ONLY walk-forward OOS probabilities
-    # (no look-ahead). The backtest does NOT reference today's signals.
+        # ⑦ PORTFOLIO BACKTEST
     print("\nRunning portfolio backtest ...")
+
+    per_ticker_probs = {
+        t: p for t, p in per_ticker_probs.items()
+        if p is not None and len(p) > 100
+    }
 
     price_by_ticker: dict[str, pd.Series] = {
         t: (df.get("Adj Close", df["Close"]))
         for t, df in raw.items()
         if t in per_ticker_probs
     }
+
+    from data_loader import align_on_common_dates
+
+    per_ticker_probs = align_on_common_dates(per_ticker_probs)
+    price_by_ticker = align_on_common_dates(price_by_ticker)
+
+    print(f"Tickers used: {len(per_ticker_probs)}")
+    print(f"Backtest length: {len(next(iter(per_ticker_probs.values())))}")
 
     bt = run_portfolio_backtest(
         price_by_ticker=price_by_ticker,
