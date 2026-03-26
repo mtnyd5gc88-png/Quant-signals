@@ -967,7 +967,7 @@
   },
   {
     "ticker": "TEAM",
-    "prob_up": 0.4203,
+    "prob_up": 0.4201,
     "price": 68.16999816894531,
     "target_return": 0.0074,
     "signal": "HOLD"
