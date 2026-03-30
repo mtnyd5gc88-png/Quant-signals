@@ -541,8 +541,8 @@ def main() -> None:
         expected_return: float | None = None
         target_price_display: float | None = None
 
-        if p.target_price is not None and p.current_price is not None:
-            expected_return = float(p.target_price)
+        if p.expected_return is not None and p.current_price is not None:
+            expected_return = p.expected_return
             target_price_display = p.current_price * (1.0 + expected_return)
 
             # Override BUY → HOLD if return < 1.5% (more aggressive)
