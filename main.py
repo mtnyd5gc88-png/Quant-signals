@@ -1,5 +1,5 @@
 """
-Quant Trading System — Main entry point [IMPROVED]
+Quant Trading System — Main entry point [IMPROVED + ALPHA ENSEMBLE]
 Key Fixes:
   1. **FRESH DATA LOADING** (default=True) — cache auto-clears each run
   2. **SHORTER WALK-FORWARD** (2 years instead of 5) — adapts to market faster
@@ -7,6 +7,8 @@ Key Fixes:
   4. **RISK MANAGEMENT** — dynamic position sizing, tighter stops
   5. **LOOK-AHEAD BIAS REMOVED** — clean OOS probability split
   6. **INTELLIGENT CACHING** — smart cache invalidation (7-day TTL)
+  7. **ALPHA ENSEMBLE** — Multi-alpha (ML + momentum + mean-reversion + vol scaling)
+  8. **TRANSACTION COSTS** — 0.1% cost modeling for realistic backtest
 """
 
 from __future__ import annotations
@@ -20,11 +22,12 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 from sklearn.base import clone
 
 from backtest import run_portfolio_backtest
-from data_loader import DataConfig, ensure_min_history, load_data
+from data_loader import DataConfig, ensure_min_history, load_data, align_on_common_dates
 from evaluation import PerformanceReport, summarize_performance
 from feature_engineering import FeatureConfig, add_features, feature_columns
 from model import (
@@ -63,6 +66,155 @@ def _check_cache_validity(cache_dir: Path, max_age_days: int = 7) -> bool:
         return age_days < max_age_days
     except Exception:
         return False
+
+
+def compute_alpha(df: pd.DataFrame, prob_series: pd.Series) -> pd.Series:
+    """
+    Multi-alpha ensemble:
+    - ML probability (0.4)
+    - Momentum 20d (0.3)
+    - Mean reversion 5d (0.2)
+    - Volatility penalty (0.1)
+    
+    Returns normalized z-score alpha.
+    """
+    returns = df["Close"].pct_change()
+
+    # Momentum (20d)
+    mom = df["Close"].pct_change(20)
+
+    # Mean reversion (5d negative)
+    rev = -df["Close"].pct_change(5)
+
+    # Volatility (risk penalty)
+    vol = returns.rolling(20).std()
+
+    # Z-score normalization
+    def z_score(x):
+        mean_val = x.mean()
+        std_val = x.std()
+        if std_val < 1e-8:
+            return pd.Series(0, index=x.index)
+        return (x - mean_val) / (std_val + 1e-8)
+
+    # Reindex to common dates
+    common_idx = prob_series.index.intersection(
+        mom.index.intersection(rev.index.intersection(vol.index))
+    )
+    
+    alpha = (
+        0.4 * z_score(prob_series.reindex(common_idx, fill_value=0)) +
+        0.3 * z_score(mom.reindex(common_idx, fill_value=0)) +
+        0.2 * z_score(rev.reindex(common_idx, fill_value=0)) -
+        0.1 * z_score(vol.reindex(common_idx, fill_value=0))
+    )
+
+    return alpha
+
+
+def compute_weights(
+    alpha_dict: dict[str, pd.Series],
+    price_dict: dict[str, pd.Series],
+) -> dict[str, pd.Series]:
+    """
+    Cross-sectional ranking + volatility scaling.
+    Returns weight series per ticker.
+    """
+    # Get common dates
+    common_dates = None
+    for alpha_series in alpha_dict.values():
+        idx = alpha_series.index
+        common_dates = idx if common_dates is None else common_dates.intersection(idx)
+    
+    if common_dates is None or len(common_dates) == 0:
+        return {t: pd.Series(0, index=pd.DatetimeIndex([])) for t in alpha_dict}
+
+    weights = {t: pd.Series(0.0, index=common_dates) for t in alpha_dict.keys()}
+
+    for date in common_dates:
+        # Collect alpha values for this date
+        alphas = {}
+        for t in alpha_dict.keys():
+            val = alpha_dict[t].get(date, np.nan)
+            if not np.isnan(val):
+                alphas[t] = val
+
+        if len(alphas) < 2:
+            continue
+
+        tickers = list(alphas.keys())
+        vals = np.array(list(alphas.values()))
+
+        # Z-score within cross-section
+        mean_val = vals.mean()
+        std_val = vals.std()
+        if std_val < 1e-8:
+            zscores = np.zeros_like(vals)
+        else:
+            zscores = (vals - mean_val) / std_val
+
+        # Volatility scaling (inverse vol weighting)
+        vols = []
+        for t in tickers:
+            px_series = price_dict[t]
+            if date not in px_series.index:
+                vols.append(0.02)  # Default vol
+                continue
+            vol_val = px_series.pct_change().rolling(20).std().get(date, np.nan)
+            vols.append(vol_val if not np.isnan(vol_val) else 0.02)
+
+        vols = np.array(vols)
+
+        # Raw weights: alpha signal / volatility
+        raw_w = zscores / (vols + 1e-6)
+
+        # Normalize to sum to 1 (allowing long/short, but capped)
+        if np.sum(np.abs(raw_w)) > 1e-8:
+            raw_w = raw_w / np.sum(np.abs(raw_w))
+        else:
+            raw_w = np.zeros_like(raw_w)
+
+        # Assign weights for this date
+        for i, t in enumerate(tickers):
+            weights[t].loc[date] = raw_w[i]
+
+    return weights
+
+
+def apply_transaction_cost(
+    equity_curve: pd.Series,
+    weights: dict[str, pd.Series],
+    cost_rate: float = 0.001,
+) -> pd.Series:
+    """
+    Apply transaction cost penalty based on portfolio turnover.
+    cost_rate: 0.1% per unit of turnover
+    """
+    common_dates = equity_curve.index
+    prev_w = None
+    cumulative_cost = 0.0
+    adjusted_equity = equity_curve.copy()
+
+    for date in common_dates:
+        # Get current weights
+        curr_w = np.array([weights[t].get(date, 0.0) for t in weights.keys()])
+
+        if prev_w is None:
+            # First day: turnover = sum of absolute weights
+            turnover = np.sum(np.abs(curr_w))
+        else:
+            # Turnover = changes in positions
+            turnover = np.sum(np.abs(curr_w - prev_w))
+
+        cost = turnover * cost_rate
+        cumulative_cost += cost
+
+        # Apply cost to equity curve
+        adjusted_equity.loc[date] *= (1.0 - cumulative_cost)
+
+        prev_w = curr_w.copy()
+
+    return adjusted_equity
 
 
 def _train_single_ticker(
@@ -233,6 +385,10 @@ def main() -> None:
     WALK_FORWARD_TRAIN_YEARS = 2  # ← FIX: was 5
     WALK_FORWARD_STEP_YEARS = 1
 
+    # **ALPHA ENSEMBLE & TRANSACTION COSTS**
+    USE_ALPHA_ENSEMBLE: bool = True
+    TRANSACTION_COST_RATE: float = 0.001  # 0.1%
+
     MAX_WORKERS = min(6, os.cpu_count() or 4)
 
     OUT_PLOTS = Path("outputs/plots")
@@ -254,7 +410,7 @@ def main() -> None:
             print("Fresh data mode: clearing cache...")
         shutil.rmtree(CACHE_DIR, ignore_errors=True)
 
-    # ═══════════════════���════════════════════════════════════════════
+    # ════════════════════════════════════════════════════════════════
     # ③ DATA LOAD
     # ════════════════════════════════════════════════════════════════
     extra_tickers = [BENCHMARK, VIX_TICKER]
@@ -371,7 +527,7 @@ def main() -> None:
 
     print(f"\nSuccessfully trained: {len(best_models)} tickers")
 
-    # ════════════════════════════════════════════════════════════════
+    # ═════════════════════════════���══════════════════════════════════
     # ⑦ RECOMMENDATIONS (LATEST SIGNALS)
     # ════════════════════════════════════════════════════════════════
     print("\nLatest predictions + recommendations (sorted by P(Up)):")
@@ -414,9 +570,9 @@ def main() -> None:
         )
 
     # ════════════════════════════════════════════════════════════════
-    # ⑧ PORTFOLIO BACKTEST
+    # ⑧ PORTFOLIO BACKTEST WITH ALPHA ENSEMBLE
     # ════════════════════════════════════════════════════════════════
-    print("\nRunning portfolio backtest ...")
+    print("\nPreparing portfolio with alpha ensemble ...")
 
     per_ticker_probs = {
         t: p for t, p in per_ticker_probs.items()
@@ -429,24 +585,62 @@ def main() -> None:
         if t in per_ticker_probs
     }
 
-    from data_loader import align_on_common_dates
-
     per_ticker_probs = align_on_common_dates(per_ticker_probs)
     price_by_ticker = align_on_common_dates(price_by_ticker)
 
     print(f"Tickers used: {len(per_ticker_probs)}")
     print(f"Backtest length: {len(next(iter(per_ticker_probs.values())))}")
 
+    # ────────────────────────────────────────────────────────────────
+    # BUILD ALPHA ENSEMBLE IF ENABLED
+    # ────────────────────────────────────────────────────────────────
+    if USE_ALPHA_ENSEMBLE:
+        print("\nBuilding alpha ensemble (ML + momentum + mean-reversion + vol scaling) ...")
+        
+        alpha_dict: dict[str, pd.Series] = {}
+        
+        for ticker in per_ticker_probs:
+            df = raw[ticker]
+            probs = per_ticker_probs[ticker]
+            
+            try:
+                alpha = compute_alpha(df, probs)
+                alpha_dict[ticker] = alpha
+            except Exception as e:
+                with _print_lock:
+                    print(f"  [WARN] Alpha failed for {ticker}: {e}")
+                continue
+        
+        # Compute cross-sectional weights
+        print("Computing cross-sectional weights with volatility scaling ...")
+        weights = compute_weights(alpha_dict, price_by_ticker)
+        
+        # Use weights as pseudo-probabilities for backtest
+        pseudo_probs = weights
+    else:
+        # Use original probabilities directly
+        pseudo_probs = per_ticker_probs
+
+    print("\nRunning portfolio backtest ...")
     bt = run_portfolio_backtest(
         price_by_ticker=price_by_ticker,
-        prob_by_ticker=per_ticker_probs,
+        prob_by_ticker=pseudo_probs,
         cfg=effective_portfolio_cfg,
     )
 
+    # ────────────────────────────────────────────────────────────────
+    # APPLY TRANSACTION COSTS
+    # ────────────────────────────────────────────────────────────────
+    if USE_ALPHA_ENSEMBLE:
+        print(f"Applying transaction costs (rate={TRANSACTION_COST_RATE:.3%}) ...")
+        strategy_eq = apply_transaction_cost(bt.equity_curve, weights, TRANSACTION_COST_RATE)
+    else:
+        strategy_eq = bt.equity_curve
+
     # Benchmark alignment
     spy_px = spy_df.get("Adj Close", spy_df["Close"])
-    spy_px = spy_px.reindex(bt.equity_curve.index).ffill().dropna()
-    strategy_eq = bt.equity_curve.reindex(spy_px.index).dropna()
+    spy_px = spy_px.reindex(strategy_eq.index).ffill().dropna()
+    strategy_eq = strategy_eq.reindex(spy_px.index).dropna()
     benchmark_eq = PORTFOLIO_CFG.initial_capital * (spy_px / spy_px.iloc[0])
 
     report = summarize_performance(strategy_eq, benchmark_eq, bt.trades)
@@ -462,7 +656,7 @@ def main() -> None:
         f"\n  # Trades       : {report.number_of_trades}"
     )
 
-    # ════════════════════════════════════════════════════════════════
+    # ════════════════════════════════════════════════════════════��═══
     # ⑨ SAVE OUTPUTS
     # ════════════════════════════════════════════════════════════════
     OUT_REPORT.parent.mkdir(parents=True, exist_ok=True)
@@ -473,7 +667,9 @@ def main() -> None:
         f.write(f"Tickers        : {', '.join(sorted(raw.keys()))}\n")
         f.write(f"Benchmark      : {BENCHMARK}\n")
         f.write(f"Market regime  : {current_regime or 'N/A'}\n")
-        f.write(f"Fresh data     : {USE_FRESH_DATA}\n\n")
+        f.write(f"Fresh data     : {USE_FRESH_DATA}\n")
+        f.write(f"Alpha ensemble : {USE_ALPHA_ENSEMBLE}\n")
+        f.write(f"Transaction cost : {TRANSACTION_COST_RATE:.3%}\n\n")
         f.write(f"Total return   : {report.cumulative_return:.2%}\n")
         f.write(f"Ann. return    : {report.annualized_return:.2%}\n")
         f.write(f"Sharpe ratio   : {report.sharpe_ratio:.3f}\n")
