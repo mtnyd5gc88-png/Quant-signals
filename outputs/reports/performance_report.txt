@@ -1,7 +1,7 @@
 Quant Trading System — Performance Report
 ==========================================
 
-Run time       : 2026-04-01 22:29:42
+Run time       : 2026-04-02 22:25:10
 Tickers        : AAPL, ADBE, ADI, AEHR, AKAM, ALLY, ALNY, AMD, AMGN, AMKR, AMZN, APD, ARKG, ARKK, ASML, AVGO, AXP, BA, BABA, BE, BIDU, BIIB, BLK, CAT, CHPT, CME, CMG, COHR, COHU, COST, CRM, CRSP, CRWD, CSCO, CSX, CVNA, DAL, DD, DDOG, DE, DIA, DIS, DKNG, DOW, ECL, ENPH, ENTG, ESTC, ETN, ETSY, EXAS, FCEL, FDX, FORM, FSLR, FSLY, GD, GE, GILD, GLD, GME, GOOGL, GS, HD, HON, HUBS, HUT, IBM, ICE, INTC, IONS, IWM, JD, JNJ, KRE, LC, LIN, LITE, LLY, LMT, LOW, LSCC, LYB, LYFT, MA, MARA, MCD, MCHP, MDB, MELI, META, MGM, MPWR, MRK, MRVL, MS, MSFT, MSTR, NET, NFLX, NIO, NKE, NOC, NOW, NSC, NTES, NTLA, NVDA, NXPI, ON, ONTO, ORCL, PANW, PDD, PENN, PFE, PINS, PPG, PYPL, QCOM, QQQ, QRVO, RCL, REGN, RIOT, ROKU, RTX, RUN, SBUX, SCHW, SE, SEDG, SHOP, SHW, SLV, SNAP, SOXL, SOXS, SPGI, SPOT, SPXL, SQQQ, SWKS, TEAM, TER, TGT, TNA, TQQQ, TSLA, TSM, TTD, UAL, UBER, UNH, UNP, UPRO, UPS, URA, USO, V, VRTX, WDAY, WMT, WYNN, XBI, XLE, XLF, XLI, XLK, XLV, XLY, XOP, ZS
 Benchmark      : SPY
 Market regime  : neutral
@@ -9,10 +9,10 @@ Fresh data     : True
 Alpha ensemble : True
 Transaction cost : 0.100%
 
-Total return   : 5.64%
-Ann. return    : 1.33%
-Sharpe ratio   : 0.166
-Max drawdown   : -29.57%
+Total return   : -9.79%
+Ann. return    : -2.45%
+Sharpe ratio   : -0.120
+Max drawdown   : -31.47%
 SPY B&H return : 51.94%
-Win rate       : 54.38%
-# Trades       : 947
+Win rate       : 53.73%
+# Trades       : 925
