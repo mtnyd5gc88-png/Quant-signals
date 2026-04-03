@@ -1,18 +1,29 @@
 Quant Trading System — Performance Report
 ==========================================
 
-Run time       : 2026-04-02 22:25:10
-Tickers        : AAPL, ADBE, ADI, AEHR, AKAM, ALLY, ALNY, AMD, AMGN, AMKR, AMZN, APD, ARKG, ARKK, ASML, AVGO, AXP, BA, BABA, BE, BIDU, BIIB, BLK, CAT, CHPT, CME, CMG, COHR, COHU, COST, CRM, CRSP, CRWD, CSCO, CSX, CVNA, DAL, DD, DDOG, DE, DIA, DIS, DKNG, DOW, ECL, ENPH, ENTG, ESTC, ETN, ETSY, EXAS, FCEL, FDX, FORM, FSLR, FSLY, GD, GE, GILD, GLD, GME, GOOGL, GS, HD, HON, HUBS, HUT, IBM, ICE, INTC, IONS, IWM, JD, JNJ, KRE, LC, LIN, LITE, LLY, LMT, LOW, LSCC, LYB, LYFT, MA, MARA, MCD, MCHP, MDB, MELI, META, MGM, MPWR, MRK, MRVL, MS, MSFT, MSTR, NET, NFLX, NIO, NKE, NOC, NOW, NSC, NTES, NTLA, NVDA, NXPI, ON, ONTO, ORCL, PANW, PDD, PENN, PFE, PINS, PPG, PYPL, QCOM, QQQ, QRVO, RCL, REGN, RIOT, ROKU, RTX, RUN, SBUX, SCHW, SE, SEDG, SHOP, SHW, SLV, SNAP, SOXL, SOXS, SPGI, SPOT, SPXL, SQQQ, SWKS, TEAM, TER, TGT, TNA, TQQQ, TSLA, TSM, TTD, UAL, UBER, UNH, UNP, UPRO, UPS, URA, USO, V, VRTX, WDAY, WMT, WYNN, XBI, XLE, XLF, XLI, XLK, XLV, XLY, XOP, ZS
-Benchmark      : SPY
-Market regime  : neutral
-Fresh data     : True
-Alpha ensemble : True
+Run time         : 2026-04-03 02:42:11
+Tickers trained  : 173
+Benchmark        : SPY
+Market regime    : neutral
+Fresh data       : True
+Alpha ensemble   : True
+Rebal frequency  : W-FRI
 Transaction cost : 0.100%
+Risk-free rate   : 4.0%
 
-Total return   : -9.79%
-Ann. return    : -2.45%
-Sharpe ratio   : -0.120
-Max drawdown   : -31.47%
-SPY B&H return : 51.94%
-Win rate       : 53.73%
-# Trades       : 925
+total_return            : 0.3827170057070697
+annualized_return       : 0.05212888488200096
+sharpe_ratio            : 0.152995448576743
+sortino_ratio           : 0.2072056268865016
+calmar_ratio            : 0.25854412780205227
+max_drawdown            : -0.201624710254714
+benchmark_total         : 1.3768201210617628
+benchmark_ann           : 0.1454112998832906
+alpha_annualized        : -0.031409359729002245
+beta                    : 0.4130320436158925
+win_rate                : 0.3422526446795271
+profit_factor           : 0.9418691374391944
+n_trading_days          : 1607
+n_years                 : 6.38
+
+# Trades         : 879
