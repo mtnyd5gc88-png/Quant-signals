@@ -874,17 +874,6 @@ def main() -> None:
         json.dump({k: (float(v) if isinstance(v, (np.floating, float)) else v)
                    for k, v in metrics.items()}, f, indent=2)
 
-    generate_html_dashboard(
-        predictions=predictions_for_output,
-        report=report,
-        plots_dir=OUT_PLOTS,
-        out_path=WEBSITE_DIR / "index.html",
-        regime=current_regime,
-        run_timestamp=run_start.strftime("%Y-%m-%d %H:%M"),
-        n_tickers_trained=len(best_models),
-        backtest_start=str(strategy_eq.index[0].date()) if len(strategy_eq) else "N/A",
-        backtest_end=str(strategy_eq.index[-1].date())  if len(strategy_eq) else "N/A",
-    )
 
     elapsed = (datetime.datetime.now() - run_start).total_seconds() / 60
     print(f"\nDone in {elapsed:.1f} min")
