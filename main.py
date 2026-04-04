@@ -181,17 +181,25 @@ def compute_weights(
         raw_w = rebal_points.reindex(raw_w.index, method="ffill")
 
     # Step 5: Long-only 변환 (음수 가중치 제거)
-    # long-short 분리
+    # Top-N 먼저 적용
+    if top_n is not None and top_n > 0:
+        rank = raw_w.rank(axis=1, ascending=False)
+        mask = rank <= top_n
+        raw_w = raw_w.where(mask, 0.0)
+
+    # long / short 분리
     long = raw_w.clip(lower=0)
     short = raw_w.clip(upper=0)
 
+    # 각각 따로 normalize
     long_sum = long.sum(axis=1).replace(0, 1e-8)
     short_sum = short.abs().sum(axis=1).replace(0, 1e-8)
 
     long_w = long.div(long_sum, axis=0)
     short_w = short.div(short_sum, axis=0)
 
-    weights_df = long_w + short_w  # short는 음수 유지
+    # 최종 weights
+    weights_df = long_w + short_w
 
     # Top-N 필터: 날짜별 상위 N개 티커만 유지
     if top_n is not None and top_n > 0:
