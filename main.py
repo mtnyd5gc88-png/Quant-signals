@@ -200,6 +200,8 @@ def compute_weights(
 
 # ── max position cap (long만 적용) ──
     weights_df = weights_df.clip(lower=-max_weight, upper=max_weight)
+    gross = weights_df.abs().sum(axis=1).replace(0, 1e-8)
+    weights_df = weights_df.div(gross, axis=0)
 
     return {t: weights_df[t] for t in weights_df.columns}
 
