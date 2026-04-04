@@ -181,18 +181,30 @@ def compute_weights(
         raw_w = rebal_points.reindex(raw_w.index, method="ffill")
 
     # Step 5: Long-only 변환 (음수 가중치 제거)
-    if long_only:
-        raw_w = raw_w.clip(lower=0)
+    # long-short 분리
+    long = raw_w.clip(lower=0)
+    short = raw_w.clip(upper=0)
+
+    long_sum = long.sum(axis=1).replace(0, 1e-8)
+    short_sum = short.abs().sum(axis=1).replace(0, 1e-8)
+
+    long_w = long.div(long_sum, axis=0)
+    short_w = short.div(short_sum, axis=0)
+
+    weights_df = long_w + short_w  # short는 음수 유지
 
     # Top-N 필터: 날짜별 상위 N개 티커만 유지
     if top_n is not None and top_n > 0:
         # 상위 N개 마스크 생성
-        mask = raw_w.rank(axis=1, ascending=False) <= top_n
+        # long 기준으로 top_n만 선택
+    if top_n is not None and top_n > 0:
+        rank = raw_w.rank(axis=1, ascending=False)
+        mask = rank <= top_n
         raw_w = raw_w.where(mask, 0.0)
 
     # Step 6: 행 합계로 정규화
-    row_sum = raw_w.sum(axis=1).replace(0, 1e-8)
-    weights_df = raw_w.div(row_sum, axis=0)
+    # normalize 제거 → long/short에서 이미 처리됨
+    weights_df = raw_w
 
     # 최대 포지션 한도 적용 후 재정규화
     weights_df = weights_df.clip(upper=max_weight)
