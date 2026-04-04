@@ -494,7 +494,7 @@ def main() -> None:
 
     BENCHMARK  = "SPY"
     VIX_TICKER = "^VIX"
-    START_DATE = "2018-01-01"
+    START_DATE = "2016-01-01"
     END_DATE: str | None = None
 
     FEATURE_CFG       = FeatureConfig()
@@ -519,7 +519,7 @@ def main() -> None:
     MAX_POSITION_W  = 0.15             # 티커당 최대 15%
     MIN_POSITION_W  = 0.01             # 1% 미만 포지션 제거
     REBAL_FREQ      = "W-FRI"          # 주간 리밸런싱 (매주 금요일)
-    TOP_N_ALPHA     = 20               # 알파 상위 20개 티커에 집중
+    TOP_N_ALPHA     = 5               # 알파 상위 5개 티커에 집중
 
     MAX_WORKERS = min(6, os.cpu_count() or 4)
 
