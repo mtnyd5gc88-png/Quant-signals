@@ -877,6 +877,11 @@ def main() -> None:
     print(f"  Plots   : {OUT_PLOTS}/")
     print(f"  Website : {WEBSITE_DIR}/index.html")
 
+    import os
+
+    os.system("git add .")
+    os.system('git commit -m "auto update"')
+    os.system("git push")
 
 if __name__ == "__main__":
     main()
