@@ -135,7 +135,7 @@ def compute_weights(
     min_weight: float = 0.01,       # 1% 미만 포지션 제거
     rebal_freq: str = "W-FRI",      # 주간 리밸런싱 (turnover 절감)
     top_n: int | None = None,       # 상위 N개 티커만 롱 (None=전체)
-    long_only: bool = False,         # 롱온리 모드
+    long_only=False,         # 롱온리 모드
 ) -> dict[str, pd.Series]:
     """
     벡터화된 크로스섹션 가중치 계산.
