@@ -180,52 +180,28 @@ def compute_weights(
         rebal_points = raw_w.resample(rebal_freq).last()
         raw_w = rebal_points.reindex(raw_w.index, method="ffill")
 
-    # Step 5: Long-only 변환 (음수 가중치 제거)
-    # Top-N 먼저 적용
+    # Step 4 이후부터 전부 교체
+
+# ── Top-N 먼저 ──
     if top_n is not None and top_n > 0:
         rank = raw_w.rank(axis=1, ascending=False)
-        mask = rank <= top_n
-        raw_w = raw_w.where(mask, 0.0)
+        raw_w = raw_w.where(rank <= top_n, 0.0)
 
-    # long / short 분리
+# ── Long / Short 분리 ──
     long = raw_w.clip(lower=0)
     short = raw_w.clip(upper=0)
 
-    # 각각 따로 normalize
-    long_sum = long.sum(axis=1).replace(0, 1e-8)
-    short_sum = short.abs().sum(axis=1).replace(0, 1e-8)
+# 각각 normalize
+    long_w = long.div(long.sum(axis=1).replace(0, 1e-8), axis=0)
+    short_w = short.div(short.abs().sum(axis=1).replace(0, 1e-8), axis=0)
 
-    long_w = long.div(long_sum, axis=0)
-    short_w = short.div(short_sum, axis=0)
-
-    # 최종 weights
+# 합치기 (short는 음수 유지)
     weights_df = long_w + short_w
 
-    # Top-N 필터: 날짜별 상위 N개 티커만 유지
-    if top_n is not None and top_n > 0:
-        # 상위 N개 마스크 생성
-        # long 기준으로 top_n만 선택
-    if top_n is not None and top_n > 0:
-        rank = raw_w.rank(axis=1, ascending=False)
-        mask = rank <= top_n
-        raw_w = raw_w.where(mask, 0.0)
-
-    # Step 6: 행 합계로 정규화
-    # normalize 제거 → long/short에서 이미 처리됨
-    weights_df = raw_w
-
-    # 최대 포지션 한도 적용 후 재정규화
-    weights_df = weights_df.clip(upper=max_weight)
-    row_sum = weights_df.sum(axis=1).replace(0, 1e-8)
-    weights_df = weights_df.div(row_sum, axis=0)
-
-    # 최소 포지션 필터 (1% 미만 제거 → ghost position 방지)
-    weights_df = weights_df.where(weights_df >= min_weight, 0.0)
-    row_sum = weights_df.sum(axis=1).replace(0, 1e-8)
-    weights_df = weights_df.div(row_sum, axis=0)
+# ── max position cap (long만 적용) ──
+    weights_df = weights_df.clip(lower=-max_weight, upper=max_weight)
 
     return {t: weights_df[t] for t in weights_df.columns}
-
 
 # ════════════════════════════════════════════════════════════════
 # FIX 3 + 4: 수익률 기반 트랜잭션 비용 + 가중치 기반 백테스트
