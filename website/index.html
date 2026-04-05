@@ -312,39 +312,7 @@
 
   <!-- ── Performance Metrics ────────────────────────────────────────────────── -->
   <div class="section-label">Performance Metrics</div>
-  <div class="metrics-grid">
-    <div class="metric-card">
-      <div class="metric-label">Total Return</div>
-      <div class="metric-val pos">+38.27%</div>
-      <div class="metric-sub">since inception</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Ann. Return</div>
-      <div class="metric-val pos">+5.21%</div>
-      <div class="metric-sub">annualised CAGR</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Sharpe Ratio</div>
-      <div class="metric-val pos">0.15</div>
-      <div class="metric-sub">daily, ann. √252</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Max Drawdown</div>
-      <div class="metric-val neg">-20.16%</div>
-      <div class="metric-sub">peak-to-trough</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">SPY Buy & Hold</div>
-      <div class="metric-val pos">+137.61%</div>
-      <div class="metric-sub">benchmark</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Win Rate</div>
-      <div class="metric-val neutral">+49.49%</div>
-      <div class="metric-sub">879 trades</div>
-    </div>
-  </div>
-
+  <div class="metrics-grid" id="metrics"></div>
   <!-- ── Charts ─────────────────────────────────────────────────────────────── -->
   <div class="section-label">Charts</div>
   <div class="charts-grid">
@@ -1997,9 +1965,69 @@
       return dir * aText.localeCompare(bText);
     });
 
+  // ===== metrics =====
+    const METRICS_URL = "data/metrics.json?nocache=" + Date.now()
+
+    fetch(METRICS_URL)
+    .then(res => res.json())
+    .then(m => {
+
+    document.getElementById("metrics").innerHTML = `
+    <div class="metric">
+      <div>Total Return</div>
+      <div class="metric-val">${(m.total_return*100).toFixed(1)}%</div>
+    </div>
+
+    <div class="metric">
+      <div>Sharpe</div>
+      <div class="metric-val">${m.sharpe_ratio.toFixed(2)}</div>
+    </div>
+
+    <div class="metric">
+      <div>Drawdown</div>
+      <div class="metric-val">${(m.max_drawdown*100).toFixed(1)}%</div>
+    </div>
+
+    <div class="metric">
+      <div>Win Rate</div>
+      <div class="metric-val">${(m.win_rate*100).toFixed(1)}%</div>
+    </div>
+    `
+
+    })
+
     rows.forEach(r => tbody.appendChild(r));
   }
-</script>
+      fetch("data/metrics.json?nocache=" + Date.now())
+    .then(res=>res.json())
+    .then(m=>{
+
+    document.getElementById("metrics").innerHTML = `
+    <div class="metric-card">
+      <div class="metric-label">Total Return</div>
+      <div class="metric-val">${(m.total_return*100).toFixed(1)}%</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-label">Sharpe</div>
+      <div class="metric-val">${m.sharpe_ratio.toFixed(2)}</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-label">Drawdown</div>
+      <div class="metric-val">${(m.max_drawdown*100).toFixed(1)}%</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-label">Win Rate</div>
+      <div class="metric-val">${(m.win_rate*100).toFixed(1)}%</div>
+    </div>
+    `
+})
+</footer>
+
+<script src="./app.js" defer></script>
 
 </body>
 </html>
+
