@@ -1,528 +1,409 @@
 [
   {
     "ticker": "GLD",
-    "prob_up": 0.9717,
-    "price": 435.3599853515625,
-    "target_return": 0.0273,
+    "prob_up": 0.964,
+    "price": 445.0899963378906,
+    "target_return": 0.0263,
     "signal": "BUY"
   },
   {
     "ticker": "SPGI",
-    "prob_up": 0.7759,
-    "price": 430.0799865722656,
-    "target_return": -0.0129,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "WMT",
-    "prob_up": 0.7144,
-    "price": 124.56999969482422,
-    "target_return": 0.0231,
-    "signal": "BUY"
-  },
-  {
-    "ticker": "GS",
-    "prob_up": 0.7013,
-    "price": 890.7899780273438,
-    "target_return": 0.0032,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "TTD",
-    "prob_up": 0.6905,
-    "price": 21.219999313354492,
-    "target_return": -0.0486,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "FORM",
-    "prob_up": 0.6806,
-    "price": 128.22000122070312,
-    "target_return": 0.0187,
-    "signal": "BUY"
-  },
-  {
-    "ticker": "URA",
-    "prob_up": 0.6463,
-    "price": 52.18000030517578,
-    "target_return": 0.0394,
-    "signal": "BUY"
-  },
-  {
-    "ticker": "VRTX",
-    "prob_up": 0.644,
-    "price": 440.04998779296875,
-    "target_return": 0.0196,
-    "signal": "BUY"
-  },
-  {
-    "ticker": "DD",
-    "prob_up": 0.6413,
-    "price": 47.150001525878906,
-    "target_return": -0.0084,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "INTC",
-    "prob_up": 0.634,
-    "price": 65.18000030517578,
-    "target_return": -0.0133,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "CAT",
-    "prob_up": 0.6247,
-    "price": 791.72998046875,
-    "target_return": 0.0212,
-    "signal": "BUY"
-  },
-  {
-    "ticker": "IBM",
-    "prob_up": 0.6236,
-    "price": 237.82000732421875,
-    "target_return": 0.0189,
-    "signal": "BUY"
-  },
-  {
-    "ticker": "BIDU",
-    "prob_up": 0.6231,
-    "price": 112.01000213623047,
-    "target_return": -0.0027,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "RUN",
-    "prob_up": 0.6179,
-    "price": 12.760000228881836,
-    "target_return": -0.0407,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "NOW",
-    "prob_up": 0.6084,
-    "price": 89.05999755859375,
-    "target_return": -0.016,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "MS",
-    "prob_up": 0.6043,
-    "price": 181.13999938964844,
-    "target_return": -0.0057,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "GE",
-    "prob_up": 0.6019,
-    "price": 311.8999938964844,
-    "target_return": 0.0184,
-    "signal": "BUY"
-  },
-  {
-    "ticker": "BIIB",
-    "prob_up": 0.601,
-    "price": 176.36500549316406,
-    "target_return": 0.0064,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "NET",
-    "prob_up": 0.5994,
-    "price": 184.02000427246094,
-    "target_return": -0.0061,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "TNA",
-    "prob_up": 0.5982,
-    "price": 53.56999969482422,
-    "target_return": -0.0024,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "REGN",
-    "prob_up": 0.5917,
-    "price": 746.4600219726562,
-    "target_return": 0.0142,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "LYB",
-    "prob_up": 0.5897,
-    "price": 75.51000213623047,
-    "target_return": 0.0309,
-    "signal": "BUY"
-  },
-  {
-    "ticker": "NVDA",
-    "prob_up": 0.5812,
-    "price": 189.30999755859375,
-    "target_return": -0.0011,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "XLI",
-    "prob_up": 0.578,
-    "price": 172.72999572753906,
-    "target_return": 0.0008,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "SQQQ",
-    "prob_up": 0.5778,
-    "price": 65.56999969482422,
-    "target_return": -0.0234,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "ESTC",
-    "prob_up": 0.5759,
-    "price": 45.59000015258789,
-    "target_return": 0.0613,
-    "signal": "BUY"
-  },
-  {
-    "ticker": "UPS",
-    "prob_up": 0.5758,
-    "price": 102.0199966430664,
-    "target_return": -0.0077,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "COHR",
-    "prob_up": 0.574,
-    "price": 307.92999267578125,
-    "target_return": 0.0423,
-    "signal": "BUY"
-  },
-  {
-    "ticker": "LITE",
-    "prob_up": 0.5728,
-    "price": 871.1799926757812,
-    "target_return": 0.1129,
-    "signal": "BUY"
-  },
-  {
-    "ticker": "ASML",
-    "prob_up": 0.5721,
-    "price": 1500.199951171875,
-    "target_return": -0.018,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "MSFT",
-    "prob_up": 0.5633,
-    "price": 384.3699951171875,
-    "target_return": 0.0087,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "NKE",
-    "prob_up": 0.5624,
-    "price": 42.90999984741211,
-    "target_return": 0.0034,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "XLF",
-    "prob_up": 0.5589,
-    "price": 51.65999984741211,
-    "target_return": -0.0045,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "AXP",
-    "prob_up": 0.5589,
-    "price": 323.82000732421875,
-    "target_return": -0.034,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "FSLY",
-    "prob_up": 0.5542,
-    "price": 24.3700008392334,
-    "target_return": 0.0984,
-    "signal": "BUY"
-  },
-  {
-    "ticker": "HD",
-    "prob_up": 0.5541,
-    "price": 341.1600036621094,
-    "target_return": -0.0185,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "SEDG",
-    "prob_up": 0.554,
-    "price": 43.209999084472656,
-    "target_return": -0.018,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "AMKR",
-    "prob_up": 0.554,
-    "price": 60.439998626708984,
-    "target_return": -0.0346,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "ONTO",
-    "prob_up": 0.5517,
-    "price": 252.61000061035156,
-    "target_return": -0.0558,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "ECL",
-    "prob_up": 0.5511,
-    "price": 275.20001220703125,
-    "target_return": 0.0213,
-    "signal": "BUY"
-  },
-  {
-    "ticker": "CRWD",
-    "prob_up": 0.55,
-    "price": 402.239990234375,
-    "target_return": 0.0012,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "ETN",
-    "prob_up": 0.5496,
-    "price": 403.3599853515625,
-    "target_return": -0.0144,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "GILD",
-    "prob_up": 0.549,
-    "price": 139.02999877929688,
+    "prob_up": 0.7799,
+    "price": 425.239990234375,
     "target_return": -0.0004,
     "signal": "HOLD"
   },
   {
-    "ticker": "DIS",
-    "prob_up": 0.5472,
-    "price": 101.18000030517578,
-    "target_return": -0.0253,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "XLE",
-    "prob_up": 0.5472,
-    "price": 57.11000061035156,
-    "target_return": 0.026,
+    "ticker": "GS",
+    "prob_up": 0.7348,
+    "price": 909.6300048828125,
+    "target_return": 0.0167,
     "signal": "BUY"
   },
   {
-    "ticker": "ORCL",
-    "prob_up": 0.5448,
-    "price": 155.6199951171875,
-    "target_return": -0.0053,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "CRSP",
-    "prob_up": 0.544,
-    "price": 54.83000183105469,
-    "target_return": 0.0018,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "DIA",
-    "prob_up": 0.544,
-    "price": 482.1300048828125,
-    "target_return": -0.0465,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "BLK",
-    "prob_up": 0.5414,
-    "price": 1023.6500244140625,
-    "target_return": -0.0149,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "JD",
-    "prob_up": 0.5411,
-    "price": 28.940000534057617,
-    "target_return": -0.0027,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "HON",
-    "prob_up": 0.5411,
-    "price": 233.63999938964844,
-    "target_return": -0.0072,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "BE",
-    "prob_up": 0.5409,
-    "price": 176.6699981689453,
-    "target_return": 0.04,
+    "ticker": "WMT",
+    "prob_up": 0.7339,
+    "price": 125.05000305175781,
+    "target_return": 0.0243,
     "signal": "BUY"
   },
   {
-    "ticker": "PANW",
-    "prob_up": 0.5401,
-    "price": 162.50999450683594,
-    "target_return": 0.0149,
+    "ticker": "VRTX",
+    "prob_up": 0.6362,
+    "price": 444.2799987792969,
+    "target_return": 0.0084,
     "signal": "HOLD"
   },
   {
-    "ticker": "MCHP",
-    "prob_up": 0.54,
-    "price": 73.55000305175781,
-    "target_return": 0.0106,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "WYNN",
-    "prob_up": 0.5371,
-    "price": 103.05999755859375,
-    "target_return": -0.0099,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "COST",
-    "prob_up": 0.5365,
-    "price": 980.8499755859375,
-    "target_return": -0.0205,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "LC",
-    "prob_up": 0.5356,
-    "price": 15.59000015258789,
-    "target_return": 0.0422,
+    "ticker": "BIDU",
+    "prob_up": 0.6353,
+    "price": 118.2300033569336,
+    "target_return": 0.0207,
     "signal": "BUY"
   },
   {
-    "ticker": "NXPI",
-    "prob_up": 0.5353,
-    "price": 208.0,
-    "target_return": 0.0561,
-    "signal": "BUY"
-  },
-  {
-    "ticker": "UNH",
-    "prob_up": 0.5346,
-    "price": 313.0,
-    "target_return": 0.0154,
-    "signal": "BUY"
-  },
-  {
-    "ticker": "META",
-    "prob_up": 0.5338,
-    "price": 634.530029296875,
-    "target_return": 0.0054,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "DAL",
-    "prob_up": 0.533,
-    "price": 67.05000305175781,
+    "ticker": "MS",
+    "prob_up": 0.6328,
+    "price": 183.33999633789062,
     "target_return": -0.0013,
     "signal": "HOLD"
   },
   {
-    "ticker": "IWM",
-    "prob_up": 0.5318,
-    "price": 265.07000732421875,
-    "target_return": -0.0006,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "NFLX",
-    "prob_up": 0.5305,
-    "price": 103.16000366210938,
-    "target_return": -0.0178,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "SNAP",
-    "prob_up": 0.5303,
-    "price": 5.150000095367432,
-    "target_return": 0.1017,
+    "ticker": "IBM",
+    "prob_up": 0.6298,
+    "price": 240.27000427246094,
+    "target_return": 0.0205,
     "signal": "BUY"
   },
   {
-    "ticker": "BA",
-    "prob_up": 0.5301,
-    "price": 222.13999938964844,
-    "target_return": -0.0079,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "HUBS",
-    "prob_up": 0.5291,
-    "price": 205.27999877929688,
-    "target_return": -0.0049,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "PPG",
-    "prob_up": 0.5291,
-    "price": 110.2300033569336,
-    "target_return": -0.0061,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "MDB",
-    "prob_up": 0.529,
-    "price": 236.13999938964844,
-    "target_return": 0.0234,
+    "ticker": "CAT",
+    "prob_up": 0.6265,
+    "price": 794.25,
+    "target_return": 0.0286,
     "signal": "BUY"
   },
   {
-    "ticker": "MSTR",
-    "prob_up": 0.5285,
-    "price": 132.36000061035156,
-    "target_return": -0.0285,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "LIN",
-    "prob_up": 0.5282,
-    "price": 508.8699951171875,
-    "target_return": -0.0116,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "CMG",
-    "prob_up": 0.5279,
-    "price": 34.59000015258789,
-    "target_return": 0.0171,
+    "ticker": "URA",
+    "prob_up": 0.622,
+    "price": 52.84000015258789,
+    "target_return": 0.026,
     "signal": "BUY"
-  },
-  {
-    "ticker": "ICE",
-    "prob_up": 0.5268,
-    "price": 164.30999755859375,
-    "target_return": 0.0069,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "MRK",
-    "prob_up": 0.5267,
-    "price": 120.1500015258789,
-    "target_return": -0.0048,
-    "signal": "HOLD"
   },
   {
     "ticker": "ADBE",
-    "prob_up": 0.5264,
-    "price": 240.11000061035156,
+    "prob_up": 0.6185,
+    "price": 235.72000122070312,
+    "target_return": 0.0163,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "NOW",
+    "prob_up": 0.6163,
+    "price": 87.79000091552734,
+    "target_return": 0.0034,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "INTC",
+    "prob_up": 0.6152,
+    "price": 63.810001373291016,
+    "target_return": -0.0323,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "LYB",
+    "prob_up": 0.6118,
+    "price": 73.25,
+    "target_return": 0.0126,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "CRWD",
+    "prob_up": 0.6089,
+    "price": 398.489990234375,
+    "target_return": -0.0067,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "DIA",
+    "prob_up": 0.608,
+    "price": 485.489990234375,
+    "target_return": -0.0369,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "NVDA",
+    "prob_up": 0.6035,
+    "price": 196.50999450683594,
+    "target_return": 0.0024,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "SEDG",
+    "prob_up": 0.5942,
+    "price": 42.97999954223633,
+    "target_return": -0.0236,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "ESTC",
+    "prob_up": 0.5807,
+    "price": 45.38999938964844,
+    "target_return": 0.0659,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "NET",
+    "prob_up": 0.5796,
+    "price": 178.64999389648438,
+    "target_return": 0.0029,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "SOXS",
+    "prob_up": 0.5794,
+    "price": 21.049999237060547,
+    "target_return": -0.0019,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "REGN",
+    "prob_up": 0.5778,
+    "price": 755.510009765625,
     "target_return": 0.0131,
     "signal": "HOLD"
   },
   {
-    "ticker": "JNJ",
-    "prob_up": 0.5261,
-    "price": 237.9600067138672,
-    "target_return": 0.0288,
+    "ticker": "XLF",
+    "prob_up": 0.5766,
+    "price": 51.779998779296875,
+    "target_return": -0.0122,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "MSFT",
+    "prob_up": 0.5759,
+    "price": 393.1099853515625,
+    "target_return": 0.0062,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "SQQQ",
+    "prob_up": 0.5755,
+    "price": 62.02000045776367,
+    "target_return": -0.0279,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "GE",
+    "prob_up": 0.5752,
+    "price": 318.0,
+    "target_return": 0.0232,
     "signal": "BUY"
+  },
+  {
+    "ticker": "XLI",
+    "prob_up": 0.5748,
+    "price": 173.35000610351562,
+    "target_return": 0.0075,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "SPXL",
+    "prob_up": 0.5747,
+    "price": 223.6699981689453,
+    "target_return": -0.045,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "DD",
+    "prob_up": 0.5737,
+    "price": 46.68000030517578,
+    "target_return": -0.0014,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "UPS",
+    "prob_up": 0.5706,
+    "price": 103.22000122070312,
+    "target_return": -0.0047,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "BA",
+    "prob_up": 0.5663,
+    "price": 223.77000427246094,
+    "target_return": -0.0052,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "SWKS",
+    "prob_up": 0.5655,
+    "price": 57.279998779296875,
+    "target_return": -0.0125,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "TNA",
+    "prob_up": 0.5654,
+    "price": 55.77000045776367,
+    "target_return": 0.0076,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "BIIB",
+    "prob_up": 0.5652,
+    "price": 178.9600067138672,
+    "target_return": -0.0096,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "AVGO",
+    "prob_up": 0.5569,
+    "price": 380.7799987792969,
+    "target_return": -0.0118,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "FSLY",
+    "prob_up": 0.5553,
+    "price": 20.950000762939453,
+    "target_return": 0.0965,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "JNJ",
+    "prob_up": 0.5545,
+    "price": 240.10000610351562,
+    "target_return": 0.0185,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "BLK",
+    "prob_up": 0.5486,
+    "price": 1054.56005859375,
+    "target_return": -0.0065,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "MSTR",
+    "prob_up": 0.5468,
+    "price": 137.41000366210938,
+    "target_return": -0.0195,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "LITE",
+    "prob_up": 0.546,
+    "price": 852.7899780273438,
+    "target_return": 0.0312,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "LC",
+    "prob_up": 0.5446,
+    "price": 15.850000381469727,
+    "target_return": 0.0446,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "AXP",
+    "prob_up": 0.5445,
+    "price": 326.9599914550781,
+    "target_return": -0.0191,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "TER",
+    "prob_up": 0.5434,
+    "price": 365.510009765625,
+    "target_return": -0.007,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "AMKR",
+    "prob_up": 0.5424,
+    "price": 61.31999969482422,
+    "target_return": -0.0405,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "ALNY",
+    "prob_up": 0.5415,
+    "price": 339.4100036621094,
+    "target_return": 0.0102,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "NFLX",
+    "prob_up": 0.5398,
+    "price": 106.27999877929688,
+    "target_return": -0.0095,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "BE",
+    "prob_up": 0.5398,
+    "price": 219.02999877929688,
+    "target_return": 0.0524,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "WDAY",
+    "prob_up": 0.5377,
+    "price": 117.86000061035156,
+    "target_return": -0.0089,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "WYNN",
+    "prob_up": 0.5373,
+    "price": 105.58999633789062,
+    "target_return": -0.0069,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "TTD",
+    "prob_up": 0.5372,
+    "price": 21.020000457763672,
+    "target_return": -0.0255,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "UNH",
+    "prob_up": 0.5355,
+    "price": 314.19000244140625,
+    "target_return": -0.0262,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "HD",
+    "prob_up": 0.5334,
+    "price": 342.7099914550781,
+    "target_return": 0.0161,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "ICE",
+    "prob_up": 0.5309,
+    "price": 162.0399932861328,
+    "target_return": 0.0114,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "HUBS",
+    "prob_up": 0.5299,
+    "price": 206.44000244140625,
+    "target_return": -0.0111,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "BABA",
+    "prob_up": 0.529,
+    "price": 131.35000610351562,
+    "target_return": -0.0199,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "ECL",
+    "prob_up": 0.528,
+    "price": 273.1300048828125,
+    "target_return": 0.0226,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "CME",
+    "prob_up": 0.5269,
+    "price": 297.0299987792969,
+    "target_return": -0.0102,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "CRSP",
+    "prob_up": 0.5266,
+    "price": 56.86000061035156,
+    "target_return": -0.0101,
+    "signal": "HOLD"
   },
   {
     "ticker": "EXAS",
@@ -532,689 +413,808 @@
     "signal": "HOLD"
   },
   {
-    "ticker": "MRVL",
-    "prob_up": 0.5239,
-    "price": 131.3000030517578,
-    "target_return": -0.0116,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "CSX",
-    "prob_up": 0.5232,
-    "price": 42.349998474121094,
-    "target_return": 0.0341,
+    "ticker": "SNAP",
+    "prob_up": 0.5244,
+    "price": 5.599999904632568,
+    "target_return": 0.0936,
     "signal": "BUY"
-  },
-  {
-    "ticker": "PINS",
-    "prob_up": 0.5195,
-    "price": 18.020000457763672,
-    "target_return": 0.0791,
-    "signal": "BUY"
-  },
-  {
-    "ticker": "SWKS",
-    "prob_up": 0.5193,
-    "price": 56.5,
-    "target_return": -0.0131,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "NOC",
-    "prob_up": 0.5179,
-    "price": 681.3099975585938,
-    "target_return": -0.0101,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "ETSY",
-    "prob_up": 0.5175,
-    "price": 55.34000015258789,
-    "target_return": -0.014,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "TSM",
-    "prob_up": 0.5167,
-    "price": 369.57000732421875,
-    "target_return": -0.0134,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "ENPH",
-    "prob_up": 0.5139,
-    "price": 31.3700008392334,
-    "target_return": -0.025,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "ALNY",
-    "prob_up": 0.5133,
-    "price": 333.0,
-    "target_return": -0.0108,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "APD",
-    "prob_up": 0.5133,
-    "price": 298.6499938964844,
-    "target_return": -0.0012,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "LYFT",
-    "prob_up": 0.5122,
-    "price": 13.600000381469727,
-    "target_return": -0.0228,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "ZS",
-    "prob_up": 0.5099,
-    "price": 122.62000274658203,
-    "target_return": -0.0085,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "SLV",
-    "prob_up": 0.5098,
-    "price": 68.27999877929688,
-    "target_return": 0.0713,
-    "signal": "BUY"
-  },
-  {
-    "ticker": "UAL",
-    "prob_up": 0.5073,
-    "price": 95.19999694824219,
-    "target_return": -0.0139,
-    "signal": "HOLD"
   },
   {
     "ticker": "DOW",
-    "prob_up": 0.5061,
-    "price": 40.11000061035156,
-    "target_return": -0.008,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "QRVO",
-    "prob_up": 0.5017,
-    "price": 79.7699966430664,
-    "target_return": -0.0355,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "TGT",
-    "prob_up": 0.5012,
-    "price": 117.87999725341797,
-    "target_return": 0.0097,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "ENTG",
-    "prob_up": 0.5002,
-    "price": 138.07000732421875,
-    "target_return": -0.0266,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "NTLA",
-    "prob_up": 0.4974,
-    "price": 14.260000228881836,
-    "target_return": 0.0582,
-    "signal": "BUY"
-  },
-  {
-    "ticker": "LSCC",
-    "prob_up": 0.4964,
-    "price": 107.76000213623047,
-    "target_return": -0.0428,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "XLY",
-    "prob_up": 0.4963,
-    "price": 113.91999816894531,
-    "target_return": -0.0129,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "LOW",
-    "prob_up": 0.4954,
-    "price": 247.0800018310547,
-    "target_return": -0.0083,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "WDAY",
-    "prob_up": 0.4952,
-    "price": 119.91999816894531,
-    "target_return": -0.022,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "SOXL",
-    "prob_up": 0.4944,
-    "price": 80.55999755859375,
-    "target_return": -0.1001,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "SOXS",
-    "prob_up": 0.4925,
-    "price": 22.420000076293945,
-    "target_return": 0.0115,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "TER",
-    "prob_up": 0.4923,
-    "price": 370.1300048828125,
-    "target_return": -0.0223,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "NTES",
-    "prob_up": 0.4915,
-    "price": 113.41000366210938,
-    "target_return": -0.0017,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "RIOT",
-    "prob_up": 0.4899,
-    "price": 17.3700008392334,
-    "target_return": -0.0005,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "MELI",
-    "prob_up": 0.4891,
-    "price": 1831.9300537109375,
-    "target_return": 0.001,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "SE",
-    "prob_up": 0.4881,
-    "price": 86.41000366210938,
-    "target_return": -0.0307,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "MA",
-    "prob_up": 0.4855,
-    "price": 508.5799865722656,
-    "target_return": -0.0014,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "ADI",
-    "prob_up": 0.4847,
-    "price": 350.010009765625,
-    "target_return": -0.0113,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "MGM",
-    "prob_up": 0.4831,
-    "price": 36.75,
-    "target_return": -0.0153,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "ON",
-    "prob_up": 0.4811,
-    "price": 71.0199966430664,
-    "target_return": 0.0152,
-    "signal": "BUY"
-  },
-  {
-    "ticker": "AAPL",
-    "prob_up": 0.4807,
-    "price": 259.20001220703125,
-    "target_return": -0.0011,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "UNP",
-    "prob_up": 0.4803,
-    "price": 251.33999633789062,
-    "target_return": -0.0368,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "V",
-    "prob_up": 0.4792,
-    "price": 309.3900146484375,
-    "target_return": -0.0141,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "IONS",
-    "prob_up": 0.4789,
-    "price": 74.94999694824219,
-    "target_return": -0.0064,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "SCHW",
-    "prob_up": 0.4766,
-    "price": 96.79000091552734,
-    "target_return": 0.0082,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "PENN",
-    "prob_up": 0.4751,
-    "price": 15.289999961853027,
-    "target_return": 0.0146,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "AEHR",
-    "prob_up": 0.4749,
-    "price": 71.66000366210938,
-    "target_return": 0.0385,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "CRM",
-    "prob_up": 0.474,
-    "price": 172.82000732421875,
-    "target_return": -0.0243,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "LLY",
-    "prob_up": 0.471,
-    "price": 929.5499877929688,
-    "target_return": -0.042,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "SPOT",
-    "prob_up": 0.4704,
-    "price": 504.1000061035156,
-    "target_return": 0.0191,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "NSC",
-    "prob_up": 0.4701,
-    "price": 297.55999755859375,
-    "target_return": -0.0043,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "UBER",
-    "prob_up": 0.4698,
-    "price": 72.33999633789062,
-    "target_return": -0.0254,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "ARKK",
-    "prob_up": 0.469,
-    "price": 71.95999908447266,
-    "target_return": 0.0102,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "PYPL",
-    "prob_up": 0.4654,
-    "price": 47.5099983215332,
-    "target_return": 0.0234,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "CVNA",
-    "prob_up": 0.4651,
-    "price": 359.2699890136719,
-    "target_return": -0.0002,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "XLV",
-    "prob_up": 0.4634,
-    "price": 147.97000122070312,
-    "target_return": -0.0111,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "KRE",
-    "prob_up": 0.4627,
-    "price": 69.38999938964844,
+    "prob_up": 0.5241,
+    "price": 39.15999984741211,
     "target_return": -0.0052,
     "signal": "HOLD"
   },
   {
-    "ticker": "DKNG",
-    "prob_up": 0.4589,
-    "price": 22.510000228881836,
-    "target_return": 0.0544,
+    "ticker": "ENTG",
+    "prob_up": 0.524,
+    "price": 137.44000244140625,
+    "target_return": -0.028,
     "signal": "HOLD"
   },
   {
-    "ticker": "CHPT",
-    "prob_up": 0.4589,
-    "price": 5.429999828338623,
-    "target_return": 0.0063,
+    "ticker": "LYFT",
+    "prob_up": 0.5236,
+    "price": 13.710000038146973,
+    "target_return": -0.0101,
     "signal": "HOLD"
   },
   {
-    "ticker": "PDD",
-    "prob_up": 0.4583,
-    "price": 100.80000305175781,
-    "target_return": 0.0095,
+    "ticker": "COST",
+    "prob_up": 0.5224,
+    "price": 974.7999877929688,
+    "target_return": -0.011,
     "signal": "HOLD"
   },
   {
-    "ticker": "PLUG",
-    "prob_up": 0.4562,
-    "price": 2.7699999809265137,
-    "target_return": -0.0258,
+    "ticker": "DIS",
+    "prob_up": 0.5222,
+    "price": 102.58999633789062,
+    "target_return": -0.0187,
     "signal": "HOLD"
   },
   {
-    "ticker": "BABA",
-    "prob_up": 0.4542,
-    "price": 128.00999450683594,
-    "target_return": -0.0129,
+    "ticker": "META",
+    "prob_up": 0.5209,
+    "price": 662.489990234375,
+    "target_return": -0.0054,
     "signal": "HOLD"
   },
   {
-    "ticker": "ARKG",
-    "prob_up": 0.4524,
-    "price": 27.899999618530273,
-    "target_return": -0.0209,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "TEAM",
-    "prob_up": 0.4493,
-    "price": 61.29999923706055,
-    "target_return": 0.046,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "RCL",
-    "prob_up": 0.4455,
-    "price": 282.4100036621094,
-    "target_return": -0.0312,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "CSCO",
-    "prob_up": 0.4439,
-    "price": 82.3499984741211,
-    "target_return": -0.0064,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "PFE",
-    "prob_up": 0.4435,
-    "price": 27.34000015258789,
+    "ticker": "TSM",
+    "prob_up": 0.5203,
+    "price": 379.8900146484375,
     "target_return": 0.0003,
     "signal": "HOLD"
   },
   {
-    "ticker": "AMGN",
-    "prob_up": 0.4382,
-    "price": 349.82000732421875,
-    "target_return": 0.0012,
+    "ticker": "NXPI",
+    "prob_up": 0.5189,
+    "price": 209.88999938964844,
+    "target_return": 0.0547,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "JD",
+    "prob_up": 0.5185,
+    "price": 31.25,
+    "target_return": -0.0014,
     "signal": "HOLD"
   },
   {
-    "ticker": "GME",
-    "prob_up": 0.4371,
-    "price": 23.399999618530273,
-    "target_return": -0.0039,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "AMZN",
-    "prob_up": 0.4369,
-    "price": 239.88999938964844,
-    "target_return": 0.0383,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "QCOM",
-    "prob_up": 0.428,
-    "price": 131.24000549316406,
-    "target_return": -0.0163,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "HUT",
-    "prob_up": 0.4258,
-    "price": 69.76000213623047,
-    "target_return": -0.0089,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "AMD",
-    "prob_up": 0.4245,
-    "price": 246.8300018310547,
-    "target_return": 0.0091,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "SHW",
-    "prob_up": 0.4184,
-    "price": 334.3800048828125,
-    "target_return": 0.0153,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "RTX",
-    "prob_up": 0.4184,
-    "price": 201.41000366210938,
-    "target_return": -0.0032,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "SBUX",
-    "prob_up": 0.4154,
-    "price": 97.4800033569336,
-    "target_return": -0.0124,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "QQQ",
-    "prob_up": 0.4123,
-    "price": 617.3900146484375,
-    "target_return": -0.0003,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "SHOP",
-    "prob_up": 0.4118,
-    "price": 114.97000122070312,
-    "target_return": 0.0132,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "AKAM",
-    "prob_up": 0.4107,
-    "price": 94.94000244140625,
-    "target_return": -0.0337,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "DDOG",
-    "prob_up": 0.4093,
-    "price": 110.08000183105469,
-    "target_return": -0.0144,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "NIO",
-    "prob_up": 0.404,
-    "price": 6.46999979019165,
-    "target_return": 0.0327,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "GD",
-    "prob_up": 0.4015,
-    "price": 340.760009765625,
-    "target_return": 0.0138,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "MPWR",
-    "prob_up": 0.3983,
-    "price": 1372.22998046875,
-    "target_return": -0.0254,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "TQQQ",
-    "prob_up": 0.3974,
-    "price": 50.65999984741211,
-    "target_return": -0.0219,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "UPRO",
-    "prob_up": 0.3936,
-    "price": 113.2300033569336,
-    "target_return": -0.0471,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "ROKU",
-    "prob_up": 0.392,
-    "price": 103.31999969482422,
-    "target_return": 0.0051,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "SPXL",
-    "prob_up": 0.3893,
-    "price": 215.91000366210938,
-    "target_return": -0.0578,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "COHU",
-    "prob_up": 0.3865,
-    "price": 37.619998931884766,
-    "target_return": -0.0135,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "XBI",
-    "prob_up": 0.3859,
-    "price": 132.0500030517578,
-    "target_return": -0.0074,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "AVGO",
-    "prob_up": 0.3851,
-    "price": 379.75,
-    "target_return": 0.0033,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "DE",
-    "prob_up": 0.378,
-    "price": 603.0399780273438,
-    "target_return": -0.0113,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "FDX",
-    "prob_up": 0.3722,
-    "price": 371.8900146484375,
-    "target_return": 0.0076,
-    "signal": "HOLD"
-  },
-  {
-    "ticker": "ALLY",
-    "prob_up": 0.3706,
-    "price": 41.939998626708984,
+    "ticker": "MA",
+    "prob_up": 0.5182,
+    "price": 513.1599731445312,
     "target_return": -0.0063,
     "signal": "HOLD"
   },
   {
-    "ticker": "XOP",
-    "prob_up": 0.3596,
-    "price": 168.69000244140625,
-    "target_return": 0.0325,
+    "ticker": "DAL",
+    "prob_up": 0.5181,
+    "price": 71.69999694824219,
+    "target_return": 0.0037,
     "signal": "HOLD"
   },
   {
-    "ticker": "XLK",
-    "prob_up": 0.3532,
-    "price": 145.61000061035156,
-    "target_return": -0.0022,
+    "ticker": "PINS",
+    "prob_up": 0.5166,
+    "price": 18.700000762939453,
+    "target_return": 0.0773,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "CSX",
+    "prob_up": 0.5162,
+    "price": 42.5099983215332,
+    "target_return": 0.0358,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "DKNG",
+    "prob_up": 0.5142,
+    "price": 22.959999084472656,
+    "target_return": 0.0535,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "NOC",
+    "prob_up": 0.513,
+    "price": 680.1300048828125,
+    "target_return": -0.0019,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "UAL",
+    "prob_up": 0.5098,
+    "price": 97.19999694824219,
+    "target_return": -0.0135,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "MRK",
+    "prob_up": 0.508,
+    "price": 119.95999908447266,
+    "target_return": -0.0049,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "ETSY",
+    "prob_up": 0.5073,
+    "price": 55.9900016784668,
+    "target_return": 0.0039,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "CMG",
+    "prob_up": 0.5071,
+    "price": 34.91999816894531,
+    "target_return": 0.0203,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "APD",
+    "prob_up": 0.507,
+    "price": 296.6300048828125,
+    "target_return": -0.0007,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "GILD",
+    "prob_up": 0.5058,
+    "price": 140.4499969482422,
+    "target_return": 0.005,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "RCL",
+    "prob_up": 0.5055,
+    "price": 281.5299987792969,
+    "target_return": 0.0114,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "COHR",
+    "prob_up": 0.5049,
+    "price": 313.4200134277344,
+    "target_return": 0.0117,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "QRVO",
+    "prob_up": 0.5048,
+    "price": 80.61000061035156,
+    "target_return": -0.0125,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "ENPH",
+    "prob_up": 0.5039,
+    "price": 32.0,
+    "target_return": -0.0264,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "PFE",
+    "prob_up": 0.4998,
+    "price": 27.110000610351562,
+    "target_return": 0.002,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "RTX",
+    "prob_up": 0.4988,
+    "price": 202.80999755859375,
+    "target_return": 0.0057,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "ETN",
+    "prob_up": 0.4983,
+    "price": 401.8999938964844,
+    "target_return": -0.0096,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "MPWR",
+    "prob_up": 0.4971,
+    "price": 1363.4200439453125,
+    "target_return": 0.0052,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "PPG",
+    "prob_up": 0.4969,
+    "price": 110.54000091552734,
+    "target_return": 0.0083,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "PENN",
+    "prob_up": 0.4954,
+    "price": 15.609999656677246,
+    "target_return": 0.0192,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "ZS",
+    "prob_up": 0.4929,
+    "price": 122.68000030517578,
+    "target_return": 0.0034,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "SLV",
+    "prob_up": 0.4908,
+    "price": 72.04000091552734,
+    "target_return": 0.0398,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "GME",
+    "prob_up": 0.4908,
+    "price": 24.030000686645508,
+    "target_return": 0.018,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "SCHW",
+    "prob_up": 0.49,
+    "price": 98.37999725341797,
+    "target_return": 0.0052,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "XLE",
+    "prob_up": 0.4895,
+    "price": 55.95000076293945,
+    "target_return": 0.0157,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "MELI",
+    "prob_up": 0.4894,
+    "price": 1840.6600341796875,
+    "target_return": 0.0064,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "PLUG",
+    "prob_up": 0.4893,
+    "price": 2.940000057220459,
+    "target_return": -0.0076,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "CRM",
+    "prob_up": 0.4892,
+    "price": 171.30999755859375,
+    "target_return": -0.0052,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "NKE",
+    "prob_up": 0.4875,
+    "price": 44.20000076293945,
+    "target_return": 0.0128,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "RIOT",
+    "prob_up": 0.487,
+    "price": 18.1200008392334,
+    "target_return": 0.0359,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "LIN",
+    "prob_up": 0.4858,
+    "price": 499.6499938964844,
+    "target_return": -0.0043,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "KRE",
+    "prob_up": 0.4855,
+    "price": 69.29000091552734,
+    "target_return": -0.0056,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "TGT",
+    "prob_up": 0.484,
+    "price": 119.52999877929688,
+    "target_return": 0.0081,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "AEHR",
+    "prob_up": 0.4803,
+    "price": 74.37999725341797,
+    "target_return": 0.0636,
+    "signal": "BUY"
+  },
+  {
+    "ticker": "NTLA",
+    "prob_up": 0.48,
+    "price": 14.779999732971191,
+    "target_return": 0.0615,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "LSCC",
+    "prob_up": 0.4788,
+    "price": 110.80999755859375,
+    "target_return": -0.0243,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "RUN",
+    "prob_up": 0.4786,
+    "price": 12.449999809265137,
+    "target_return": -0.0276,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "NTES",
+    "prob_up": 0.4757,
+    "price": 113.5999984741211,
+    "target_return": -0.0086,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "PANW",
+    "prob_up": 0.4715,
+    "price": 161.58999633789062,
+    "target_return": 0.0228,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "CVNA",
+    "prob_up": 0.4714,
+    "price": 374.2099914550781,
+    "target_return": 0.0097,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "MCHP",
+    "prob_up": 0.4706,
+    "price": 74.5,
+    "target_return": -0.0072,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "MGM",
+    "prob_up": 0.4689,
+    "price": 36.72999954223633,
+    "target_return": 0.0034,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "SPOT",
+    "prob_up": 0.4679,
+    "price": 511.3599853515625,
+    "target_return": 0.0046,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "XLV",
+    "prob_up": 0.4668,
+    "price": 148.8300018310547,
+    "target_return": -0.0074,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "LOW",
+    "prob_up": 0.4667,
+    "price": 248.44000244140625,
+    "target_return": -0.013,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "IWM",
+    "prob_up": 0.466,
+    "price": 268.7200012207031,
+    "target_return": -0.0005,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "MDB",
+    "prob_up": 0.4632,
+    "price": 233.60000610351562,
+    "target_return": 0.0171,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "SE",
+    "prob_up": 0.4621,
+    "price": 85.5999984741211,
+    "target_return": -0.022,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "PDD",
+    "prob_up": 0.4613,
+    "price": 102.0999984741211,
+    "target_return": 0.0074,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "NSC",
+    "prob_up": 0.461,
+    "price": 299.70001220703125,
+    "target_return": -0.004,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "IONS",
+    "prob_up": 0.4602,
+    "price": 76.76000213623047,
+    "target_return": -0.0198,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "V",
+    "prob_up": 0.4587,
+    "price": 311.3699951171875,
+    "target_return": -0.0114,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "UNP",
+    "prob_up": 0.457,
+    "price": 252.0399932861328,
+    "target_return": -0.0308,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "ONTO",
+    "prob_up": 0.4551,
+    "price": 261.5899963378906,
+    "target_return": -0.0394,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "TEAM",
+    "prob_up": 0.4539,
+    "price": 59.709999084472656,
+    "target_return": 0.0596,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "MRVL",
+    "prob_up": 0.4538,
+    "price": 133.8300018310547,
+    "target_return": -0.0158,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "ORCL",
+    "prob_up": 0.4532,
+    "price": 163.0,
+    "target_return": 0.0051,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "UBER",
+    "prob_up": 0.4523,
+    "price": 72.91000366210938,
+    "target_return": -0.0296,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "QCOM",
+    "prob_up": 0.4508,
+    "price": 132.83999633789062,
+    "target_return": -0.0136,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "HON",
+    "prob_up": 0.4496,
+    "price": 233.24000549316406,
+    "target_return": -0.003,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "GD",
+    "prob_up": 0.4442,
+    "price": 339.8800048828125,
+    "target_return": 0.0208,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "ON",
+    "prob_up": 0.4428,
+    "price": 72.05000305175781,
+    "target_return": -0.0142,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "XLY",
+    "prob_up": 0.4426,
+    "price": 116.44000244140625,
+    "target_return": -0.0103,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "AKAM",
+    "prob_up": 0.4409,
+    "price": 88.83999633789062,
+    "target_return": -0.0244,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "SHW",
+    "prob_up": 0.4343,
+    "price": 333.6000061035156,
+    "target_return": 0.0211,
     "signal": "HOLD"
   },
   {
     "ticker": "MCD",
-    "prob_up": 0.3417,
-    "price": 304.510009765625,
-    "target_return": -0.0094,
-    "signal": "STAY IN CASH"
+    "prob_up": 0.4337,
+    "price": 303.2200012207031,
+    "target_return": -0.0029,
+    "signal": "HOLD"
   },
   {
-    "ticker": "CME",
-    "prob_up": 0.34,
-    "price": 300.5899963378906,
-    "target_return": -0.0129,
-    "signal": "STAY IN CASH"
+    "ticker": "AMZN",
+    "prob_up": 0.4275,
+    "price": 249.02000427246094,
+    "target_return": 0.0461,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "DDOG",
+    "prob_up": 0.4273,
+    "price": 110.56999969482422,
+    "target_return": -0.0175,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "NIO",
+    "prob_up": 0.4269,
+    "price": 6.579999923706055,
+    "target_return": 0.0337,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "HUT",
+    "prob_up": 0.4257,
+    "price": 71.73999786376953,
+    "target_return": -0.0626,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "ARKG",
+    "prob_up": 0.4251,
+    "price": 29.299999237060547,
+    "target_return": -0.0283,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "CSCO",
+    "prob_up": 0.4246,
+    "price": 82.61000061035156,
+    "target_return": -0.001,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "CHPT",
+    "prob_up": 0.4236,
+    "price": 6.260000228881836,
+    "target_return": -0.0036,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "LLY",
+    "prob_up": 0.4219,
+    "price": 922.5,
+    "target_return": -0.0303,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "AAPL",
+    "prob_up": 0.4193,
+    "price": 258.8299865722656,
+    "target_return": 0.0015,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "ADI",
+    "prob_up": 0.4183,
+    "price": 348.6000061035156,
+    "target_return": 0.0025,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "FORM",
+    "prob_up": 0.4173,
+    "price": 128.27999877929688,
+    "target_return": 0.0468,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "AMGN",
+    "prob_up": 0.4167,
+    "price": 350.95001220703125,
+    "target_return": 0.0015,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "ROKU",
+    "prob_up": 0.4146,
+    "price": 106.54000091552734,
+    "target_return": -0.0071,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "ARKK",
+    "prob_up": 0.4094,
+    "price": 74.83000183105469,
+    "target_return": 0.0134,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "SHOP",
+    "prob_up": 0.4082,
+    "price": 117.63999938964844,
+    "target_return": 0.0394,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "XBI",
+    "prob_up": 0.4066,
+    "price": 135.72000122070312,
+    "target_return": -0.0187,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "AMD",
+    "prob_up": 0.3937,
+    "price": 255.07000732421875,
+    "target_return": -0.013,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "SBUX",
+    "prob_up": 0.3886,
+    "price": 98.47000122070312,
+    "target_return": -0.0078,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "FDX",
+    "prob_up": 0.3861,
+    "price": 370.1400146484375,
+    "target_return": 0.014,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "UPRO",
+    "prob_up": 0.3798,
+    "price": 117.33999633789062,
+    "target_return": -0.0394,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "DE",
+    "prob_up": 0.3775,
+    "price": 596.0399780273438,
+    "target_return": -0.0013,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "XOP",
+    "prob_up": 0.3665,
+    "price": 163.4199981689453,
+    "target_return": 0.0305,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "QQQ",
+    "prob_up": 0.3612,
+    "price": 628.5999755859375,
+    "target_return": -0.0005,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "ALLY",
+    "prob_up": 0.3588,
+    "price": 42.56999969482422,
+    "target_return": -0.007,
+    "signal": "HOLD"
   },
   {
     "ticker": "TSLA",
-    "prob_up": 0.3385,
-    "price": 352.4200134277344,
-    "target_return": -0.0696,
+    "prob_up": 0.3542,
+    "price": 364.20001220703125,
+    "target_return": -0.0713,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "TQQQ",
+    "prob_up": 0.3512,
+    "price": 53.40999984741211,
+    "target_return": -0.0167,
+    "signal": "HOLD"
+  },
+  {
+    "ticker": "SOXL",
+    "prob_up": 0.3443,
+    "price": 85.30999755859375,
+    "target_return": -0.0693,
     "signal": "STAY IN CASH"
   },
   {
-    "ticker": "FSLR",
-    "prob_up": 0.3181,
-    "price": 200.35000610351562,
-    "target_return": -0.0303,
+    "ticker": "ASML",
+    "prob_up": 0.3241,
+    "price": 1518.300048828125,
+    "target_return": -0.0045,
     "signal": "STAY IN CASH"
   },
   {
-    "ticker": "MARA",
-    "prob_up": 0.3101,
-    "price": 10.359999656677246,
-    "target_return": 0.0249,
+    "ticker": "COHU",
+    "prob_up": 0.3208,
+    "price": 38.5099983215332,
+    "target_return": -0.0185,
     "signal": "STAY IN CASH"
   },
   {
-    "ticker": "FCEL",
-    "prob_up": 0.3034,
-    "price": 6.829999923706055,
-    "target_return": -0.0857,
+    "ticker": "PYPL",
+    "prob_up": 0.3171,
+    "price": 47.970001220703125,
+    "target_return": 0.023,
     "signal": "STAY IN CASH"
   },
   {
     "ticker": "GOOGL",
-    "prob_up": 0.2957,
-    "price": 321.30999755859375,
-    "target_return": -0.0282,
+    "prob_up": 0.3023,
+    "price": 332.9100036621094,
+    "target_return": -0.027,
+    "signal": "STAY IN CASH"
+  },
+  {
+    "ticker": "FSLR",
+    "prob_up": 0.295,
+    "price": 200.61000061035156,
+    "target_return": -0.0179,
+    "signal": "STAY IN CASH"
+  },
+  {
+    "ticker": "FCEL",
+    "prob_up": 0.2766,
+    "price": 7.300000190734863,
+    "target_return": -0.0787,
+    "signal": "STAY IN CASH"
+  },
+  {
+    "ticker": "MARA",
+    "prob_up": 0.2751,
+    "price": 10.489999771118164,
+    "target_return": 0.0258,
+    "signal": "STAY IN CASH"
+  },
+  {
+    "ticker": "XLK",
+    "prob_up": 0.2607,
+    "price": 147.94000244140625,
+    "target_return": -0.0024,
     "signal": "STAY IN CASH"
   },
   {
     "ticker": "LMT",
-    "prob_up": 0.2761,
-    "price": 619.6900024414062,
-    "target_return": -0.0171,
+    "prob_up": 0.2492,
+    "price": 611.5800170898438,
+    "target_return": -0.0306,
     "signal": "STAY IN CASH"
   },
   {
     "ticker": "USO",
-    "prob_up": 0.239,
-    "price": 128.47000122070312,
-    "target_return": 0.0348,
+    "prob_up": 0.1902,
+    "price": 123.8499984741211,
+    "target_return": 0.0338,
     "signal": "STAY IN CASH"
   }
 ]
