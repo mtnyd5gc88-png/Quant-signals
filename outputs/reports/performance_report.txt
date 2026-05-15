@@ -1,7 +1,7 @@
 Quant Trading System — Performance Report
 ==========================================
 
-Run time         : 2026-05-14 22:50:34
+Run time         : 2026-05-15 22:45:55
 Tickers trained  : 175
 Benchmark        : SPY
 Market regime    : bull
@@ -11,19 +11,19 @@ Rebal frequency  : W-FRI
 Transaction cost : 0.100%
 Risk-free rate   : 4.0%
 
-total_return            : 0.3971871096896211
-annualized_return       : 0.0554414741508793
-sharpe_ratio            : 0.17690850448104198
-sortino_ratio           : 0.2397245355583446
-calmar_ratio            : 0.303283211872971
-max_drawdown            : -0.18280429628189385
-benchmark_total         : 1.22434101458285
-benchmark_ann           : 0.13766543031554135
-alpha_annualized        : -0.015496065621828821
-beta                    : 0.31677062879622697
-win_rate                : 0.3322663252240717
-profit_factor           : 0.9752979514654854
+total_return            : 0.37320550089746374
+annualized_return       : 0.05249756016383933
+sharpe_ratio            : 0.15634520358437753
+sortino_ratio           : 0.21109806764592856
+calmar_ratio            : 0.25715130398821434
+max_drawdown            : -0.2041504722081061
+benchmark_total         : 1.2243412449707471
+benchmark_ann           : 0.137665449325989
+alpha_annualized        : -0.018266171106525755
+beta                    : 0.3149909357164938
+win_rate                : 0.32970550576184376
+profit_factor           : 0.9879070785699974
 n_trading_days          : 1562
 n_years                 : 6.2
 
-# Trades         : 854
+# Trades         : 850
