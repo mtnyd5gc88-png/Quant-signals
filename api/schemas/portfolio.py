@@ -5,18 +5,20 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class PositionItem(BaseModel):
+class PortfolioHolding(BaseModel):
     ticker: str
+    company: Optional[str] = None
+    sector: Optional[str] = None
     weight: float
     signal: Optional[str] = None
     prob_up: Optional[float] = None
-    expected_return_pct: Optional[float] = None
+    price: Optional[float] = None
+    target_return: Optional[float] = None
 
 
 class PortfolioResponse(BaseModel):
-    positions: list[PositionItem]
+    holdings: list[PortfolioHolding]
+    total_weight: float
     n_positions: int
-    last_rebal_date: Optional[str] = None
+    expected_return: float
     last_updated: str
-    method: str
-    rebal_freq: str

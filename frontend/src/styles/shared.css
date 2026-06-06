@@ -1,0 +1,121 @@
+/* ── Shared page content container ── */
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-5) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ── KPI row ── */
+.kpi-row {
+  display: flex;
+  gap: var(--space-3);
+  overflow-x: auto;
+  flex-shrink: 0;
+  padding-bottom: 2px;
+}
+
+/* ── Chart panel ── */
+.chart-panel {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  padding: 20px 24px;
+}
+.chart-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+.chart-subtitle {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+/* ── Shared data table styles ── */
+.data-table-wrapper {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.data-table thead tr {
+  height: 32px;
+  background: var(--bg-surface-3);
+  border-bottom: 1px solid var(--border-default);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.data-table th {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  padding: 0 12px;
+  text-align: left;
+  white-space: nowrap;
+}
+.data-table th.numeric   { text-align: right; }
+.data-table th.th-center { text-align: center; }
+.data-table th.sortable  { cursor: pointer; user-select: none; }
+.data-table th.sortable:hover { color: var(--text-primary); }
+.data-table tbody tr {
+  height: 36px;
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background 100ms ease;
+  will-change: background;
+}
+.data-table tbody tr:nth-child(odd)  { background: var(--bg-surface-2); }
+.data-table tbody tr:nth-child(even) { background: var(--bg-surface-1); }
+.data-table tbody tr:hover { background: var(--bg-surface-3); }
+.data-table td {
+  padding: 0 12px;
+  font-size: 13px;
+  color: var(--text-primary);
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Shared cell styles ── */
+.cell-numeric {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-align: right;
+  font-feature-settings: "tnum" 1;
+}
+.cell-numeric.positive { color: var(--positive); }
+.cell-numeric.negative { color: var(--negative); }
+.cell-sector { font-size: 12px; color: var(--text-secondary); }
+.td-center { text-align: center; }
+
+/* ── Ticker cell ── */
+.ticker-cell { display: flex; align-items: center; gap: 8px; }
+.company-logo-circle {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--bg-surface-3); color: var(--text-secondary);
+  font-size: 9px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; border: 1px solid var(--border-default);
+  font-family: var(--font-mono);
+}
+.ticker-symbol {
+  font-size: 13px; font-weight: 600; color: var(--text-primary);
+  font-family: var(--font-mono); letter-spacing: 0.02em; line-height: 1.2;
+}
+.company-name {
+  font-size: 10px; color: var(--text-secondary); font-weight: 400;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 120px;
+}

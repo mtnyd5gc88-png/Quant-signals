@@ -1,0 +1,15 @@
+.portfolio-row-2 {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.pie-legend {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px 16px;
+  margin-top: 12px;
+}
+.pie-legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+.pie-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.pie-ticker { color: var(--text-secondary); font-family: var(--font-mono); font-weight: 600; }
+.pie-pct { margin-left: auto; color: var(--text-primary); font-family: var(--font-mono); font-feature-settings: "tnum" 1; }

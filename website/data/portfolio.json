@@ -1,0 +1,53 @@
+{
+  "positions": [
+    {
+      "ticker": "CSCO",
+      "weight": 0.0909
+    },
+    {
+      "ticker": "PANW",
+      "weight": 0.0909
+    },
+    {
+      "ticker": "CRWD",
+      "weight": 0.0909
+    },
+    {
+      "ticker": "MU",
+      "weight": 0.0909
+    },
+    {
+      "ticker": "NVDA",
+      "weight": 0.0909
+    },
+    {
+      "ticker": "MRVL",
+      "weight": 0.0909
+    },
+    {
+      "ticker": "DDOG",
+      "weight": 0.0909
+    },
+    {
+      "ticker": "TEAM",
+      "weight": 0.0909
+    },
+    {
+      "ticker": "ADSK",
+      "weight": 0.0909
+    },
+    {
+      "ticker": "ON",
+      "weight": 0.0909
+    },
+    {
+      "ticker": "PCAR",
+      "weight": 0.0909
+    }
+  ],
+  "n_positions": 11,
+  "last_rebal_date": "2026-06-06",
+  "last_updated": "2026-06-06T22:56:21",
+  "method": "equal_weight",
+  "rebal_freq": "ME"
+}

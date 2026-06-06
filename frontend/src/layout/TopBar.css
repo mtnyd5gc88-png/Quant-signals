@@ -1,0 +1,93 @@
+.topbar {
+  grid-area: topbar;
+  height: 48px;
+  background: var(--bg-surface-1);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: var(--space-4);
+  flex-shrink: 0;
+}
+
+.topbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.topbar-monogram {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  background: var(--accent-dim);
+  color: var(--accent-primary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--accent-primary);
+  letter-spacing: 0.02em;
+}
+.topbar-name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+}
+
+.topbar-search {
+  flex: 1;
+  max-width: 480px;
+  margin: 0 auto;
+  height: 32px;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: border-color 100ms ease;
+}
+.topbar-search:focus-within { border-color: var(--accent-primary); }
+.topbar-search input {
+  flex: 1;
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+.topbar-search input::placeholder { color: var(--text-tertiary); }
+
+.topbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+.topbar-timestamp {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+.topbar-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-surface-3);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-default);
+  flex-shrink: 0;
+}

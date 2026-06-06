@@ -24,7 +24,7 @@ class PerformanceMetrics(BaseModel):
 class EquityCurvePoint(BaseModel):
     date: str
     strategy: float
-    spy: float
+    benchmark: float
 
 
 class EquityCurveResponse(BaseModel):

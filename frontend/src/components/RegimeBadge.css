@@ -1,0 +1,14 @@
+.regime-badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.regime-badge.bull      { background: var(--positive-dim); color: var(--positive); border-color: var(--positive); }
+.regime-badge.neutral   { background: var(--neutral-dim);  color: var(--neutral);  border-color: var(--neutral); }
+.regime-badge.risk-off  { background: var(--negative-dim); color: var(--negative); border-color: var(--negative); }
+.regime-badge.defensive { background: var(--neutral-dim);  color: var(--neutral);  border-color: var(--neutral); }

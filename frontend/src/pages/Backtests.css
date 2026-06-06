@@ -1,0 +1,24 @@
+.heatmap-container { overflow-x: auto; }
+.heatmap-table { border-collapse: collapse; width: 100%; font-family: var(--font-mono); font-size: 11px; }
+.heatmap-table thead th {
+  font-size: 10px; font-weight: 500; text-transform: uppercase;
+  letter-spacing: 0.04em; color: var(--text-secondary); padding: 4px 6px;
+  text-align: center; background: var(--bg-surface-3);
+}
+.heatmap-year-col { width: 48px; text-align: left !important; padding-left: 8px !important; }
+.heatmap-month-col { width: 52px; }
+.heatmap-year-label { font-size: 11px; font-weight: 600; color: var(--text-secondary); padding: 0 8px; white-space: nowrap; }
+.heatmap-cell {
+  width: 52px; padding: 5px 4px;
+  font-size: 10px; text-align: center;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.cost-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
+.cost-stat { display: flex; flex-direction: column; gap: 4px; }
+.cost-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); }
+.cost-value { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--text-primary); font-feature-settings: "tnum" 1; }
+.cost-value.negative { color: var(--negative); }
+.cost-sub { font-size: 11px; color: var(--text-tertiary); }

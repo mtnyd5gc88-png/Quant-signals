@@ -1,0 +1,21 @@
+.confidence-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+}
+.confidence-dots { display: flex; gap: 2px; }
+.confidence-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--border-default);
+}
+.confidence-dot.filled { background: var(--accent-primary); }
+.confidence-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  min-width: 54px;
+  text-align: right;
+}

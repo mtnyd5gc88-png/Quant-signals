@@ -995,8 +995,8 @@ def main() -> None:
     _spy_norm   = benchmark_eq / benchmark_eq.iloc[0] * 100
     equity_curve_out = [
         {"date": d.strftime("%Y-%m-%d"),
-         "strategy": round(float(_strat_norm.iloc[i]), 4),
-         "spy":      round(float(_spy_norm.iloc[i]),   4)}
+         "strategy":  round(float(_strat_norm.iloc[i]), 4),
+         "benchmark": round(float(_spy_norm.iloc[i]),   4)}
         for i, d in enumerate(strategy_eq.index)
     ]
     with open(data_dir / "equity_curve.json", "w") as f:
