@@ -53,9 +53,9 @@ def _make_random_forest(random_state: int = 42, n_jobs: int = 2) -> Pipeline:
     accuracy loss on typical financial datasets.
     """
     base_rf = RandomForestClassifier(
-        n_estimators=80,          # was 120; 80 is sufficient for most datasets
-        max_depth=None,
-        min_samples_leaf=3,       # slightly more regularization
+        n_estimators=80,
+        max_depth=8,
+        min_samples_leaf=5,
         n_jobs=n_jobs,
         random_state=random_state,
         class_weight="balanced_subsample",
@@ -75,8 +75,8 @@ def _make_random_forest_regressor(random_state: int = 42, n_jobs: int = 2) -> Pi
                 "reg",
                 RandomForestRegressor(
                     n_estimators=80,
-                    max_depth=None,
-                    min_samples_leaf=3,
+                    max_depth=8,
+                    min_samples_leaf=5,
                     n_jobs=n_jobs,
                     random_state=random_state,
                 ),

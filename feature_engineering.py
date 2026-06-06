@@ -18,6 +18,9 @@ class FeatureConfig:
     macd_fast: int = 12
     macd_slow: int = 26
     macd_signal: int = 9
+    # When True, replaces raw-price features with stationary equivalents so
+    # StandardScaler z-scores stay bounded across walk-forward windows.
+    stationary_scale_features: bool = True
 
 
 def _price_series(df: pd.DataFrame) -> pd.Series:
@@ -49,7 +52,11 @@ def add_features(
 ) -> pd.DataFrame:
     """
     Return a dataframe with engineered features and binary target:
-      target = 1 if next-day return > 0 else 0
+      target = 1 if close rises over next 5 days else 0
+
+    When cfg.stationary_scale_features=True (default), raw-price features are
+    replaced with stationary equivalents so StandardScaler z-scores remain
+    bounded across all walk-forward windows regardless of price drift.
     """
     out = df.copy()
     close = _price_series(out)
@@ -57,17 +64,34 @@ def add_features(
     # Log return
     out["log_return"] = np.log(close / close.shift(1))
 
-    # Moving averages
-    ma5, ma20, ma50 = cfg.ma_windows
-    out[f"ma_{ma5}"] = close.rolling(ma5).mean()
-    out[f"ma_{ma20}"] = close.rolling(ma20).mean()
-    out[f"ma_{ma50}"] = close.rolling(ma50).mean()
-    out["ma20_ma50_ratio"] = out[f"ma_{ma20}"] / out[f"ma_{ma50}"]
+    # Moving average series (computed once; reused for ratios and distance_from_ma50)
+    ma5_win, ma20_win, ma50_win = cfg.ma_windows
+    ma5_ser  = close.rolling(ma5_win).mean()
+    ma20_ser = close.rolling(ma20_win).mean()
+    ma50_ser = close.rolling(ma50_win).mean()
 
-    # Momentum (price difference)
-    out[f"momentum_{cfg.momentum_window}"] = close - close.shift(cfg.momentum_window)
+    if cfg.stationary_scale_features:
+        # Price-to-MA ratios: bounded near 1.0, stationary across years
+        out["close_ma5_ratio"]  = close / ma5_ser
+        out["close_ma20_ratio"] = close / ma20_ser
+        out["close_ma50_ratio"] = close / ma50_ser
+    else:
+        # Raw MA levels: non-stationary, grow with price (legacy behavior)
+        out[f"ma_{ma5_win}"]  = ma5_ser
+        out[f"ma_{ma20_win}"] = ma20_ser
+        out[f"ma_{ma50_win}"] = ma50_ser
 
-    # Volatility (rolling std of returns)
+    out["ma20_ma50_ratio"] = ma20_ser / ma50_ser   # already stationary in both modes
+
+    # Momentum
+    if cfg.stationary_scale_features:
+        # Percentage change: stationary regardless of price level
+        out["momentum_10_pct"] = close.pct_change(cfg.momentum_window)
+    else:
+        # Raw price difference: scales with price level (legacy behavior)
+        out[f"momentum_{cfg.momentum_window}"] = close - close.shift(cfg.momentum_window)
+
+    # Volatility (rolling std of log returns — stationary in both modes)
     out[f"vol_{cfg.volatility_window}"] = out["log_return"].rolling(cfg.volatility_window).std()
 
     # Volume change
@@ -78,54 +102,49 @@ def add_features(
 
     # MACD
     macd_line = _ema(close, cfg.macd_fast) - _ema(close, cfg.macd_slow)
-    macd_signal = _ema(macd_line, cfg.macd_signal)
-    out["macd"] = macd_line
-    out["macd_signal"] = macd_signal
-    out["macd_hist"] = macd_line - macd_signal
+    macd_sig  = _ema(macd_line, cfg.macd_signal)
+    if cfg.stationary_scale_features:
+        # Divide by close to normalize EMA differences to a price-independent scale
+        out["macd_pct"]        = macd_line / close
+        out["macd_signal_pct"] = macd_sig  / close
+        out["macd_hist_pct"]   = (macd_line - macd_sig) / close
+    else:
+        # Raw EMA differences: scale with price (legacy behavior)
+        out["macd"]        = macd_line
+        out["macd_signal"] = macd_sig
+        out["macd_hist"]   = macd_line - macd_sig
 
-    # Bollinger Bands
-    mid = close.rolling(cfg.bollinger_window).mean()
-    std = close.rolling(cfg.bollinger_window).std()
-    out["bb_mid"] = mid
-    out["bb_upper"] = mid + cfg.bollinger_k * std
-    out["bb_lower"] = mid - cfg.bollinger_k * std
-    out["bb_width"] = (out["bb_upper"] - out["bb_lower"]) / mid
+    # Bollinger Bands (bb_width = 2*k*std/mid is already stationary)
+    bb_mid = close.rolling(cfg.bollinger_window).mean()
+    bb_std = close.rolling(cfg.bollinger_window).std()
+    out["bb_upper"] = bb_mid + cfg.bollinger_k * bb_std
+    out["bb_lower"] = bb_mid - cfg.bollinger_k * bb_std
+    out["bb_width"] = (out["bb_upper"] - out["bb_lower"]) / bb_mid
 
-    # Additional alpha features (purely backward-looking).
-    # Level-based momentum and volatility
+    # Additional stationary features (unchanged in both modes)
     out["momentum_20"] = close.pct_change(20)
-    out["momentum_5"] = close.pct_change(5)
+    out["momentum_5"]  = close.pct_change(5)
     returns = close.pct_change()
     out["volatility_20"] = returns.rolling(20).std()
-    out["volume_ratio"] = out["Volume"] / out["Volume"].rolling(20).mean()
-    ma50 = close.rolling(50).mean()
-    out["distance_from_ma50"] = (close - ma50) / ma50
+    out["volume_ratio"]  = out["Volume"] / out["Volume"].rolling(20).mean()
+    out["distance_from_ma50"] = (close - ma50_ser) / ma50_ser
+
     if benchmark_close is not None and not benchmark_close.empty:
-        # Relative strength vs market (SPY) over 20 trading days.
         stock_return_20d = close.pct_change(20)
-        spy_aligned = benchmark_close.reindex(close.index)
-        spy_return_20d = spy_aligned.pct_change(20)
+        spy_aligned      = benchmark_close.reindex(close.index)
+        spy_return_20d   = spy_aligned.pct_change(20)
         out["relative_strength_20"] = stock_return_20d - spy_return_20d
     else:
         out["relative_strength_20"] = np.nan
 
-    # Cross-sectional style ranking features (within each ticker's history).
-    ret_5 = close.pct_change(5)
-    ret_20 = close.pct_change(20)
-    vol_20 = returns.rolling(20).std()
-    out["ret_5"] = ret_5
-    out["ret_20"] = ret_20
-    out["volatility_20_cross"] = vol_20
-    out["ret_rank_5"] = ret_5.rank(pct=True)
-    out["ret_rank_20"] = ret_20.rank(pct=True)
-    out["vol_rank_20"] = vol_20.rank(pct=True)
+    out["ret_5"]  = close.pct_change(5)
+    out["ret_20"] = close.pct_change(20)
 
-    # 5-day forward classification target (aligned horizon).
-    horizon = 5
+    # 5-day forward classification target
+    horizon      = 5
     future_close = close.shift(-horizon)
     out["target"] = np.where(future_close.notna(), (future_close > close).astype(int), np.nan)
 
-    # Clean: drop rows with any NaNs in feature columns or target.
     feature_cols = feature_columns(cfg)
     out = out.dropna(subset=feature_cols + ["target"])
     out["target"] = out["target"].astype(int)
@@ -134,20 +153,25 @@ def add_features(
 
 
 def feature_columns(cfg: FeatureConfig = FeatureConfig()) -> list[str]:
-    ma5, ma20, ma50 = cfg.ma_windows
+    ma5_win, ma20_win, ma50_win = cfg.ma_windows
+    if cfg.stationary_scale_features:
+        ma_cols   = ["close_ma5_ratio", "close_ma20_ratio", "close_ma50_ratio"]
+        mom_col   = "momentum_10_pct"
+        macd_cols = ["macd_pct", "macd_signal_pct", "macd_hist_pct"]
+    else:
+        ma_cols   = [f"ma_{ma5_win}", f"ma_{ma20_win}", f"ma_{ma50_win}"]
+        mom_col   = f"momentum_{cfg.momentum_window}"
+        macd_cols = ["macd", "macd_signal", "macd_hist"]
+
     return [
         "log_return",
-        f"ma_{ma5}",
-        f"ma_{ma20}",
-        f"ma_{ma50}",
+        *ma_cols,
         "ma20_ma50_ratio",
-        f"momentum_{cfg.momentum_window}",
+        mom_col,
         f"vol_{cfg.volatility_window}",
         "volume_pct_change",
         f"rsi_{cfg.rsi_window}",
-        "macd",
-        "macd_signal",
-        "macd_hist",
+        *macd_cols,
         "bb_width",
         "momentum_20",
         "momentum_5",
@@ -157,9 +181,5 @@ def feature_columns(cfg: FeatureConfig = FeatureConfig()) -> list[str]:
         "relative_strength_20",
         "ret_5",
         "ret_20",
-        "volatility_20_cross",
-        "ret_rank_5",
-        "ret_rank_20",
-        "vol_rank_20",
     ]
 
