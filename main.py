@@ -989,6 +989,121 @@ def main() -> None:
         json.dump({k: (float(v) if isinstance(v, (np.floating, float)) else v)
                    for k, v in metrics.items()}, f, indent=2)
 
+    # ── Extended JSON exports for web API ────────────────────────
+    # equity_curve.json — normalized to 100 at start
+    _strat_norm = strategy_eq / strategy_eq.iloc[0] * 100
+    _spy_norm   = benchmark_eq / benchmark_eq.iloc[0] * 100
+    equity_curve_out = [
+        {"date": d.strftime("%Y-%m-%d"),
+         "strategy": round(float(_strat_norm.iloc[i]), 4),
+         "spy":      round(float(_spy_norm.iloc[i]),   4)}
+        for i, d in enumerate(strategy_eq.index)
+    ]
+    with open(data_dir / "equity_curve.json", "w") as f:
+        json.dump(equity_curve_out, f)
+
+    # drawdown.json
+    _dd = drawdown_series.reindex(strategy_eq.index).fillna(0)
+    drawdown_out = [
+        {"date": d.strftime("%Y-%m-%d"), "drawdown": round(float(_dd.iloc[i]), 6)}
+        for i, d in enumerate(_dd.index)
+    ]
+    with open(data_dir / "drawdown.json", "w") as f:
+        json.dump(drawdown_out, f)
+
+    # monthly_returns.json
+    _monthly = daily_net_ret.resample("ME").apply(lambda r: float((1 + r).prod() - 1))
+    monthly_returns_out = [
+        {"year": int(d.year), "month": int(d.month), "return": round(float(r), 6)}
+        for d, r in _monthly.items()
+        if not np.isnan(r)
+    ]
+    with open(data_dir / "monthly_returns.json", "w") as f:
+        json.dump(monthly_returns_out, f)
+
+    # portfolio.json — current weights from last rebalance
+    try:
+        _last_w  = weights.iloc[-1]
+        _active  = _last_w[_last_w > 1e-4].sort_values(ascending=False)
+        portfolio_out = {
+            "positions":       [{"ticker": t, "weight": round(float(w), 4)} for t, w in _active.items()],
+            "n_positions":     int(len(_active)),
+            "last_rebal_date": weights.index[-1].strftime("%Y-%m-%d"),
+            "last_updated":    run_start.strftime("%Y-%m-%dT%H:%M:%S"),
+            "method":          "equal_weight" if EQUAL_WEIGHT else "vol_weighted",
+            "rebal_freq":      REBAL_FREQ,
+        }
+    except NameError:
+        portfolio_out = {
+            "positions": [], "n_positions": 0,
+            "last_updated": run_start.strftime("%Y-%m-%dT%H:%M:%S"),
+        }
+    with open(data_dir / "portfolio.json", "w") as f:
+        json.dump(portfolio_out, f, indent=2)
+
+    # regime.json
+    with open(data_dir / "regime.json", "w") as f:
+        json.dump({"regime": current_regime or "unknown",
+                   "last_updated": run_start.strftime("%Y-%m-%dT%H:%M:%S")}, f, indent=2)
+
+    # diagnostics.json
+    _roc_aucs   = [m.metrics.roc_auc  for m in best_models.values() if not np.isnan(m.metrics.roc_auc)]
+    _accuracies = [m.metrics.accuracy  for m in best_models.values()]
+    _precisions = [m.metrics.precision for m in best_models.values()]
+    _recalls    = [m.metrics.recall    for m in best_models.values()]
+    _feat_imp   = (
+        [{"feature": str(k), "importance": round(float(v), 6)}
+         for k, v in rf_importances.sort_values(ascending=False).items()]
+        if rf_importances is not None else []
+    )
+    try:
+        _dt_series = weights.diff().abs().sum(axis=1) / 2.0
+        _avg_dt    = float(_dt_series.mean())
+        _ann_mult  = _avg_dt * 252
+        _cost_drag = _ann_mult * TRANSACTION_COST_RATE * 100
+    except NameError:
+        _avg_dt = _ann_mult = _cost_drag = 0.0
+    _gross_cagr = metrics["annualized_return"] + (_cost_drag / 100)
+    diagnostics_out = {
+        "model_quality": {
+            "roc_auc_mean":   round(float(np.mean(_roc_aucs)),   4) if _roc_aucs   else None,
+            "accuracy_mean":  round(float(np.mean(_accuracies)), 4) if _accuracies else None,
+            "precision_mean": round(float(np.mean(_precisions)), 4) if _precisions else None,
+            "recall_mean":    round(float(np.mean(_recalls)),    4) if _recalls    else None,
+            "n_tickers":      len(best_models),
+        },
+        "feature_importance": _feat_imp,
+        "turnover": {
+            "avg_daily":       round(_avg_dt,    4),
+            "annual_multiple": round(_ann_mult,  2),
+            "cost_drag_pct":   round(_cost_drag, 4),
+            "gross_cagr":      round(_gross_cagr, 4),
+            "net_cagr":        round(metrics["annualized_return"], 4),
+        },
+        "alpha_attribution": {
+            "ensemble_cagr": round(metrics["annualized_return"], 4),
+            "alpha_ann":     round(metrics["alpha_annualized"],  4),
+            "beta":          round(metrics["beta"],              4),
+        },
+        "run_config": {
+            "top_n_alpha":              TOP_N_ALPHA,
+            "equal_weight":             EQUAL_WEIGHT,
+            "rebal_freq":               REBAL_FREQ,
+            "transaction_cost_rate":    TRANSACTION_COST_RATE,
+            "slippage_rate":            SLIPPAGE_RATE,
+            "risk_free_rate":           RISK_FREE_RATE,
+            "max_position_w":           MAX_POSITION_W,
+            "min_position_w":           MIN_POSITION_W,
+            "walk_forward_train_years": WALK_FORWARD_TRAIN_YEARS,
+            "walk_forward_step_years":  WALK_FORWARD_STEP_YEARS,
+            "n_tickers_universe":       len(tickers),
+            "n_tickers_trained":        len(best_models),
+            "run_time":                 run_start.strftime("%Y-%m-%dT%H:%M:%S"),
+            "n_trades":                 report.number_of_trades,
+        },
+    }
+    with open(data_dir / "diagnostics.json", "w") as f:
+        json.dump(diagnostics_out, f, indent=2)
 
     elapsed = (datetime.datetime.now() - run_start).total_seconds() / 60
     print(f"\nDone in {elapsed:.1f} min")

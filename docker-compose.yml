@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: quant
+      POSTGRES_PASSWORD: quant
+      POSTGRES_DB: quant
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quant"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://quant:quant@postgres:5432/quant
+      AUTH_ENABLED: "false"
+      QUANT_DATA_DIR: /app/website/data
+      SCHEDULER_ENABLED: "true"
+    volumes:
+      - ./website/data:/app/website/data:ro
+      - ./:/app:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

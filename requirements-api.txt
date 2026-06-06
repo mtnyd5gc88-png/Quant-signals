@@ -1,0 +1,21 @@
+# FastAPI + server
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+
+# Database
+sqlalchemy[asyncio]>=2.0.36
+asyncpg>=0.30.0
+alembic>=1.14.0
+
+# Config + validation
+pydantic-settings>=2.6.0
+python-dotenv>=1.0.0
+
+# Auth (Supabase JWT validation)
+python-jose[cryptography]>=3.3.0
+
+# Scheduling
+apscheduler>=3.10.4
+
+# HTTP client (async, for health checks)
+httpx>=0.28.0
