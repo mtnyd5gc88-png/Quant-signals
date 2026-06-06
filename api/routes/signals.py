@@ -15,6 +15,9 @@ from api.models.run_log import RunLog
 from api.models.signal_snapshot import SignalSnapshot
 from api.schemas.signals import SignalDetail, SignalHistoryPoint, SignalItem, SignalsResponse
 
+# DB dependency type alias for readability
+_DBDep = Optional[AsyncSession]
+
 router = APIRouter(prefix="/signals", tags=["signals"])
 
 
@@ -47,7 +50,7 @@ def _enrich_with_alpha_scores(raw: list[dict]) -> list[dict]:
 @router.get("", response_model=SignalsResponse)
 async def get_signals(
     _user: CurrentUser,
-    signal_filter: Literal["ALL", "BUY", "HOLD", "SELL", "CASH"] = Query("ALL"),
+    signal_filter: Literal["ALL", "BUY", "HOLD", "SELL", "CASH", "STAY IN CASH"] = Query("ALL"),
     sort_by: Literal["prob_up", "ticker", "target_return"] = Query("prob_up"),
     order: Literal["asc", "desc"] = Query("desc"),
     search: Optional[str] = Query(None, max_length=10),
@@ -77,7 +80,7 @@ async def get_signals(
         buy_count=sum(1 for i in items if i.signal == "BUY"),
         hold_count=sum(1 for i in items if i.signal == "HOLD"),
         sell_count=sum(1 for i in items if i.signal == "SELL"),
-        cash_count=sum(1 for i in items if i.signal == "CASH"),
+        cash_count=sum(1 for i in items if i.signal in ("CASH", "STAY IN CASH")),
         last_updated=last_updated,
     )
 
@@ -86,29 +89,30 @@ async def get_signals(
 async def get_signal_detail(
     ticker: str,
     _user: CurrentUser,
-    db: AsyncSession = Depends(get_db),
+    db: Optional[AsyncSession] = Depends(get_db),
 ) -> SignalDetail:
     raw = _enrich_with_alpha_scores(_load_predictions())
     match = next((r for r in raw if r["ticker"] == ticker.upper()), None)
     if match is None:
         raise HTTPException(status_code=404, detail=f"Ticker {ticker} not found")
 
-    stmt = (
-        select(SignalSnapshot, RunLog.run_at)
-        .join(RunLog, SignalSnapshot.run_id == RunLog.id)
-        .where(SignalSnapshot.ticker == ticker.upper())
-        .order_by(RunLog.run_at.desc())
-        .limit(90)
-    )
-    result = await db.execute(stmt)
-    rows = result.all()
-    history = [
-        SignalHistoryPoint(
-            run_at=run_at.isoformat(),
-            prob_up=snap.prob_up or 0.0,
-            signal=snap.signal or "HOLD",
+    history = []
+    if db is not None:
+        stmt = (
+            select(SignalSnapshot, RunLog.run_at)
+            .join(RunLog, SignalSnapshot.run_id == RunLog.id)
+            .where(SignalSnapshot.ticker == ticker.upper())
+            .order_by(RunLog.run_at.desc())
+            .limit(90)
         )
-        for snap, run_at in rows
-    ]
+        rows = (await db.execute(stmt)).all()
+        history = [
+            SignalHistoryPoint(
+                run_at=run_at.isoformat(),
+                prob_up=snap.prob_up or 0.0,
+                signal=snap.signal or "HOLD",
+            )
+            for snap, run_at in rows
+        ]
 
     return SignalDetail(**match, history=history)

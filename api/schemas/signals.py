@@ -7,7 +7,7 @@ from pydantic import BaseModel, computed_field
 
 class SignalItem(BaseModel):
     ticker: str
-    signal: Literal["BUY", "HOLD", "SELL", "CASH"]
+    signal: Literal["BUY", "HOLD", "SELL", "CASH", "STAY IN CASH"]
     prob_up: float
     price: Optional[float] = None
     target_return: Optional[float] = None

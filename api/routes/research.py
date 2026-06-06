@@ -1,6 +1,7 @@
 from __future__ import annotations
 import json
 import statistics
+from typing import Optional
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
@@ -77,10 +78,12 @@ async def get_feature_importance(_user: CurrentUser) -> list[dict]:
 @router.get("/prediction-drift", response_model=list[PredictionDriftPoint])
 async def get_prediction_drift(
     _user: CurrentUser,
-    db: AsyncSession = Depends(get_db),
+    db: Optional[AsyncSession] = Depends(get_db),
     limit: int = 90,
 ) -> list[PredictionDriftPoint]:
-    """Signal distribution history from PostgreSQL for prediction drift analysis."""
+    """Signal distribution history from PostgreSQL for prediction drift analysis. Empty in JSON-only mode."""
+    if db is None:
+        return []
     stmt = (
         select(RunLog.id, RunLog.run_at)
         .where(RunLog.status == "success")

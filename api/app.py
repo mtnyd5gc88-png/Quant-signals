@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.config import settings
-from api.db import init_db
+from api.db import init_db, DB_AVAILABLE
 from api.routes import diagnostics, performance, portfolio, refresh, regime, research, settings as settings_router, signals
 from api.scheduler import start_scheduler, stop_scheduler
 
@@ -56,4 +56,5 @@ app.include_router(refresh.router,             prefix=_prefix)
 
 @app.get("/api/health")
 async def health() -> dict:
-    return {"status": "ok"}
+    from api.db import DB_AVAILABLE as _db
+    return {"status": "ok", "db": "connected" if _db else "json-only"}

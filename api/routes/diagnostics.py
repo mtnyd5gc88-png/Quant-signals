@@ -1,6 +1,7 @@
 from __future__ import annotations
 import json
 import statistics
+from typing import Optional
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
@@ -110,10 +111,12 @@ async def get_calibration(_user: CurrentUser) -> list[CalibrationBucket]:
 @router.get("/model-drift", response_model=list[ModelDriftPoint])
 async def get_model_drift(
     _user: CurrentUser,
-    db: AsyncSession = Depends(get_db),
+    db: Optional[AsyncSession] = Depends(get_db),
     limit: int = 90,
 ) -> list[ModelDriftPoint]:
-    """Historical model quality metrics from PostgreSQL (for drift analysis)."""
+    """Historical model quality metrics from PostgreSQL (for drift analysis). Empty in JSON-only mode."""
+    if db is None:
+        return []
     stmt = (
         select(DiagnosticsSnapshot, RunLog.run_at)
         .join(RunLog, DiagnosticsSnapshot.run_id == RunLog.id)
@@ -134,10 +137,12 @@ async def get_model_drift(
 @router.get("/feature-importance-history", response_model=list[FeatureImportanceDriftPoint])
 async def get_feature_importance_history(
     _user: CurrentUser,
-    db: AsyncSession = Depends(get_db),
+    db: Optional[AsyncSession] = Depends(get_db),
     limit: int = 30,
 ) -> list[FeatureImportanceDriftPoint]:
-    """Feature importance evolution over time (from PostgreSQL)."""
+    """Feature importance evolution over time (from PostgreSQL). Empty in JSON-only mode."""
+    if db is None:
+        return []
     stmt = (
         select(RunLog.id, RunLog.run_at)
         .order_by(RunLog.run_at.desc())

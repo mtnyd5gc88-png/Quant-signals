@@ -1,8 +1,8 @@
 from __future__ import annotations
 import asyncio
 import logging
-import subprocess
 from datetime import datetime, timezone
+from typing import Optional
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -13,7 +13,7 @@ from api.ingest import ingest_latest_run
 
 log = logging.getLogger(__name__)
 
-_scheduler: AsyncIOScheduler | None = None
+_scheduler: Optional[AsyncIOScheduler] = None
 _run_status: dict = {
     "status": "idle",       # "idle" | "running" | "error"
     "last_run": None,
@@ -51,9 +51,13 @@ async def _run_quant_engine() -> None:
         if proc.returncode != 0:
             raise RuntimeError(f"main.py exited with code {proc.returncode}")
 
-        # Ingest JSON outputs into PostgreSQL
-        async with AsyncSessionLocal() as db:
-            await ingest_latest_run(db)
+        # Ingest JSON outputs into PostgreSQL (skipped in JSON-only mode)
+        from api.db import DB_AVAILABLE
+        if DB_AVAILABLE:
+            async with AsyncSessionLocal() as db:
+                await ingest_latest_run(db)
+        else:
+            log.info("JSON-only mode — skipping PostgreSQL ingest")
 
         _run_status["last_run"] = datetime.now(timezone.utc).isoformat()
         _run_status["status"] = "idle"

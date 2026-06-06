@@ -6,7 +6,7 @@ Called after each successful main.py run.
 import json
 import logging
 from datetime import datetime, timezone
-from pathlib import Path
+from typing import Optional, Union
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,7 +19,7 @@ from api.models.signal_snapshot import FeatureImportanceSnapshot, SignalSnapshot
 log = logging.getLogger(__name__)
 
 
-def _read_json(name: str) -> dict | list | None:
+def _read_json(name: str) -> Optional[Union[dict, list]]:
     path = settings.quant_data_dir / name
     if not path.exists():
         return None
