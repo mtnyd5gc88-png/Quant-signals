@@ -53,7 +53,11 @@ export function Signals() {
     let rows = [...data.items];
 
     if (filter !== 'ALL') {
-      rows = rows.filter((r) => r.signal === filter);
+      rows = rows.filter((r) =>
+        filter === 'SELL'
+          ? r.signal === 'SELL' || r.signal === 'CASH'
+          : r.signal === filter
+      );
     }
 
     if (search.trim()) {
