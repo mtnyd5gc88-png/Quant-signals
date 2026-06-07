@@ -32,14 +32,14 @@
   margin: 1px 8px;
   font-size: 13px;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: #6b7280;
   cursor: pointer;
   transition: background 150ms ease, color 150ms ease;
   text-decoration: none;
   border-left: 2px solid transparent;
 }
 .nav-item:hover {
-  background: var(--bg-surface-2);
+  background: #f9fafb;
   color: var(--text-primary);
 }
 .nav-item.active {

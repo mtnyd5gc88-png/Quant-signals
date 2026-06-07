@@ -1,18 +1,19 @@
 import { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, RotateCw, CheckCircle, AlertCircle } from 'lucide-react';
 import { RegimeBadge } from '../components/RegimeBadge';
 import { useRegime } from '../api/hooks';
 import { useAuth } from '../auth/AuthContext';
 import { api } from '../api/client';
+import { fmtRelTime } from '../utils/format';
 import type { SignalItem } from '../api/types';
 import './TopBar.css';
 
-function formatTimestamp(iso: string): string {
+function formatLastUpdated(iso: string): string {
   try {
-    return `UPDATED ${new Date(iso).toLocaleTimeString('en-US', { hour12: false, timeZone: 'UTC' })} UTC`;
+    return `Updated ${fmtRelTime(iso)}`;
   } catch {
-    return 'UPDATED --:--:-- UTC';
+    return 'Updated —';
   }
 }
 
@@ -167,6 +168,42 @@ function SearchBar() {
   );
 }
 
+function RefreshButton() {
+  const [state, setState] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleRefresh = async () => {
+    if (state === 'loading') return;
+    setState('loading');
+    if (timerRef.current) clearTimeout(timerRef.current);
+    try {
+      await api.refresh();
+      setState('ok');
+    } catch {
+      setState('error');
+    }
+    timerRef.current = setTimeout(() => setState('idle'), 2500);
+  };
+
+  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
+
+  return (
+    <button
+      className="topbar-refresh"
+      onClick={handleRefresh}
+      disabled={state === 'loading'}
+      title="Refresh data"
+      aria-label="Refresh data"
+    >
+      {state === 'ok'
+        ? <CheckCircle size={14} color="var(--positive)" />
+        : state === 'error'
+          ? <AlertCircle size={14} color="var(--negative)" />
+          : <RotateCw size={14} strokeWidth={1.5} className={state === 'loading' ? 'topbar-refresh-spin' : ''} />}
+    </button>
+  );
+}
+
 export function TopBar() {
   const { data: regime } = useRegime();
 
@@ -181,7 +218,8 @@ export function TopBar() {
 
       <div className="topbar-right">
         <RegimeBadge regime={regime.regime.toUpperCase()} />
-        <span className="topbar-timestamp">{formatTimestamp(regime.last_updated)}</span>
+        <span className="topbar-timestamp">{formatLastUpdated(regime.last_updated)}</span>
+        <RefreshButton />
         <ProfileDropdown />
       </div>
     </header>
