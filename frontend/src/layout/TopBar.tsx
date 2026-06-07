@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, RotateCw, CheckCircle, AlertCircle, Menu } from 'lucide-react';
+import type { BackendStatus } from '../api/hooks';
 import { RegimeBadge } from '../components/RegimeBadge';
 import { useRegime } from '../api/hooks';
 import { useAuth } from '../auth/AuthContext';
@@ -204,7 +205,32 @@ function RefreshButton() {
   );
 }
 
-export function TopBar({ onMenuClick }: { onMenuClick?: () => void }) {
+const STATUS_CONFIG: Record<BackendStatus, { color: string; label: string }> = {
+  connecting: { color: '#9ca3af', label: 'Connecting to server...' },
+  online:     { color: '#16a34a', label: 'Live' },
+  slow:       { color: '#d97706', label: 'Server starting up... (free tier)' },
+  offline:    { color: '#dc2626', label: 'Server offline' },
+};
+
+function BackendStatusBadge({ status }: { status: BackendStatus }) {
+  const { color, label } = STATUS_CONFIG[status];
+  return (
+    <div className="backend-status">
+      <span className="backend-status-dot" style={{ background: color }} />
+      <span className="backend-status-label" style={{ color: status === 'offline' ? '#dc2626' : undefined }}>
+        {label}
+      </span>
+    </div>
+  );
+}
+
+export function TopBar({
+  onMenuClick,
+  backendStatus = 'online',
+}: {
+  onMenuClick?: () => void;
+  backendStatus?: BackendStatus;
+}) {
   const { data: regime } = useRegime();
 
   return (
@@ -227,6 +253,7 @@ export function TopBar({ onMenuClick }: { onMenuClick?: () => void }) {
       <SearchBar />
 
       <div className="topbar-right">
+        <BackendStatusBadge status={backendStatus} />
         <RegimeBadge regime={regime.regime.toUpperCase()} />
         <span className="topbar-timestamp">{formatLastUpdated(regime.last_updated)}</span>
         <RefreshButton />

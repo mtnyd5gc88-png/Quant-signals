@@ -4,6 +4,29 @@ import * as mock from './mock';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
+export type BackendStatus = 'connecting' | 'online' | 'slow' | 'offline';
+
+export function useBackendStatus(): BackendStatus {
+  const [status, setStatus] = useState<BackendStatus>('connecting');
+
+  useEffect(() => {
+    const apiUrl = import.meta.env.VITE_API_URL as string | undefined;
+    if (!apiUrl || USE_MOCK) {
+      setStatus('online');
+      return;
+    }
+    const start = Date.now();
+    fetch(`${apiUrl}/health`)
+      .then(() => {
+        const elapsed = Date.now() - start;
+        setStatus(elapsed > 5000 ? 'slow' : 'online');
+      })
+      .catch(() => setStatus('offline'));
+  }, []);
+
+  return status;
+}
+
 type FetchFn<T> = () => Promise<T>;
 
 function useApi<T>(fetcher: FetchFn<T>, fallback: T) {

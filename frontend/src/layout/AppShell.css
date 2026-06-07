@@ -19,6 +19,31 @@
   min-width: 0;
 }
 
+/* Cold-start progress bar */
+.cold-start-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 9999;
+  background: rgba(37, 99, 235, 0.12);
+  overflow: hidden;
+}
+
+.cold-start-bar-fill {
+  height: 100%;
+  width: 30%;
+  background: #2563eb;
+  border-radius: 0 1px 1px 0;
+  animation: cold-start-slide 1.6s ease-in-out infinite;
+}
+
+@keyframes cold-start-slide {
+  0%   { transform: translateX(-200%); }
+  100% { transform: translateX(500%); }
+}
+
 /* Backdrop for mobile sidebar */
 .sidebar-overlay {
   position: fixed;
