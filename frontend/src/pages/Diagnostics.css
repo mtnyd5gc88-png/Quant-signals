@@ -24,7 +24,7 @@
 }
 
 .chart-panel {
-  background: var(--bg-surface-2);
+  background: var(--bg-surface-1);
   border: 1px solid var(--border-default);
   border-radius: 8px;
   padding: 20px 24px;
@@ -35,7 +35,7 @@
 .alpha-attr-table { margin-bottom: var(--space-4); }
 
 .drift-status-card {
-  background: var(--bg-surface-2);
+  background: var(--bg-surface-1);
   border: 1px solid var(--border-default);
   border-radius: 8px;
   padding: 24px;
@@ -55,7 +55,7 @@
 .drift-score-sub { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
 
 .drift-note {
-  background: var(--bg-surface-2);
+  background: var(--bg-surface-1);
   border: 1px solid var(--border-default);
   border-radius: 8px;
   padding: 16px 20px;
@@ -65,13 +65,13 @@
 }
 
 /* reuse data-table styles from Signals.css */
-.data-table-wrapper { background: var(--bg-surface-2); border: 1px solid var(--border-default); border-radius: 8px; overflow: hidden; }
+.data-table-wrapper { background: var(--bg-surface-1); border: 1px solid var(--border-default); border-radius: 8px; overflow: hidden; }
 .data-table { width: 100%; border-collapse: collapse; }
 .data-table thead tr { height: 32px; background: var(--bg-surface-3); border-bottom: 1px solid var(--border-default); }
 .data-table th { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); padding: 0 12px; text-align: left; white-space: nowrap; }
 .data-table th.numeric { text-align: right; }
 .data-table tbody tr { height: 36px; border-bottom: 1px solid var(--border-subtle); }
-.data-table tbody tr:nth-child(odd)  { background: var(--bg-surface-2); }
+.data-table tbody tr:nth-child(odd)  { background: var(--bg-surface-1); }
 .data-table tbody tr:nth-child(even) { background: var(--bg-surface-1); }
 .data-table td { padding: 0 12px; font-size: 13px; color: var(--text-primary); vertical-align: middle; white-space: nowrap; }
 .cell-numeric { font-family: var(--font-mono); font-size: 12px; text-align: right; font-feature-settings: "tnum" 1; }

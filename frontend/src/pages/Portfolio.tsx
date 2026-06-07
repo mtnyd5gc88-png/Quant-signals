@@ -12,13 +12,13 @@ import './Portfolio.css';
 
 const CHART_TOOLTIP = {
   contentStyle: {
-    background: 'var(--bg-surface-4)',
-    border: '1px solid var(--border-strong)',
-    borderRadius: '6px',
-    padding: '8px 12px',
+    background: 'var(--bg-surface-1)',
+    border: '1px solid var(--border-default)',
+    borderRadius: '8px',
+    padding: '10px 14px',
     fontSize: '12px',
     color: 'var(--text-primary)',
-    boxShadow: 'none',
+    boxShadow: '0 4px 12px rgba(26,32,53,0.10)',
   },
 };
 

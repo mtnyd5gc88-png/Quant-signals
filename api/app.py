@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.config import settings
 from api.db import init_db, DB_AVAILABLE
-from api.routes import diagnostics, performance, portfolio, refresh, regime, research, settings as settings_router, signals
+from api.routes import auth as auth_router, diagnostics, performance, portfolio, refresh, regime, research, settings as settings_router, signals
 from api.scheduler import start_scheduler, stop_scheduler
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s — %(message)s")
@@ -44,6 +44,7 @@ app.add_middleware(
 )
 
 _prefix = "/api"
+app.include_router(auth_router.router,         prefix=_prefix)
 app.include_router(signals.router,             prefix=_prefix)
 app.include_router(portfolio.router,           prefix=_prefix)
 app.include_router(performance.router,         prefix=_prefix)

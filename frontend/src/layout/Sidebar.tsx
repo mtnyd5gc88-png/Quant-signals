@@ -7,7 +7,6 @@ import {
   TrendingUp,
   FlaskConical,
   Settings,
-  ChevronDown,
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -34,24 +33,9 @@ const NAV_GROUPS = [
 export function Sidebar() {
   return (
     <nav className="sidebar">
-      {/* Brand / Logo */}
-      <div className="sidebar-brand">
-        <div className="sidebar-logo-mark">QS</div>
-        <div className="sidebar-brand-text">
-          <div className="sidebar-brand-name">Quant Signals</div>
-          <div className="sidebar-brand-sub">Research Platform</div>
-        </div>
-      </div>
-
-      <div className="sidebar-divider" />
-
-      {/* Nav groups */}
       {NAV_GROUPS.map(({ section, items }) => (
         <div key={section} className="nav-group">
-          <div className="nav-section-label">
-            <span>{section}</span>
-            <ChevronDown size={10} strokeWidth={1.5} />
-          </div>
+          <div className="nav-section-label">{section}</div>
           {items.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
@@ -59,7 +43,7 @@ export function Sidebar() {
               end={to === '/'}
               className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
             >
-              <Icon size={15} strokeWidth={1.5} />
+              <Icon size={16} strokeWidth={1.5} />
               <span>{label}</span>
             </NavLink>
           ))}

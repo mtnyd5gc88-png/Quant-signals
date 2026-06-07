@@ -1,19 +1,29 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
   /* ── FONTS ── */
-  --font-sans: 'Inter', 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Roboto Mono', 'Fira Mono', monospace;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Roboto Mono', monospace;
 
   /* ── TYPE SCALE ── */
   --text-xs:  11px;
   --text-sm:  12px;
   --text-md:  13px;
-  --text-lg:  15px;
+  --text-lg:  14px;
   --text-xl:  18px;
   --text-2xl: 22px;
 
   /* ── SPACING ── */
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  20px;
+  --sp-6:  24px;
+  --sp-8:  32px;
+  --sp-10: 40px;
+
+  /* legacy aliases */
   --space-1:  4px;
   --space-2:  8px;
   --space-3:  12px;
@@ -23,43 +33,49 @@
   --space-8:  32px;
   --space-10: 40px;
 
-  /* ── BACKGROUNDS ── */
-  --bg-base:      #0d1117;
-  --bg-surface-1: #161b22;
-  --bg-surface-2: #1c2030;
-  --bg-surface-3: #242840;
-  --bg-surface-4: #2d3148;
+  /* ── BACKGROUNDS — Light layered system ── */
+  --bg-base:      #f6f7fb;
+  --bg-surface-1: #ffffff;
+  --bg-surface-2: #f0f4fa;
+  --bg-surface-3: #e7edf7;
+  --bg-surface-4: #dce4f2;
 
   /* ── BORDERS ── */
-  --border-subtle:  #1e2335;
-  --border-default: #2a2d3e;
-  --border-strong:  #3d4166;
+  --border-subtle:  #eef1f8;
+  --border-default: #dde4f0;
+  --border-strong:  #b8c6de;
 
   /* ── TEXT ── */
-  --text-primary:   #e8eaf0;
-  --text-secondary: #8b92a8;
-  --text-tertiary:  #5a6177;
-  --text-inverse:   #0d1117;
+  --text-primary:   #1a2535;
+  --text-secondary: #5a6a82;
+  --text-tertiary:  #8aa5c2;
+  --text-disabled:  #c5d0e0;
+  --text-inverse:   #ffffff;
 
-  /* ── SEMANTIC FINANCIAL ── */
-  --positive:     #26c281;
-  --positive-dim: #1a3d2e;
-  --negative:     #f04060;
-  --negative-dim: #3d1a22;
-  --neutral:      #f0b840;
-  --neutral-dim:  #3d2e10;
+  /* ── SEMANTIC — Financial ── */
+  --positive:     #0ea85e;
+  --positive-dim: #e8f8f0;
+  --negative:     #e53444;
+  --negative-dim: #fdf0f1;
+  --neutral:      #d4890a;
+  --neutral-dim:  #fdf7e8;
 
-  /* ── ACCENT ── */
-  --accent-primary: #4d8ef0;
-  --accent-hover:   #6ba3f5;
-  --accent-dim:     #1a2d4a;
+  /* ── ACCENT — Koyfin blue ── */
+  --accent-primary: #2563f4;
+  --accent-hover:   #1d52e0;
+  --accent-dim:     #eff3fd;
 
   /* ── CHART ── */
-  --chart-1:    #4d8ef0;
-  --chart-2:    #26c281;
-  --chart-3:    #f0b840;
-  --chart-4:    #b06ef5;
-  --chart-5:    #f04060;
-  --chart-grid: #1e2335;
-  --chart-axis: #3d4166;
+  --chart-1:    #2563f4;
+  --chart-2:    #0ea85e;
+  --chart-3:    #d4890a;
+  --chart-4:    #8b5cf6;
+  --chart-5:    #e53444;
+  --chart-grid: #eef1f8;
+  --chart-axis: #b8c6de;
+
+  /* ── ELEVATION ── */
+  --shadow-sm: 0 1px 3px rgba(26, 32, 53, 0.06), 0 1px 2px rgba(26, 32, 53, 0.04);
+  --shadow-md: 0 4px 12px rgba(26, 32, 53, 0.08), 0 2px 4px rgba(26, 32, 53, 0.05);
+  --shadow-lg: 0 10px 30px rgba(26, 32, 53, 0.10), 0 4px 8px rgba(26, 32, 53, 0.06);
 }

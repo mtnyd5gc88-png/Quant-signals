@@ -27,10 +27,11 @@
 }
 
 .chart-panel {
-  background: var(--bg-surface-2);
+  background: var(--bg-surface-1);
   border: 1px solid var(--border-default);
   border-radius: 8px;
   padding: 20px 24px;
+  box-shadow: var(--shadow-sm);
 }
 
 .chart-title {
