@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { api } from './client';
 import * as mock from './mock';
 
@@ -10,19 +10,35 @@ function useApi<T>(fetcher: FetchFn<T>, fallback: T) {
   const [data, setData] = useState<T>(fallback);
   const [loading, setLoading] = useState(!USE_MOCK);
   const [error, setError] = useState<string | null>(null);
+  const [fetchedAt, setFetchedAt] = useState<string>(() => new Date().toISOString());
+  const [fetchKey, setFetchKey] = useState(0);
 
   useEffect(() => {
-    if (USE_MOCK) { setData(fallback); setLoading(false); return; }
+    if (USE_MOCK) {
+      setData(fallback);
+      setLoading(false);
+      setFetchedAt(new Date().toISOString());
+      return;
+    }
     let cancelled = false;
     setLoading(true);
+    setError(null);
     fetcher()
-      .then((d) => { if (!cancelled) { setData(d); setLoading(false); } })
+      .then((d) => {
+        if (!cancelled) {
+          setData(d);
+          setLoading(false);
+          setFetchedAt(new Date().toISOString());
+        }
+      })
       .catch((e: Error) => { if (!cancelled) { setError(e.message); setLoading(false); } });
     return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchKey]);
 
-  return { data, loading, error };
+  const refetch = useCallback(() => setFetchKey((k) => k + 1), []);
+
+  return { data, loading, error, refetch, fetchedAt };
 }
 
 export function useSignals(filter = 'ALL', sortBy = 'prob_up', order = 'desc', search?: string) {

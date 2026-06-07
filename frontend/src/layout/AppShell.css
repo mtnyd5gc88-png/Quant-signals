@@ -18,3 +18,28 @@
   flex-direction: column;
   min-width: 0;
 }
+
+/* Backdrop for mobile sidebar */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 90;
+}
+
+/* Tablet: collapse sidebar to icon-only 56px */
+@media (max-width: 1023px) and (min-width: 768px) {
+  .app-shell {
+    grid-template-columns: 56px 1fr;
+  }
+}
+
+/* Mobile: sidebar removed from grid, floats as overlay */
+@media (max-width: 767px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "topbar"
+      "main";
+  }
+}

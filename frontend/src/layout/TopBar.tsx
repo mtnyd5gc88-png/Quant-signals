@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, RotateCw, CheckCircle, AlertCircle } from 'lucide-react';
+import { Search, RotateCw, CheckCircle, AlertCircle, Menu } from 'lucide-react';
 import { RegimeBadge } from '../components/RegimeBadge';
 import { useRegime } from '../api/hooks';
 import { useAuth } from '../auth/AuthContext';
@@ -204,11 +204,21 @@ function RefreshButton() {
   );
 }
 
-export function TopBar() {
+export function TopBar({ onMenuClick }: { onMenuClick?: () => void }) {
   const { data: regime } = useRegime();
 
   return (
     <header className="topbar">
+      {onMenuClick && (
+        <button
+          className="topbar-hamburger"
+          onClick={onMenuClick}
+          aria-label="Toggle navigation"
+          type="button"
+        >
+          <Menu size={18} strokeWidth={1.5} />
+        </button>
+      )}
       <div className="topbar-logo">
         <div className="topbar-logo-mark">QS</div>
         <span className="topbar-logo-name">QUANT-SIGNALS</span>

@@ -90,11 +90,19 @@
   text-overflow: ellipsis;
 }
 
+/* ── Numeric utility (Phase 10) ── */
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
 /* ── Shared cell styles ── */
 .cell-numeric {
   font-family: var(--font-mono);
   font-size: 12px;
   text-align: right;
+  font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum" 1;
 }
 .cell-numeric.positive { color: var(--positive); }

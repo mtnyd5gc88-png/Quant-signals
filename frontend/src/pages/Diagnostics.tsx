@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useDiagnostics } from '../api/hooks';
 import { fmtPct } from '../utils/format';
+import { FreshnessTag } from '../components/FreshnessTag';
+import { SectionError } from '../components/SectionError';
 import type { FeatureImportanceItem } from '../api/types';
 import './Diagnostics.css';
 
 export function Diagnostics() {
-  const { data: diag } = useDiagnostics();
+  const { data: diag, loading, error, refetch, fetchedAt } = useDiagnostics();
   const mq = diag.model_quality;
   const t = diag.turnover;
 
@@ -19,7 +21,21 @@ export function Diagnostics() {
     <div className="diag-page">
       {/* Model Quality */}
       <div className="diag-panel">
-        <div className="diag-panel-title">Model Quality</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+          <div className="diag-panel-title" style={{ margin: 0 }}>Model Quality</div>
+          <FreshnessTag lastUpdated={fetchedAt} />
+        </div>
+        {error && <SectionError message="Failed to load diagnostics." onRetry={refetch} />}
+        {loading ? (
+          <div className="diag-mq-cards">
+            {Array.from({ length: 5 }, (_, i) => (
+              <div key={i} className="diag-mq-card">
+                <div className="skeleton skeleton-text" style={{ width: '60%' }} />
+                <div className="skeleton skeleton-value" style={{ width: '40%' }} />
+              </div>
+            ))}
+          </div>
+        ) : (
         <div className="diag-mq-cards">
           <RocAucCard value={mq.roc_auc_mean ?? 0} />
           <MetricCard label="Accuracy Mean" value={`${((mq.accuracy_mean ?? 0) * 100).toFixed(1)}%`} />
@@ -31,13 +47,22 @@ export function Diagnostics() {
           ROC-AUC measures the model's ability to rank up-moves above down-moves.
           Values above 0.60 indicate meaningful predictive power beyond random chance.
         </div>
+        )}
       </div>
 
       {/* Feature Importance */}
       <div className="diag-panel">
         <div className="diag-panel-title">Feature Importance</div>
         <div className="diag-panel-subtitle">Top {top15.length} features — mean importance across all tickers</div>
-        <FeatureImportanceBars items={top15} />
+        {loading ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {Array.from({ length: 8 }, (_, i) => (
+              <div key={i} className="skeleton" style={{ height: 20, width: `${60 + (i % 4) * 10}%` }} />
+            ))}
+          </div>
+        ) : (
+          <FeatureImportanceBars items={top15} />
+        )}
       </div>
 
       {/* Turnover & Cost Summary */}

@@ -11,6 +11,28 @@
   flex-shrink: 0;
 }
 
+/* ── Hamburger (mobile only) ── */
+.topbar-hamburger {
+  display: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 100ms ease;
+}
+.topbar-hamburger:hover { background: var(--bg-surface-2); }
+
+@media (max-width: 767px) {
+  .topbar-hamburger { display: flex; }
+  .topbar-logo-name { display: none; }
+}
+
 /* ── Logo ── */
 .topbar-logo {
   display: flex;

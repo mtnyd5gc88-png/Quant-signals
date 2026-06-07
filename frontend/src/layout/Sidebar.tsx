@@ -8,6 +8,7 @@ import {
   BarChart2,
   FlaskConical,
   Settings,
+  X,
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -32,9 +33,22 @@ const NAV_GROUPS = [
   },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  mobileOpen?: boolean;
+  onClose?: () => void;
+}
+
+export function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
   return (
-    <nav className="sidebar">
+    <nav className={`sidebar${mobileOpen ? ' sidebar--mobile-open' : ''}`}>
+      <button
+        className="sidebar-mobile-close"
+        onClick={onClose}
+        aria-label="Close menu"
+        type="button"
+      >
+        <X size={16} strokeWidth={1.5} />
+      </button>
       {NAV_GROUPS.map(({ section, items }) => (
         <div key={section} className="nav-group">
           <div className="nav-section-label">{section}</div>
@@ -44,9 +58,10 @@ export function Sidebar() {
               to={to}
               end={to === '/'}
               className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+              onClick={onClose}
             >
               <Icon size={16} strokeWidth={1.5} />
-              <span>{label}</span>
+              <span className="nav-item-label">{label}</span>
             </NavLink>
           ))}
         </div>

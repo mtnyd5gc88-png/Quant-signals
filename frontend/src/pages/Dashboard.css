@@ -80,3 +80,20 @@
   width: 44px;
   text-align: right;
 }
+
+/* ── Responsive ── */
+@media (max-width: 1023px) {
+  .dashboard-row-2,
+  .dashboard-row-3 {
+    flex-direction: column;
+  }
+  .kpi-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .kpi-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+}

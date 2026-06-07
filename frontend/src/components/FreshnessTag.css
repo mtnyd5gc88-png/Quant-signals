@@ -1,0 +1,14 @@
+.freshness-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: #6b7280;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.freshness-tag--stale {
+  color: #b45309;
+}

@@ -1,6 +1,10 @@
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
+import { PieChart as PieChartIcon } from 'lucide-react';
 import { usePortfolio } from '../api/hooks';
 import { fmtPct } from '../utils/format';
+import { FreshnessTag } from '../components/FreshnessTag';
+import { SectionError } from '../components/SectionError';
+import { EmptyState } from '../components/EmptyState';
 import './Portfolio.css';
 
 const MAX_WEIGHT = 0.15;
@@ -23,7 +27,7 @@ const CHART_TOOLTIP = {
 };
 
 export function Portfolio() {
-  const { data: portfolio } = usePortfolio();
+  const { data: portfolio, loading, error, refetch, fetchedAt } = usePortfolio();
 
   const sorted = [...portfolio.holdings].sort((a, b) => b.weight - a.weight);
 
@@ -64,7 +68,25 @@ export function Portfolio() {
 
       {/* Holdings Table */}
       <div className="port-panel">
-        <div className="port-panel-title">Current Holdings</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+          <div className="port-panel-title" style={{ margin: 0 }}>Current Holdings</div>
+          <FreshnessTag lastUpdated={fetchedAt} />
+        </div>
+        {error && <SectionError message="Failed to load portfolio." onRetry={refetch} />}
+        {!error && !loading && sorted.length === 0 && (
+          <EmptyState
+            icon={<PieChartIcon size={36} strokeWidth={1.25} />}
+            message="No active positions in current portfolio."
+          />
+        )}
+        {loading && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {Array.from({ length: 5 }, (_, i) => (
+              <div key={i} className="skeleton skeleton-row" />
+            ))}
+          </div>
+        )}
+        {!loading && !error && sorted.length > 0 && (
         <table className="port-holdings-table">
           <thead>
             <tr>
@@ -100,6 +122,7 @@ export function Portfolio() {
             ))}
           </tbody>
         </table>
+        )}
       </div>
 
       {/* Donut chart + Warnings row */}

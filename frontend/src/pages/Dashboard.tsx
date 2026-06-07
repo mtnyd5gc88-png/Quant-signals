@@ -6,6 +6,8 @@ import {
 import { KpiCard } from '../components/KpiCard';
 import { SectionHeader } from '../components/SectionHeader';
 import { TimeRangeSelector, type TimeRange } from '../components/TimeRangeSelector';
+import { FreshnessTag } from '../components/FreshnessTag';
+import { SectionError } from '../components/SectionError';
 import { usePerformance, useEquityCurve, useDrawdown, useSignals } from '../api/hooks';
 import { fmtPct, fmtPctSigned, fmtNum, filterByRange } from '../utils/format';
 import './Dashboard.css';
@@ -24,10 +26,10 @@ const CHART_TOOLTIP = {
 
 export function Dashboard() {
   const [range, setRange] = useState<TimeRange>('ALL');
-  const { data: perf, loading: perfLoading } = usePerformance();
-  const { data: equity } = useEquityCurve();
+  const { data: perf, loading: perfLoading, error: perfError, refetch: perfRefetch, fetchedAt: perfFetchedAt } = usePerformance();
+  const { data: equity, error: equityError, refetch: equityRefetch } = useEquityCurve();
   const { data: dd } = useDrawdown();
-  const { data: signals } = useSignals();
+  const { data: signals, fetchedAt: signalsFetchedAt } = useSignals();
 
   const equityFiltered = filterByRange(equity.points, range);
   const ddFiltered = filterByRange(dd, range);
@@ -76,7 +78,12 @@ export function Dashboard() {
       <div className="dashboard-row-2">
         {/* Equity Curve */}
         <div className="chart-panel" style={{ flex: 2 }}>
-          <div className="chart-title">Equity Curve</div>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 2 }}>
+            <div className="chart-title">Equity Curve</div>
+            <FreshnessTag lastUpdated={perfFetchedAt} />
+          </div>
+          {equityError && <SectionError message="Failed to load equity data." onRetry={equityRefetch} />}
+          {perfError && <SectionError message="Failed to load performance data." onRetry={perfRefetch} />}
           <div className="chart-subtitle">Strategy vs. Benchmark (SPY) — rebased to 1.0</div>
           <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={equityFiltered} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
@@ -99,7 +106,10 @@ export function Dashboard() {
 
         {/* Signal Distribution */}
         <div className="chart-panel" style={{ flex: 1, minWidth: 0 }}>
-          <div className="chart-title">Signal Distribution</div>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 2 }}>
+            <div className="chart-title">Signal Distribution</div>
+            <FreshnessTag lastUpdated={signalsFetchedAt} />
+          </div>
           <div className="chart-subtitle">Current signal breakdown across universe</div>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={signalDist} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>

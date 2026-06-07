@@ -1,9 +1,12 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, Activity } from 'lucide-react';
 import { SignalBadge } from '../components/SignalBadge';
 import { ProbBar } from '../components/ProbBar';
 import { TickerDrawer } from '../components/TickerDrawer';
+import { FreshnessTag } from '../components/FreshnessTag';
+import { SectionError } from '../components/SectionError';
+import { EmptyState } from '../components/EmptyState';
 import { useSignals, useDiagnostics, usePortfolio, useRegime } from '../api/hooks';
 import { fmtPctSigned, fmtPrice, colorClass } from '../utils/format';
 import type { SignalItem } from '../api/types';
@@ -22,7 +25,7 @@ export function Signals() {
   const [search, setSearch] = useState(() => searchParams.get('q') ?? '');
   const [drawerItem, setDrawerItem] = useState<SignalItem | null>(null);
 
-  const { data, loading } = useSignals();
+  const { data, loading, error, refetch: signalsRefetch, fetchedAt } = useSignals();
   const { data: diag } = useDiagnostics();
   const { data: portfolio } = usePortfolio();
   const { data: regimeData } = useRegime();
@@ -109,7 +112,7 @@ export function Signals() {
   const buyCount = displayRows.filter((r) => r.signal === 'BUY').length;
   const holdCount = displayRows.filter((r) => r.signal === 'HOLD').length;
 
-  const isEmpty = !loading && shown === 0;
+  const isEmpty = !loading && !error && shown === 0;
 
   return (
     <div className="signals-page">
@@ -144,6 +147,8 @@ export function Signals() {
             <span className="count-buy">{buyCount} BUY</span>
             &nbsp;·&nbsp;
             <span className="count-hold">{holdCount} HOLD</span>
+            &nbsp;·&nbsp;
+            <FreshnessTag lastUpdated={fetchedAt} />
           </span>
         )}
       </div>
@@ -164,14 +169,16 @@ export function Signals() {
                 </div>
               ))}
             </div>
-          ) : isEmpty ? (
-            <div className="table-empty">
-              <Search size={48} color="#9ca3af" strokeWidth={1.5} />
-              <p className="table-empty-text">
-                No signals found{search.trim() ? ` for "${search.trim()}"` : ''}
-              </p>
-              <p className="table-empty-sub">Try a different ticker symbol</p>
+          ) : error ? (
+            <div style={{ padding: 20 }}>
+              <SectionError message="Failed to load signals." onRetry={signalsRefetch} />
             </div>
+          ) : isEmpty ? (
+            <EmptyState
+              icon={<Activity size={40} strokeWidth={1.25} />}
+              message="No signals available. Run the quant engine to generate signals."
+              sub={search.trim() ? `No results for "${search.trim()}"` : undefined}
+            />
           ) : (
             <table className="data-table">
               <thead>
