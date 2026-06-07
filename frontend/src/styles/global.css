@@ -47,6 +47,13 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 3px var(--accent-dim);
 }
 
+/* Recharts: prevent SVG from leaking outside its container on mobile */
+.recharts-wrapper,
+.recharts-surface {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
 /* Prevent iOS zoom on focused inputs */
 @media (max-width: 767px) {
   input, select, textarea {
