@@ -24,7 +24,7 @@ const CHART_TOOLTIP = {
 
 export function Dashboard() {
   const [range, setRange] = useState<TimeRange>('ALL');
-  const { data: perf } = usePerformance();
+  const { data: perf, loading: perfLoading } = usePerformance();
   const { data: equity } = useEquityCurve();
   const { data: dd } = useDrawdown();
   const { data: signals } = useSignals();
@@ -40,18 +40,36 @@ export function Dashboard() {
 
   return (
     <div className="page-content">
-      {/* KPI Row */}
-      <div className="kpi-row">
-        <KpiCard label="Sharpe Ratio" value={fmtNum(perf.sharpe_ratio, 3)} />
-        <KpiCard label="CAGR" value={fmtPct(perf.annualized_return)} changeType={perf.annualized_return >= 0 ? 'positive' : 'negative'} />
-        <KpiCard label="Max Drawdown" value={fmtPct(perf.max_drawdown)} changeType="negative" />
-        <KpiCard label="Win Rate" value={fmtPct(perf.win_rate)} />
-        <KpiCard label="Alpha" value={fmtPctSigned(perf.alpha_annualized)} changeType={perf.alpha_annualized >= 0 ? 'positive' : 'negative'} />
-        <KpiCard label="Beta" value={fmtNum(perf.beta, 3)} />
-        <KpiCard label="Sortino" value={fmtNum(perf.sortino_ratio, 3)} />
-        <KpiCard label="Positions" value={String(signals.total)} />
-        <KpiCard label="BUY Signals" value={String(signals.buy_count)} changeType="positive" />
-        <KpiCard label="Period" value={`${perf.n_years.toFixed(1)}Y`} />
+      {/* KPI Strip */}
+      <div className="kpi-strip">
+        <KpiCard
+          label="Annualized Return"
+          value={fmtPctSigned(perf.annualized_return)}
+          changeType={perf.annualized_return >= 0 ? 'positive' : 'negative'}
+          tooltip="CAGR after transaction costs and slippage vs. 4% risk-free rate"
+          loading={perfLoading}
+        />
+        <KpiCard
+          label="Sharpe Ratio"
+          value={fmtNum(perf.sharpe_ratio, 2)}
+          changeType={perf.sharpe_ratio >= 1.0 ? 'positive' : 'negative'}
+          tooltip="Risk-adjusted return. >1.0 is good. >2.0 is excellent."
+          loading={perfLoading}
+        />
+        <KpiCard
+          label="Alpha (Ann.)"
+          value={fmtPctSigned(perf.alpha_annualized)}
+          changeType={perf.alpha_annualized >= 0 ? 'positive' : 'negative'}
+          tooltip="Excess return over SPY after accounting for market beta."
+          loading={perfLoading}
+        />
+        <KpiCard
+          label="Max Drawdown"
+          value={fmtPct(perf.max_drawdown)}
+          changeType="negative"
+          tooltip="Worst peak-to-trough loss in the backtest period."
+          loading={perfLoading}
+        />
       </div>
 
       {/* Main Charts Row */}

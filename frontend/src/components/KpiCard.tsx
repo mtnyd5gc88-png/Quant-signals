@@ -3,23 +3,27 @@ import './KpiCard.css';
 interface Props {
   label: string;
   value: string;
-  change?: string;
   changeType?: 'positive' | 'negative' | 'neutral';
-  mono?: boolean;
+  tooltip?: string;
+  loading?: boolean;
 }
 
-export function KpiCard({ label, value, change, changeType = 'neutral', mono = true }: Props) {
+export function KpiCard({ label, value, changeType = 'neutral', tooltip, loading = false }: Props) {
   return (
     <div className="kpi-card">
-      <div className="kpi-label">{label}</div>
-      <div className={`kpi-value${mono ? ' mono' : ''}`}>{value}</div>
-      {change && (
-        <div className={`kpi-change ${changeType}`}>
-          {changeType === 'positive' && <span>▲</span>}
-          {changeType === 'negative' && <span>▼</span>}
-          {change}
-        </div>
-      )}
+      <div className="kpi-label">
+        {label}
+        {tooltip && (
+          <span className="kpi-tooltip-anchor">
+            <span className="kpi-tooltip-icon">?</span>
+            <span className="kpi-tooltip-bubble">{tooltip}</span>
+          </span>
+        )}
+      </div>
+      {loading
+        ? <div className="kpi-skeleton" />
+        : <div className={`kpi-value${changeType !== 'neutral' ? ` kpi-value-${changeType}` : ''}`}>{value}</div>
+      }
     </div>
   );
 }
