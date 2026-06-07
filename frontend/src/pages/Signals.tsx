@@ -136,7 +136,7 @@ export function Signals() {
         <div className="filter-bar-search">
           <input
             type="text"
-            placeholder="Filter ticker…"
+            placeholder="Ticker…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -226,7 +226,6 @@ export function Signals() {
                   <SignalBadge signal={item.signal} />
                 </div>
                 <div className="scm-right">
-                  <span className="scm-prob">{Math.round(item.prob_up * 100)}%</span>
                   <ProbBar value={item.prob_up} />
                 </div>
               </div>
