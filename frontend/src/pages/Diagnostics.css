@@ -214,6 +214,13 @@
   .diag-mq-cards {
     grid-template-columns: repeat(2, 1fr);
   }
+  .diag-fi-label {
+    width: 100px;
+    font-size: 10px;
+  }
+  .diag-run-config-key {
+    width: 140px;
+  }
 }
 
 /* Run Configuration collapsible */

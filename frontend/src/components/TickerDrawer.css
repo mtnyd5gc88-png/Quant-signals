@@ -259,6 +259,52 @@
   background: #dc2626;
 }
 
+/* ── Mobile: full-width bottom sheet ── */
+@media (max-width: 767px) {
+  .ticker-drawer {
+    width: 100vw;
+    top: auto;
+    bottom: 0;
+    height: 90dvh;
+    border-left: none;
+    border-top: 1px solid #e5e7eb;
+    border-radius: 16px 16px 0 0;
+    animation: drawer-slide-up 300ms ease-out;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  @keyframes drawer-slide-up {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+
+  /* Drag handle pill */
+  .ticker-drawer::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: #d1d5db;
+    margin: 10px auto 0;
+    flex-shrink: 0;
+  }
+
+  .drawer-header {
+    padding-top: 12px;
+  }
+
+  /* Larger touch target for close button */
+  .drawer-close {
+    width: 44px;
+    height: 44px;
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 /* Warning flags */
 .drawer-warning {
   display: flex;

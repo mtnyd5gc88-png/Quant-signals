@@ -278,4 +278,19 @@
   .port-meta-sep {
     display: none;
   }
+  .port-donut-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .port-donut-legend {
+    max-height: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .port-donut-legend-item {
+    min-width: 110px;
+  }
+  .port-bar-track {
+    width: 120px;
+  }
 }

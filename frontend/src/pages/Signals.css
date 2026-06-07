@@ -294,6 +294,29 @@
     min-height: 48px;
     flex-wrap: wrap;
     padding: 8px 12px;
+    gap: 4px;
+  }
+  .filter-pills {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .filter-pill {
+    height: 26px;
+    font-size: 11px;
+    padding: 0 8px;
+  }
+  .filter-bar-search input {
+    width: 80px;
+  }
+}
+
+@media (max-width: 359px) {
+  /* iPhone SE 1st gen (320px) — even tighter */
+  .filter-bar-search {
+    display: none;
+  }
+  .filter-divider {
+    display: none;
   }
 }
 

@@ -30,5 +30,22 @@
 @media (max-width: 639px) {
   .page-content {
     padding: 12px;
+    gap: 12px;
+  }
+  .cost-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .cost-value {
+    font-size: 14px;
+  }
+  .heatmap-table {
+    font-size: 9px;
+  }
+  .heatmap-cell,
+  .heatmap-month-col {
+    width: 36px;
+    min-width: 36px;
+    padding: 3px 2px;
   }
 }

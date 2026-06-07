@@ -96,8 +96,7 @@
   border: 1px solid var(--border-default);
   border-radius: 12px;
   padding: 44px 48px;
-  width: 100%;
-  max-width: 420px;
+  width: min(420px, 92vw);
   box-shadow: var(--shadow-md);
 }
 
@@ -188,4 +187,47 @@
   background: var(--bg-surface-3);
   color: var(--text-tertiary);
   cursor: not-allowed;
+}
+
+/* ── Tablet (768–1023px) ── */
+@media (max-width: 1023px) and (min-width: 768px) {
+  .login-left {
+    width: 36%;
+    padding: 40px 32px;
+  }
+  .login-card {
+    padding: 32px 32px;
+  }
+}
+
+/* ── Mobile (<768px) ── */
+@media (max-width: 767px) {
+  .login-shell {
+    flex-direction: column;
+    overflow-y: auto;
+    height: auto;
+    min-height: 100dvh;
+  }
+  .login-left {
+    display: none;
+  }
+  .login-right {
+    flex: 1;
+    padding: 24px 16px;
+    align-items: flex-start;
+    padding-top: max(40px, env(safe-area-inset-top, 40px));
+  }
+  .login-card {
+    padding: 28px 20px;
+    border-radius: 10px;
+  }
+  .login-btn {
+    height: 48px;
+    font-size: 15px;
+    touch-action: manipulation;
+  }
+  .login-input {
+    height: 44px;
+    font-size: 16px; /* prevent iOS zoom */
+  }
 }

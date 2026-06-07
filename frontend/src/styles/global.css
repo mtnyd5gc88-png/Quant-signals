@@ -47,10 +47,32 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 3px var(--accent-dim);
 }
 
+/* Prevent iOS zoom on focused inputs */
+@media (max-width: 767px) {
+  input, select, textarea {
+    font-size: 16px;
+  }
+}
+
+/* Improve tap responsiveness */
+button, [role="button"], a, label {
+  touch-action: manipulation;
+}
+
+/* Safe-area support for notched phones */
+.app-shell {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 ::-webkit-scrollbar          { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track    { background: var(--bg-surface-2); }
 ::-webkit-scrollbar-thumb    { background: var(--border-strong); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
+
+/* Touch devices: hide scrollbars to save space */
+@media (hover: none) {
+  ::-webkit-scrollbar { width: 3px; height: 3px; }
+}
 
 /* ── SKELETON ── */
 @keyframes shimmer {

@@ -40,6 +40,12 @@
   .topbar-search-wrap { max-width: 120px; }
 }
 
+@media (max-width: 359px) {
+  /* 320px (iPhone SE 1st gen) — hide search, keep hamburger + logo mark + avatar */
+  .topbar-search-wrap { display: none; }
+  .topbar { gap: 8px; padding: 0 12px; }
+}
+
 /* ── Logo ── */
 .topbar-logo {
   display: flex;

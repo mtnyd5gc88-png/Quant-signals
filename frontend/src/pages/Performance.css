@@ -103,6 +103,17 @@
     padding: 12px;
     gap: 12px;
   }
+  .perf-panel {
+    padding: 14px 12px;
+  }
+  .perf-heatmap {
+    min-width: 480px;
+  }
+  .perf-heat-cell,
+  .perf-heat-month-col {
+    min-width: 34px;
+    font-size: 9px;
+  }
 }
 
 /* Metrics table */

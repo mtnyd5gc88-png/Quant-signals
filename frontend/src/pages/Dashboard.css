@@ -100,4 +100,13 @@
     padding: 12px;
     gap: 12px;
   }
+  .chart-panel {
+    padding: 14px 12px;
+  }
+  /* Compact chart heights on mobile via CSS custom properties */
+  .dashboard-row-2 .chart-panel,
+  .dashboard-row-3 .chart-panel {
+    --chart-equity-h: 220px;
+    --chart-drawdown-h: 120px;
+  }
 }
