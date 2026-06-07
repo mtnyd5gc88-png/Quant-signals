@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react';
+import { Lock } from 'lucide-react';
 import { api } from '../api/client';
 import { humanizeError } from '../utils/format';
 import './Settings.css';
@@ -13,7 +14,7 @@ function Toast({ message, type, onClose }: { message: string; type: 'success' | 
   );
 }
 
-function SettingRow({ label, description, control }: { label: string; description: string; control: ReactNode }) {
+function SettingRow({ label, description, control }: { label: ReactNode; description: string; control: ReactNode }) {
   return (
     <div className="setting-row">
       <div className="setting-info">
@@ -97,14 +98,10 @@ function DataRefreshSection() {
 }
 
 function ApiConfigSection() {
-  const [baseUrl, setBaseUrl] = useState(
-    () => localStorage.getItem('qs_api_url') || 'http://localhost:8000',
+  const [baseUrl] = useState(
+    () => (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:8000',
   );
   const [connStatus, setConnStatus] = useState<'idle' | 'checking' | 'ok' | 'error'>('idle');
-
-  const saveUrl = () => {
-    localStorage.setItem('qs_api_url', baseUrl);
-  };
 
   const testConnection = async () => {
     setConnStatus('checking');
@@ -119,15 +116,19 @@ function ApiConfigSection() {
   return (
     <div className="settings-card">
       <SettingRow
-        label="Backend URL"
-        description="FastAPI backend base URL"
+        label={
+          <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <Lock size={12} style={{ flexShrink: 0, opacity: 0.55 }} />
+            Backend URL
+          </span>
+        }
+        description="FastAPI backend base URL (set via VITE_API_URL at build time)"
         control={
           <div className="settings-url-row">
             <input
               className="settings-input"
               value={baseUrl}
-              onChange={(e) => setBaseUrl(e.target.value)}
-              onBlur={saveUrl}
+              readOnly
               placeholder="http://localhost:8000"
             />
             {connStatus === 'ok'       && <span className="conn-status ok">● Connected</span>}

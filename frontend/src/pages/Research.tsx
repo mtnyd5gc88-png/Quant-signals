@@ -43,14 +43,24 @@ export function Research() {
   );
 }
 
+function median(values: number[]): number {
+  if (!values.length) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 !== 0
+    ? sorted[mid]
+    : (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
 function UniverseTab({ signals }: { signals: ReturnType<typeof useSignals>['data'] }) {
   const items = signals.items;
   const probs = items.map((i) => i.prob_up);
   const meanProb = probs.reduce((s, v) => s + v, 0) / (probs.length || 1);
   const stdProb = Math.sqrt(probs.reduce((s, v) => s + Math.pow(v - meanProb, 2), 0) / (probs.length || 1));
-  const medianConf = items.map((i) => i.model_confidence ?? 0).sort((a, b) => a - b)[Math.floor(items.length / 2)] ?? 0;
+  const confidence = (prob_up: number) => Math.abs(prob_up - 0.5) * 2;
+  const medianConf = median(items.map((i) => confidence(i.prob_up)));
 
-  const stats = [
+  const stats: [string, string, string?][] = [
     ['Total Tickers', items.length.toString()],
     ['Coverage', `${items.length} (100%)`],
     ['BUY Signals', `${signals.buy_count} (${fmtPct(signals.buy_count / items.length)})`],
@@ -58,7 +68,7 @@ function UniverseTab({ signals }: { signals: ReturnType<typeof useSignals>['data
     ['CASH Signals', `${signals.cash_count} (${fmtPct(signals.cash_count / items.length)})`],
     ['Mean Predicted Prob', fmtNum(meanProb, 4)],
     ['Std Predicted Prob', fmtNum(stdProb, 4)],
-    ['Median Confidence', fmtNum(medianConf, 2)],
+    ['Median Confidence', fmtNum(medianConf, 2), 'Median |p − 0.5| × 2 across all signals. 0 = no conviction, 1 = maximum conviction.'],
   ];
 
   return (
@@ -68,8 +78,8 @@ function UniverseTab({ signals }: { signals: ReturnType<typeof useSignals>['data
         <table className="data-table">
           <thead><tr><th>METRIC</th><th className="numeric">VALUE</th></tr></thead>
           <tbody>
-            {stats.map(([label, value]) => (
-              <tr key={label}>
+            {stats.map(([label, value, tooltip]) => (
+              <tr key={label} title={tooltip}>
                 <td className="cell-sector">{label}</td>
                 <td className="cell-numeric">{value}</td>
               </tr>
