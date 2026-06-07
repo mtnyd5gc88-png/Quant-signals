@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Activity } from 'lucide-react';
 import { SignalBadge } from '../components/SignalBadge';
 import { ProbBar } from '../components/ProbBar';
+import { ConfidenceDots } from '../components/ConfidenceDots';
 import { TickerDrawer } from '../components/TickerDrawer';
 import { FreshnessTag } from '../components/FreshnessTag';
 import { SectionError } from '../components/SectionError';
@@ -153,57 +154,94 @@ export function Signals() {
         )}
       </div>
 
-      {/* Table Area */}
-      <div className="table-scroll-wrapper">
-        <div className="data-table-wrapper">
-          {loading ? (
-            <div className="table-skeleton-wrapper">
-              {Array.from({ length: 8 }, (_, i) => (
-                <div key={i} className="table-skeleton-row">
-                  <div className="skel" style={{ width: 160 }} />
-                  <div className="skel" style={{ width: 64 }} />
-                  <div className="skel" style={{ width: 128 }} />
-                  <div className="skel" style={{ width: 72 }} />
-                  <div className="skel" style={{ width: 72 }} />
-                  <div className="skel" style={{ width: 48 }} />
-                </div>
-              ))}
-            </div>
-          ) : error ? (
-            <div style={{ padding: 20 }}>
-              <SectionError message="Failed to load signals." onRetry={signalsRefetch} />
-            </div>
-          ) : isEmpty ? (
-            <EmptyState
-              icon={<Activity size={40} strokeWidth={1.25} />}
-              message="No signals available. Run the quant engine to generate signals."
-              sub={search.trim() ? `No results for "${search.trim()}"` : undefined}
-            />
-          ) : (
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <SortTH label="TICKER"      col="ticker"        width={200} />
-                  <SortTH label="SIGNAL"      col="signal"        width={90}  center />
-                  <SortTH label="PROBABILITY" col="prob_up"       width={180} />
-                  <SortTH label="EST. RETURN" col="target_return" width={110} right />
-                  <SortTH label="PRICE"       col="price"         width={100} right />
-                  <th style={{ width: 80 }} className="th-center">ACTIONS</th>
-                </tr>
-              </thead>
-              <tbody>
-                {displayRows.map((item) => (
-                  <SignalRow
-                    key={item.ticker}
-                    item={item}
-                    onOpen={() => setDrawerItem(item)}
-                    rocAuc={rocAuc}
-                  />
+      {/* Desktop table */}
+      <div className="signals-table-desktop">
+        <div className="table-scroll-wrapper">
+          <div className="data-table-wrapper">
+            {loading ? (
+              <div className="table-skeleton-wrapper">
+                {Array.from({ length: 8 }, (_, i) => (
+                  <div key={i} className="table-skeleton-row">
+                    <div className="skel" style={{ width: 160 }} />
+                    <div className="skel" style={{ width: 64 }} />
+                    <div className="skel" style={{ width: 128 }} />
+                    <div className="skel" style={{ width: 72 }} />
+                    <div className="skel" style={{ width: 72 }} />
+                    <div className="skel" style={{ width: 48 }} />
+                  </div>
                 ))}
-              </tbody>
-            </table>
-          )}
+              </div>
+            ) : error ? (
+              <div style={{ padding: 20 }}>
+                <SectionError message="Failed to load signals." onRetry={signalsRefetch} />
+              </div>
+            ) : isEmpty ? (
+              <EmptyState
+                icon={<Activity size={40} strokeWidth={1.25} />}
+                message="No signals available. Run the quant engine to generate signals."
+                sub={search.trim() ? `No results for "${search.trim()}"` : undefined}
+              />
+            ) : (
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <SortTH label="TICKER"      col="ticker"        width={200} />
+                    <SortTH label="SIGNAL"      col="signal"        width={90}  center />
+                    <SortTH label="PROBABILITY" col="prob_up"       width={180} />
+                    <SortTH label="EST. RETURN" col="target_return" width={110} right />
+                    <SortTH label="PRICE"       col="price"         width={100} right />
+                    <th style={{ width: 80 }} className="th-center">ACTIONS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {displayRows.map((item) => (
+                    <SignalRow
+                      key={item.ticker}
+                      item={item}
+                      onOpen={() => setDrawerItem(item)}
+                      rocAuc={rocAuc}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
+      </div>
+
+      {/* Mobile card list */}
+      <div className="signals-mobile-list">
+        {displayRows.map((item) => {
+          const retVal = item.target_return ?? item.expected_return ?? 0;
+          return (
+            <div
+              key={item.ticker}
+              className="signal-card-mobile"
+              onClick={() => setDrawerItem(item)}
+            >
+              <div className="scm-row-1">
+                <div className="scm-left">
+                  <span className="scm-avatar">{item.ticker.slice(0, 2)}</span>
+                  <span className="scm-ticker">{item.ticker}</span>
+                  <SignalBadge signal={item.signal} />
+                </div>
+                <div className="scm-right">
+                  <span className="scm-prob">{Math.round(item.prob_up * 100)}%</span>
+                  <ProbBar value={item.prob_up} />
+                </div>
+              </div>
+              <div className="scm-row-2">
+                <span className="scm-trust">
+                  Trust <ConfidenceDots value={item.model_confidence ?? 0} />
+                </span>
+                <span className={`scm-return ${retVal > 0 ? 'pos' : 'neg'}`}>
+                  {retVal > 0 ? '+' : ''}{(retVal * 100).toFixed(2)}%
+                </span>
+                <span className="scm-price">${item.price?.toFixed(2) ?? '—'}</span>
+              </div>
+            </div>
+          );
+        })}
       </div>
       <TickerDrawer
         item={drawerItem}
