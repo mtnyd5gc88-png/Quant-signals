@@ -1,29 +1,30 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { Search } from 'lucide-react';
 import { SignalBadge } from '../components/SignalBadge';
 import { ProbBar } from '../components/ProbBar';
-import { ConfidenceDots } from '../components/ConfidenceDots';
-import { Sparkline } from '../components/Sparkline';
-import { useSignals } from '../api/hooks';
-import { fmtPctSigned, fmtPrice, fmtRelTime, colorClass } from '../utils/format';
+import { useSignals, useDiagnostics } from '../api/hooks';
+import { fmtPctSigned, fmtPrice, colorClass } from '../utils/format';
 import type { SignalItem } from '../api/types';
 import './Signals.css';
 
-const FILTERS = ['ALL', 'BUY', 'HOLD', 'CASH'] as const;
+const FILTERS = ['ALL', 'BUY', 'HOLD', 'SELL'] as const;
+type Filter = typeof FILTERS[number];
 
-type SortKey = 'prob_up' | 'target_return' | 'ticker' | 'model_confidence' | 'position_weight';
+type SortKey = 'prob_up' | 'target_return' | 'ticker' | 'price' | 'signal';
 
 export function Signals() {
   const [searchParams] = useSearchParams();
-  const [filter, setFilter] = useState('ALL');
+  const [filter, setFilter] = useState<Filter>('ALL');
   const [sortKey, setSortKey] = useState<SortKey>('prob_up');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [search, setSearch] = useState(() => searchParams.get('q') ?? '');
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const { data, loading } = useSignals();
+  const { data: diag } = useDiagnostics();
+  const rocAuc = diag.model_quality.roc_auc_mean;
 
-  // Auto-expand exact ticker match when arriving from TopBar search
   useEffect(() => {
     const q = searchParams.get('q');
     if (!q || !data.items.length) return;
@@ -64,9 +65,7 @@ export function Signals() {
       }
       const as = String(av ?? '');
       const bs = String(bv ?? '');
-      return sortDir === 'desc'
-        ? bs.localeCompare(as)
-        : as.localeCompare(bs);
+      return sortDir === 'desc' ? bs.localeCompare(as) : as.localeCompare(bs);
     });
 
     return rows;
@@ -105,7 +104,8 @@ export function Signals() {
   const shown = displayRows.length;
   const buyCount = displayRows.filter((r) => r.signal === 'BUY').length;
   const holdCount = displayRows.filter((r) => r.signal === 'HOLD').length;
-  const cashCount = displayRows.filter((r) => r.signal === 'CASH').length;
+
+  const isEmpty = !loading && shown === 0;
 
   return (
     <div className="signals-page">
@@ -118,7 +118,7 @@ export function Signals() {
               className={`filter-pill${filter === f ? ' active' : ''}`}
               onClick={() => setFilter(f)}
             >
-              {f}
+              {f === 'ALL' ? 'All' : `${f} only`}
             </button>
           ))}
         </div>
@@ -134,58 +134,67 @@ export function Signals() {
           />
         </div>
 
-        <span className="filter-bar-right">
-          {shown} signals&nbsp;·&nbsp;
-          <span className="count-buy">{buyCount} BUY</span>
-          &nbsp;·&nbsp;
-          <span className="count-hold">{holdCount} HOLD</span>
-          &nbsp;·&nbsp;
-          {cashCount} CASH
-        </span>
+        {!loading && (
+          <span className="filter-bar-right">
+            {shown} signals&nbsp;·&nbsp;
+            <span className="count-buy">{buyCount} BUY</span>
+            &nbsp;·&nbsp;
+            <span className="count-hold">{holdCount} HOLD</span>
+          </span>
+        )}
       </div>
 
-      {/* Table */}
+      {/* Table Area */}
       <div className="table-scroll-wrapper">
         <div className="data-table-wrapper">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th style={{ width: 160 }}>TICKER</th>
-                <th style={{ width: 80 }} className="th-center">SIGNAL</th>
-                <SortTH label="PROB UP"    col="prob_up"          width={130} right />
-                <SortTH label="EXP RETURN" col="target_return"    width={100} right />
-                <th style={{ width: 96 }} className="numeric">TARGET PRICE</th>
-                <th style={{ width: 96 }} className="numeric">CURRENT PRICE</th>
-                <SortTH label="POS WT"     col="position_weight"  width={72}  right />
-                <th style={{ width: 110 }}>SECTOR</th>
-                <SortTH label="CONFIDENCE" col="model_confidence" width={120} right />
-                <th style={{ width: 80 }} className="numeric">LAST PRED</th>
-                <th style={{ width: 76 }} className="th-center">TREND</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading
-                ? Array.from({ length: 15 }, (_, i) => (
-                    <tr key={i}>
-                      {Array.from({ length: 11 }, (__, j) => (
-                        <td key={j}>
-                          <div className="skeleton skeleton-text" />
-                        </td>
-                      ))}
-                    </tr>
-                  ))
-                : displayRows.map((item) => (
-                    <SignalRow
-                      key={item.ticker}
-                      item={item}
-                      expanded={expanded === item.ticker}
-                      onToggle={() =>
-                        setExpanded(expanded === item.ticker ? null : item.ticker)
-                      }
-                    />
-                  ))}
-            </tbody>
-          </table>
+          {loading ? (
+            <div className="table-skeleton-wrapper">
+              {Array.from({ length: 8 }, (_, i) => (
+                <div key={i} className="table-skeleton-row">
+                  <div className="skel" style={{ width: 160 }} />
+                  <div className="skel" style={{ width: 64 }} />
+                  <div className="skel" style={{ width: 128 }} />
+                  <div className="skel" style={{ width: 72 }} />
+                  <div className="skel" style={{ width: 72 }} />
+                  <div className="skel" style={{ width: 48 }} />
+                </div>
+              ))}
+            </div>
+          ) : isEmpty ? (
+            <div className="table-empty">
+              <Search size={48} color="#9ca3af" strokeWidth={1.5} />
+              <p className="table-empty-text">
+                No signals found{search.trim() ? ` for "${search.trim()}"` : ''}
+              </p>
+              <p className="table-empty-sub">Try a different ticker symbol</p>
+            </div>
+          ) : (
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <SortTH label="TICKER"      col="ticker"        width={200} />
+                  <SortTH label="SIGNAL"      col="signal"        width={90}  center />
+                  <SortTH label="PROBABILITY" col="prob_up"       width={180} />
+                  <SortTH label="EST. RETURN" col="target_return" width={110} right />
+                  <SortTH label="PRICE"       col="price"         width={100} right />
+                  <th style={{ width: 80 }} className="th-center">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody>
+                {displayRows.map((item) => (
+                  <SignalRow
+                    key={item.ticker}
+                    item={item}
+                    expanded={expanded === item.ticker}
+                    onToggle={() =>
+                      setExpanded(expanded === item.ticker ? null : item.ticker)
+                    }
+                    rocAuc={rocAuc}
+                  />
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>
@@ -196,20 +205,19 @@ function SignalRow({
   item,
   expanded,
   onToggle,
+  rocAuc,
 }: {
   item: SignalItem;
   expanded: boolean;
   onToggle: () => void;
+  rocAuc?: number;
 }) {
   const retVal = item.target_return ?? item.expected_return ?? 0;
   const retClass = colorClass(retVal);
 
   return (
     <>
-      <tr
-        className={`signal-row${expanded ? ' expanded' : ''}`}
-        onClick={onToggle}
-      >
+      <tr className={`signal-row${expanded ? ' expanded' : ''}`}>
         <td>
           <div className="ticker-cell">
             <div className="company-logo-circle">{item.ticker.slice(0, 2)}</div>
@@ -225,32 +233,19 @@ function SignalRow({
           <SignalBadge signal={item.signal} />
         </td>
         <td>
-          <ProbBar value={item.prob_up} />
+          <ProbBar value={item.prob_up} rocAuc={rocAuc} avgTrust={rocAuc !== undefined} />
         </td>
         <td className={`cell-numeric ${retClass}`}>{fmtPctSigned(retVal)}</td>
-        <td className="cell-numeric">
-          {item.target_price ? `$${fmtPrice(item.target_price)}` : '—'}
-        </td>
         <td className="cell-numeric">${fmtPrice(item.price)}</td>
-        <td className="cell-numeric">
-          {item.position_weight
-            ? `${(item.position_weight * 100).toFixed(2)}%`
-            : '—'}
-        </td>
-        <td className="cell-sector">{item.sector ?? '—'}</td>
-        <td>
-          <ConfidenceDots value={item.model_confidence ?? 0.5} />
-        </td>
-        <td className="cell-numeric cell-sm">
-          {item.last_prediction ? fmtRelTime(item.last_prediction) : '—'}
-        </td>
         <td className="td-center">
-          <Sparkline data={item.trend ?? [item.price]} />
+          <button className="detail-btn" onClick={onToggle}>
+            {expanded ? '▲' : 'Detail'}
+          </button>
         </td>
       </tr>
       {expanded && (
         <tr className="expanded-detail-row">
-          <td colSpan={11}>
+          <td colSpan={6}>
             <div className="expanded-detail">
               <div className="expanded-stat">
                 <span className="expanded-label">Alpha Score</span>
@@ -274,6 +269,12 @@ function SignalRow({
                 <span className="expanded-label">Expected Return</span>
                 <span className={`expanded-value ${colorClass(retVal)}`}>
                   {fmtPctSigned(retVal)}
+                </span>
+              </div>
+              <div className="expanded-stat">
+                <span className="expanded-label">Target Price</span>
+                <span className="expanded-value">
+                  {item.target_price ? `$${fmtPrice(item.target_price)}` : '—'}
                 </span>
               </div>
               <div className="expanded-stat">

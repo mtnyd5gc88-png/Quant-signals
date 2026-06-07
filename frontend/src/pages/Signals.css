@@ -39,20 +39,19 @@
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 120ms ease;
-  background: var(--bg-surface-2);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-default);
+  transition: all 150ms ease;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid transparent;
 }
 .filter-pill:hover {
-  background: var(--bg-surface-3);
-  color: var(--text-primary);
-  border-color: var(--border-strong);
+  background: #e5e7eb;
+  color: #111827;
 }
 .filter-pill.active {
-  background: var(--accent-dim);
-  color: var(--accent-primary);
-  border-color: var(--accent-primary);
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
   font-weight: 600;
 }
 
@@ -62,6 +61,13 @@
   border-radius: 6px;
   font-size: 12px;
   width: 150px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface-2);
+  color: var(--text-primary);
+  outline: none;
+}
+.filter-bar-search input:focus {
+  border-color: #2563eb;
 }
 
 .filter-bar-right {
@@ -71,11 +77,11 @@
   font-family: var(--font-mono);
   white-space: nowrap;
 }
-.count-buy  { color: var(--positive); }
-.count-hold { color: var(--neutral); }
+.count-buy  { color: #166534; }
+.count-hold { color: #854d0e; }
 
 /* ── Sort column header ── */
-.data-table th.sorted { color: var(--accent-primary); }
+.data-table th.sorted { color: #2563eb; }
 .sort-icon { font-size: 9px; margin-left: 3px; }
 .sort-icon-inactive { opacity: 0.35; }
 
@@ -95,6 +101,61 @@
   box-shadow: var(--shadow-sm);
 }
 
+/* ── Skeleton loading (no header) ── */
+.table-skeleton-wrapper {
+  padding: 8px 0;
+}
+
+.table-skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 52px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.table-skeleton-row:last-child {
+  border-bottom: none;
+}
+
+.skel {
+  height: 12px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #f3f4f6 25%, #e9eaec 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: sig-shimmer 1.4s ease infinite;
+  flex-shrink: 0;
+}
+
+@keyframes sig-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Empty state ── */
+.table-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  gap: 8px;
+}
+
+.table-empty-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.table-empty-sub {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin: 0;
+}
+
+/* ── Data table ── */
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -127,13 +188,13 @@
 .data-table th.sortable:hover { color: var(--text-primary); }
 
 .data-table tbody tr {
-  height: 40px;
+  height: 52px;
   border-bottom: 1px solid var(--border-subtle);
   transition: background 100ms ease;
-  cursor: pointer;
   will-change: background;
 }
 .data-table tbody tr:hover { background: var(--bg-surface-2); }
+.data-table tbody tr:last-child { border-bottom: none; }
 
 .data-table td {
   padding: 0 12px;
@@ -162,7 +223,7 @@
 }
 .company-name {
   font-size: 11px; color: var(--text-secondary); font-weight: 400;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 120px;
 }
 
 /* ── Cells ── */
@@ -172,10 +233,28 @@
   text-align: right;
   font-feature-settings: "tnum" 1;
 }
-.cell-sm     { font-size: 11px; }
-.cell-sector { font-size: 12px; color: var(--text-secondary); }
 .cell-numeric.positive { color: var(--positive); }
 .cell-numeric.negative { color: var(--negative); }
+
+/* ── Detail action button ── */
+.detail-btn {
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 120ms ease;
+  background: var(--bg-surface-2);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+  white-space: nowrap;
+}
+.detail-btn:hover {
+  background: var(--accent-dim);
+  color: #2563eb;
+  border-color: #2563eb;
+}
 
 /* ── Expanded row ── */
 .signal-row.expanded { background: var(--bg-surface-2) !important; }
