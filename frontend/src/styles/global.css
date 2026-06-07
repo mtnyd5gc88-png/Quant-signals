@@ -52,6 +52,14 @@ input:focus, select:focus, textarea:focus {
   input, select, textarea {
     font-size: 16px;
   }
+  .recharts-wrapper,
+  .recharts-surface {
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+  .chart-panel {
+    contain: layout style;
+  }
 }
 
 /* Improve tap responsiveness */
