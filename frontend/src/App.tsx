@@ -7,6 +7,7 @@ import { Signals } from './pages/Signals';
 import { Portfolio } from './pages/Portfolio';
 import { Diagnostics } from './pages/Diagnostics';
 import { Backtests } from './pages/Backtests';
+import { Performance } from './pages/Performance';
 import { Research } from './pages/Research';
 import { Settings } from './pages/Settings';
 import type { ReactNode } from 'react';
@@ -34,7 +35,8 @@ export default function App() {
             <Route path="signals"     element={<Signals />} />
             <Route path="portfolio"   element={<Portfolio />} />
             <Route path="diagnostics" element={<Diagnostics />} />
-            <Route path="backtests"   element={<Backtests />} />
+            <Route path="backtests"    element={<Backtests />} />
+            <Route path="performance"  element={<Performance />} />
             <Route path="research"    element={<Research />} />
             <Route path="settings"    element={<Settings />} />
             <Route path="*"           element={<Navigate to="/" replace />} />

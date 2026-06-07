@@ -3,7 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { SignalBadge } from '../components/SignalBadge';
 import { ProbBar } from '../components/ProbBar';
-import { useSignals, useDiagnostics } from '../api/hooks';
+import { TickerDrawer } from '../components/TickerDrawer';
+import { useSignals, useDiagnostics, usePortfolio, useRegime } from '../api/hooks';
 import { fmtPctSigned, fmtPrice, colorClass } from '../utils/format';
 import type { SignalItem } from '../api/types';
 import './Signals.css';
@@ -19,17 +20,20 @@ export function Signals() {
   const [sortKey, setSortKey] = useState<SortKey>('prob_up');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [search, setSearch] = useState(() => searchParams.get('q') ?? '');
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const [drawerItem, setDrawerItem] = useState<SignalItem | null>(null);
 
   const { data, loading } = useSignals();
   const { data: diag } = useDiagnostics();
+  const { data: portfolio } = usePortfolio();
+  const { data: regimeData } = useRegime();
   const rocAuc = diag.model_quality.roc_auc_mean;
+  const regime = regimeData.regime;
 
   useEffect(() => {
     const q = searchParams.get('q');
     if (!q || !data.items.length) return;
     const exact = data.items.find((i) => i.ticker === q.toUpperCase());
-    if (exact) setExpanded(exact.ticker);
+    if (exact) setDrawerItem(exact);
   }, [data.items, searchParams]);
 
   function handleSort(key: SortKey) {
@@ -185,10 +189,7 @@ export function Signals() {
                   <SignalRow
                     key={item.ticker}
                     item={item}
-                    expanded={expanded === item.ticker}
-                    onToggle={() =>
-                      setExpanded(expanded === item.ticker ? null : item.ticker)
-                    }
+                    onOpen={() => setDrawerItem(item)}
                     rocAuc={rocAuc}
                   />
                 ))}
@@ -197,94 +198,59 @@ export function Signals() {
           )}
         </div>
       </div>
+      <TickerDrawer
+        item={drawerItem}
+        onClose={() => setDrawerItem(null)}
+        rocAuc={rocAuc ?? 0}
+        regime={regime}
+        portfolioHolding={
+          drawerItem
+            ? portfolio.holdings.find((h) => h.ticker === drawerItem.ticker)
+            : undefined
+        }
+      />
     </div>
   );
 }
 
 function SignalRow({
   item,
-  expanded,
-  onToggle,
+  onOpen,
   rocAuc,
 }: {
   item: SignalItem;
-  expanded: boolean;
-  onToggle: () => void;
+  onOpen: () => void;
   rocAuc?: number;
 }) {
   const retVal = item.target_return ?? item.expected_return ?? 0;
   const retClass = colorClass(retVal);
 
   return (
-    <>
-      <tr className={`signal-row${expanded ? ' expanded' : ''}`}>
-        <td>
-          <div className="ticker-cell">
-            <div className="company-logo-circle">{item.ticker.slice(0, 2)}</div>
-            <div>
-              <div className="ticker-symbol">{item.ticker}</div>
-              {item.company && (
-                <div className="company-name">{item.company}</div>
-              )}
-            </div>
+    <tr className="signal-row" onClick={onOpen} style={{ cursor: 'pointer' }}>
+      <td>
+        <div className="ticker-cell">
+          <div className="company-logo-circle">{item.ticker.slice(0, 2)}</div>
+          <div>
+            <div className="ticker-symbol">{item.ticker}</div>
+            {item.company && (
+              <div className="company-name">{item.company}</div>
+            )}
           </div>
-        </td>
-        <td className="td-center">
-          <SignalBadge signal={item.signal} />
-        </td>
-        <td>
-          <ProbBar value={item.prob_up} rocAuc={rocAuc} avgTrust={rocAuc !== undefined} />
-        </td>
-        <td className={`cell-numeric ${retClass}`}>{fmtPctSigned(retVal)}</td>
-        <td className="cell-numeric">${fmtPrice(item.price)}</td>
-        <td className="td-center">
-          <button className="detail-btn" onClick={onToggle}>
-            {expanded ? '▲' : 'Detail'}
-          </button>
-        </td>
-      </tr>
-      {expanded && (
-        <tr className="expanded-detail-row">
-          <td colSpan={6}>
-            <div className="expanded-detail">
-              <div className="expanded-stat">
-                <span className="expanded-label">Alpha Score</span>
-                <span className="expanded-value">
-                  {item.alpha_score?.toFixed(4) ?? '—'}
-                </span>
-              </div>
-              <div className="expanded-stat">
-                <span className="expanded-label">Probability Up</span>
-                <span className="expanded-value">
-                  {(item.prob_up * 100).toFixed(2)}%
-                </span>
-              </div>
-              <div className="expanded-stat">
-                <span className="expanded-label">Model Confidence</span>
-                <span className="expanded-value">
-                  {((item.model_confidence ?? 0) * 100).toFixed(1)}%
-                </span>
-              </div>
-              <div className="expanded-stat">
-                <span className="expanded-label">Expected Return</span>
-                <span className={`expanded-value ${colorClass(retVal)}`}>
-                  {fmtPctSigned(retVal)}
-                </span>
-              </div>
-              <div className="expanded-stat">
-                <span className="expanded-label">Target Price</span>
-                <span className="expanded-value">
-                  {item.target_price ? `$${fmtPrice(item.target_price)}` : '—'}
-                </span>
-              </div>
-              <div className="expanded-stat">
-                <span className="expanded-label">Signal</span>
-                <SignalBadge signal={item.signal} />
-              </div>
-            </div>
-          </td>
-        </tr>
-      )}
-    </>
+        </div>
+      </td>
+      <td className="td-center">
+        <SignalBadge signal={item.signal} />
+      </td>
+      <td>
+        <ProbBar value={item.prob_up} rocAuc={rocAuc} avgTrust={rocAuc !== undefined} />
+      </td>
+      <td className={`cell-numeric ${retClass}`}>{fmtPctSigned(retVal)}</td>
+      <td className="cell-numeric">${fmtPrice(item.price)}</td>
+      <td className="td-center">
+        <button className="detail-btn" onClick={(e) => { e.stopPropagation(); onOpen(); }}>
+          Detail
+        </button>
+      </td>
+    </tr>
   );
 }

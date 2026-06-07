@@ -5,6 +5,7 @@ import {
   PieChart,
   Activity,
   TrendingUp,
+  BarChart2,
   FlaskConical,
   Settings,
 } from 'lucide-react';
@@ -18,8 +19,9 @@ const NAV_GROUPS = [
       { to: '/signals',     label: 'Signals',     icon: Zap },
       { to: '/portfolio',   label: 'Portfolio',   icon: PieChart },
       { to: '/diagnostics', label: 'Diagnostics', icon: Activity },
-      { to: '/backtests',   label: 'Backtests',   icon: TrendingUp },
-      { to: '/research',    label: 'Research',    icon: FlaskConical },
+      { to: '/backtests',    label: 'Backtests',    icon: TrendingUp },
+      { to: '/performance', label: 'Performance',  icon: BarChart2 },
+      { to: '/research',    label: 'Research',     icon: FlaskConical },
     ],
   },
   {
