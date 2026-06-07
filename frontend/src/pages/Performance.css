@@ -160,3 +160,19 @@
   text-align: right;
   font-feature-settings: "tnum" 1;
 }
+
+@media (max-width: 767px) {
+  .perf-metrics-table {
+    table-layout: fixed;
+    width: 100%;
+  }
+  .perf-metrics-table td:first-child {
+    width: 60%;
+  }
+  .perf-metrics-table td:last-child {
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

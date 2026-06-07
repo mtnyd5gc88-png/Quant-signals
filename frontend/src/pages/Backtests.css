@@ -27,6 +27,15 @@
   .cost-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
+@media (max-width: 767px) {
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    overflow-x: visible;
+  }
+}
+
 @media (max-width: 639px) {
   .page-content {
     padding: 12px;
