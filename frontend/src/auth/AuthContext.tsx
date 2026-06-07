@@ -28,8 +28,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const login = async (email: string, password: string) => {
-    const baseUrl = localStorage.getItem('qs_api_url') || 'http://localhost:8000';
-    const res = await fetch(`${baseUrl}/api/auth/login`, {
+    const apiBase = localStorage.getItem('qs_api_url')
+      ? `${localStorage.getItem('qs_api_url')}/api`
+      : (import.meta.env.VITE_API_URL ?? 'http://localhost:8000/api');
+    const res = await fetch(`${apiBase}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
