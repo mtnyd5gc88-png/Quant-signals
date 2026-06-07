@@ -192,6 +192,20 @@ export const mockDiagnostics: DiagnosticsResponse = {
     beta: 0.412,
   },
   last_run: new Date().toISOString(),
+  run_config: {
+    universe: 'Nasdaq-100',
+    rebalance_freq: 'weekly',
+    lookback_days: 252,
+    n_estimators: 200,
+    max_features: 'sqrt',
+    signal_threshold: 0.55,
+    cost_per_trade_bps: 10,
+    walk_forward_splits: 8,
+    train_months: 24,
+    test_months: 3,
+    random_state: 42,
+    min_prob_delta: 0.02,
+  },
 };
 
 export const mockCalibration: CalibrationBucket[] = [

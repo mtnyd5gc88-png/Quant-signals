@@ -1,80 +1,258 @@
 .diag-page {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.diag-content {
-  flex: 1;
   overflow-y: auto;
-  padding: var(--space-5) var(--space-6);
-}
-
-.diag-section {
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: 16px;
 }
 
-.metrics-grid {
+.diag-panel {
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.diag-panel-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+}
+
+.diag-panel-subtitle {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: -10px;
+  margin-bottom: 16px;
+}
+
+/* Model Quality cards */
+.diag-mq-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
   gap: 12px;
+  margin-bottom: 16px;
 }
 
-.chart-panel {
-  background: var(--bg-surface-1);
+.diag-mq-card {
+  background: var(--bg-surface-2);
   border: 1px solid var(--border-default);
   border-radius: 8px;
-  padding: 20px 24px;
+  padding: 14px 16px;
 }
-.chart-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
-.chart-subtitle { font-size: 11px; color: var(--text-secondary); margin-bottom: 16px; }
 
-.alpha-attr-table { margin-bottom: var(--space-4); }
+.diag-mq-card-label {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
 
-.drift-status-card {
-  background: var(--bg-surface-1);
-  border: 1px solid var(--border-default);
-  border-radius: 8px;
-  padding: 24px;
-  text-align: center;
+.diag-mq-card-value {
+  font-size: 22px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  font-feature-settings: "tnum" 1;
+  margin-bottom: 10px;
 }
-.drift-score-label {
-  font-size: 10px; font-weight: 500; text-transform: uppercase;
-  letter-spacing: 0.1em; color: var(--text-tertiary); margin-bottom: 8px;
-}
-.drift-score-value {
-  font-family: var(--font-mono); font-size: var(--text-2xl);
-  font-weight: 700; letter-spacing: 0.04em;
-}
-.drift-score-value.stable { color: var(--positive); }
-.drift-score-value.warning { color: var(--neutral); }
-.drift-score-value.drift   { color: var(--negative); }
-.drift-score-sub { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
 
-.drift-note {
-  background: var(--bg-surface-1);
-  border: 1px solid var(--border-default);
-  border-radius: 8px;
-  padding: 16px 20px;
+/* ROC-AUC gauge */
+.diag-roc-gauge {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.diag-roc-gauge-track {
+  position: relative;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, #ef4444 0%, #f59e0b 40%, #84cc16 70%, #16a34a 100%);
+}
+
+.diag-roc-gauge-marker {
+  position: absolute;
+  top: -3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #374151;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+.diag-roc-gauge-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+}
+
+/* Explanation text */
+.diag-mq-explanation {
   font-size: 12px;
   color: var(--text-secondary);
   line-height: 1.6;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 12px;
 }
 
-/* reuse data-table styles from Signals.css */
-.data-table-wrapper { background: var(--bg-surface-1); border: 1px solid var(--border-default); border-radius: 8px; overflow: hidden; }
-.data-table { width: 100%; border-collapse: collapse; }
-.data-table thead tr { height: 32px; background: var(--bg-surface-3); border-bottom: 1px solid var(--border-default); }
-.data-table th { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); padding: 0 12px; text-align: left; white-space: nowrap; }
-.data-table th.numeric { text-align: right; }
-.data-table tbody tr { height: 36px; border-bottom: 1px solid var(--border-subtle); }
-.data-table tbody tr:nth-child(odd)  { background: var(--bg-surface-1); }
-.data-table tbody tr:nth-child(even) { background: var(--bg-surface-1); }
-.data-table td { padding: 0 12px; font-size: 13px; color: var(--text-primary); vertical-align: middle; white-space: nowrap; }
-.cell-numeric { font-family: var(--font-mono); font-size: 12px; text-align: right; font-feature-settings: "tnum" 1; }
-.cell-sector { font-size: 12px; color: var(--text-secondary); }
-.cell-numeric.positive { color: var(--positive); }
-.cell-numeric.negative { color: var(--negative); }
+/* Feature Importance chart */
+.diag-fi-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.diag-fi-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 20px;
+}
+
+.diag-fi-label {
+  width: 160px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+.diag-fi-bar-track {
+  flex: 1;
+  height: 20px;
+  background: var(--bg-surface-3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.diag-fi-bar-fill {
+  height: 100%;
+  background: #2563eb;
+  border-radius: 2px;
+  transition: width 400ms ease;
+}
+
+.diag-fi-value {
+  width: 56px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  text-align: right;
+  flex-shrink: 0;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Turnover & Cost Summary */
+.diag-cost-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 14px;
+}
+
+.diag-cost-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 13px;
+}
+
+.diag-cost-row:last-child { border-bottom: none; }
+
+.diag-cost-label { color: #374151; }
+
+.diag-cost-val {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-feature-settings: "tnum" 1;
+  color: var(--text-primary);
+}
+
+.diag-cost-val-pos { color: #16a34a; }
+.diag-cost-val-neg { color: #dc2626; }
+
+.diag-cost-impact {
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: #fef9c3;
+  border: 1px solid #fde68a;
+  border-radius: 6px;
+  padding: 10px 14px;
+  line-height: 1.5;
+}
+
+.diag-cost-impact strong {
+  color: #92400e;
+}
+
+/* Run Configuration collapsible */
+.diag-run-config-panel { padding: 0; }
+
+.diag-run-config-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 16px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.diag-run-config-summary:hover { color: var(--accent-primary); }
+.diag-run-config-summary.open { border-bottom: 1px solid var(--border-subtle); }
+
+.diag-run-config-chevron {
+  font-size: 12px;
+  color: var(--text-secondary);
+  width: 12px;
+  flex-shrink: 0;
+}
+
+.diag-run-config-body {
+  padding: 12px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.diag-run-config-row {
+  display: flex;
+  gap: 16px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 12px;
+  font-family: var(--font-mono);
+}
+
+.diag-run-config-row:last-child { border-bottom: none; }
+
+.diag-run-config-key {
+  width: 200px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.diag-run-config-val {
+  color: var(--text-primary);
+  font-weight: 500;
+}

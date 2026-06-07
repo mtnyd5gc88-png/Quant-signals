@@ -103,6 +103,7 @@ export interface DiagnosticsResponse {
   turnover: TurnoverStats;
   alpha_attribution: AlphaAttribution;
   last_run: string;
+  run_config?: Record<string, string | number | boolean>;
 }
 
 export interface CalibrationBucket {
