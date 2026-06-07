@@ -107,8 +107,8 @@ export function Performance() {
             />
             <Tooltip
               {...CHART_TOOLTIP_STYLE}
-              formatter={(v: number, n: string) => [`${v.toFixed(1)}`, n]}
-              labelFormatter={(l: string) => l}
+              formatter={(v, n) => [`${(v as number).toFixed(1)}`, String(n)]}
+              labelFormatter={(l) => String(l)}
             />
             <Legend
               verticalAlign="top"
@@ -166,7 +166,7 @@ export function Performance() {
             />
             <Tooltip
               {...CHART_TOOLTIP_STYLE}
-              formatter={(v: number) => [`${v.toFixed(1)}%`, 'Drawdown']}
+              formatter={(v) => [`${(v as number).toFixed(1)}%`, 'Drawdown']}
             />
             <ReferenceLine y={0} stroke="#d1d5db" strokeWidth={1} />
             <Area

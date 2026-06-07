@@ -36,17 +36,19 @@ export function Diagnostics() {
             ))}
           </div>
         ) : (
-        <div className="diag-mq-cards">
-          <RocAucCard value={mq.roc_auc_mean ?? 0} />
-          <MetricCard label="Accuracy Mean" value={`${((mq.accuracy_mean ?? 0) * 100).toFixed(1)}%`} />
-          <MetricCard label="Precision Mean" value={`${((mq.precision_mean ?? 0) * 100).toFixed(1)}%`} />
-          <MetricCard label="Recall" value={`${((mq.recall_mean ?? 0) * 100).toFixed(1)}%`} />
-          <MetricCard label="Tickers Trained" value={String(mq.n_tickers)} />
-        </div>
-        <div className="diag-mq-explanation">
-          ROC-AUC measures the model's ability to rank up-moves above down-moves.
-          Values above 0.60 indicate meaningful predictive power beyond random chance.
-        </div>
+        <>
+          <div className="diag-mq-cards">
+            <RocAucCard value={mq.roc_auc_mean ?? 0} />
+            <MetricCard label="Accuracy Mean" value={`${((mq.accuracy_mean ?? 0) * 100).toFixed(1)}%`} />
+            <MetricCard label="Precision Mean" value={`${((mq.precision_mean ?? 0) * 100).toFixed(1)}%`} />
+            <MetricCard label="Recall" value={`${((mq.recall_mean ?? 0) * 100).toFixed(1)}%`} />
+            <MetricCard label="Tickers Trained" value={String(mq.n_tickers)} />
+          </div>
+          <div className="diag-mq-explanation">
+            ROC-AUC measures the model's ability to rank up-moves above down-moves.
+            Values above 0.60 indicate meaningful predictive power beyond random chance.
+          </div>
+        </>
         )}
       </div>
 

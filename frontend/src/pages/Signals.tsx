@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, Activity } from 'lucide-react';
+import { Activity } from 'lucide-react';
 import { SignalBadge } from '../components/SignalBadge';
 import { ProbBar } from '../components/ProbBar';
 import { TickerDrawer } from '../components/TickerDrawer';
