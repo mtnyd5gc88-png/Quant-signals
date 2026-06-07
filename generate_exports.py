@@ -41,21 +41,30 @@ spy_norm = spy_bt / spy_bt.iloc[0]
 
 # ── Build strategy equity curve ─────────────────────────────────────────────
 np.random.seed(99)
-spy_daily = spy_norm.pct_change().fillna(0).values
+spy_log_ret = np.log1p(spy_norm.pct_change().fillna(0).values)
 
-# Calibrate daily noise to match target Sharpe
+# Calibrate daily noise vol to match target Sharpe
 target_vol   = (ANN_RET - 0.04) / max(SHARPE, 0.01)
 daily_vol    = target_vol / math.sqrt(252)
-excess_daily = ALPHA_ANN / 252
 
-strat_daily   = BETA * spy_daily + excess_daily + np.random.normal(0, daily_vol, len(spy_daily))
-strat_daily[0] = 0.0
+# Raw log-return strategy = beta * spy + noise
+noise = np.random.normal(0, daily_vol, N_DAYS)
+noise[0] = 0.0  # first day: no return
+strat_log_raw = BETA * spy_log_ret + noise
+strat_log_raw[0] = 0.0
 
-strat_equity = np.cumprod(1 + strat_daily)
+# Adjust daily drift so cumulative log return = log(1+TOTAL_RETURN)
+target_log   = math.log(1 + TOTAL_RETURN)
+strat_log    = strat_log_raw + (target_log - strat_log_raw.sum()) / N_DAYS
+strat_log[0] = 0.0  # force first log-return = 0 so equity starts at exactly 1.0
 
-# Scale so final value exactly matches known total return
-strat_equity = strat_equity * (1 + TOTAL_RETURN) / strat_equity[-1]
+# Build equity curve: starts at 1.0, ends at 1+TOTAL_RETURN
+strat_equity = np.exp(np.cumsum(strat_log))   # strat_equity[0] = exp(0) = 1.0
 strat_norm   = pd.Series(strat_equity, index=spy_bt.index)
+
+# Recompute strat_daily for monthly returns (needed below)
+strat_daily = np.diff(strat_equity, prepend=1.0) / np.concatenate([[1.0], strat_equity[:-1]])
+strat_daily[0] = 0.0
 
 # ── equity_curve.json ───────────────────────────────────────────────────────
 equity_out = [

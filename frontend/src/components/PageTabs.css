@@ -4,7 +4,7 @@
   background: var(--bg-surface-1);
   display: flex;
   align-items: flex-end;
-  padding: 0 16px;
+  padding: 0 0 0 16px;
   gap: 0;
   flex-shrink: 0;
 }
@@ -13,7 +13,7 @@
   padding: 0 16px;
   font-size: 13px;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -21,8 +21,9 @@
   transition: color 100ms ease;
   background: none;
   white-space: nowrap;
+  user-select: none;
 }
-.tab-item:hover { color: var(--text-primary); }
+.tab-item:hover { color: var(--text-secondary); }
 .tab-item.active {
   color: var(--text-primary);
   border-bottom-color: var(--accent-primary);

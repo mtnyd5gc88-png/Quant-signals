@@ -33,15 +33,20 @@ export function Signals() {
     <div className="signals-page">
       {/* Filter Bar */}
       <div className="filter-bar">
-        {FILTERS.map((f) => (
-          <button
-            key={f}
-            className={`filter-pill${filter === f ? ' active' : ''}`}
-            onClick={() => setFilter(f)}
-          >
-            {f}
-          </button>
-        ))}
+        <div className="filter-pills">
+          {FILTERS.map((f) => (
+            <button
+              key={f}
+              className={`filter-pill${filter === f ? ' active' : ''}`}
+              onClick={() => setFilter(f)}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+
+        <div className="filter-divider" />
+
         <div className="filter-bar-search">
           <input
             type="text"
@@ -50,8 +55,30 @@ export function Signals() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
+
+        <select
+          className="sort-dropdown"
+          value={`${sortBy}:${order}`}
+          onChange={(e) => {
+            const [col, ord] = e.target.value.split(':');
+            setSortBy(col);
+            setOrder(ord as 'asc' | 'desc');
+          }}
+        >
+          <option value="prob_up:desc">Sort: Prob ↓</option>
+          <option value="prob_up:asc">Sort: Prob ↑</option>
+          <option value="target_return:desc">Sort: Return ↓</option>
+          <option value="target_return:asc">Sort: Return ↑</option>
+          <option value="ticker:asc">Sort: Ticker A→Z</option>
+        </select>
+
         <span className="filter-bar-right">
-          Showing {data.items.length} of {data.total} · {data.buy_count} BUY · {data.hold_count} HOLD · {data.cash_count} CASH
+          {data.items.length} of {data.total} &nbsp;·&nbsp;
+          <span className="positive">{data.buy_count} BUY</span>
+          &nbsp;·&nbsp;
+          <span style={{ color: 'var(--neutral)' }}>{data.hold_count} HOLD</span>
+          &nbsp;·&nbsp;
+          {data.cash_count} CASH
         </span>
       </div>
 

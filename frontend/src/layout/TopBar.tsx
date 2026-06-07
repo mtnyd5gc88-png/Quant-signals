@@ -1,4 +1,4 @@
-import { Search } from 'lucide-react';
+import { Search, Bell } from 'lucide-react';
 import { RegimeBadge } from '../components/RegimeBadge';
 import { useRegime } from '../api/hooks';
 import './TopBar.css';
@@ -20,23 +20,22 @@ export function TopBar({ onSearch }: Props) {
 
   return (
     <header className="topbar">
-      <div className="topbar-logo">
-        <span className="topbar-monogram">QS</span>
-        <span className="topbar-name">QUANT-SIGNALS</span>
-      </div>
-
       <div className="topbar-search">
-        <Search size={12} color="var(--text-tertiary)" />
+        <Search size={13} color="var(--text-tertiary)" strokeWidth={1.5} />
         <input
           type="text"
           placeholder="Search ticker, company... (Press /)"
           onChange={(e) => onSearch?.(e.target.value)}
         />
+        <span className="topbar-search-kbd">/</span>
       </div>
 
       <div className="topbar-right">
         <RegimeBadge regime={regime.regime.toUpperCase()} />
         <span className="topbar-timestamp">{formatTimestamp(regime.last_updated)}</span>
+        <button className="topbar-bell" aria-label="Notifications">
+          <Bell size={15} strokeWidth={1.5} color="var(--text-secondary)" />
+        </button>
         <div className="topbar-avatar">IJ</div>
       </div>
     </header>

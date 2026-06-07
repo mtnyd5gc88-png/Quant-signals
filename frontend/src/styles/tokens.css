@@ -43,9 +43,9 @@
 
   /* ── SEMANTIC FINANCIAL ── */
   --positive:     #26c281;
-  --positive-dim: #0d2e1e;
-  --negative:     #e05252;
-  --negative-dim: #2e1010;
+  --positive-dim: #1a3d2e;
+  --negative:     #f04060;
+  --negative-dim: #3d1a22;
   --neutral:      #f0b840;
   --neutral-dim:  #3d2e10;
 
@@ -58,7 +58,8 @@
   --chart-1:    #4d8ef0;
   --chart-2:    #26c281;
   --chart-3:    #f0b840;
-  --chart-4:    #e05252;
-  --chart-grid: #2a2d3e;
+  --chart-4:    #b06ef5;
+  --chart-5:    #f04060;
+  --chart-grid: #1e2335;
   --chart-axis: #3d4166;
 }

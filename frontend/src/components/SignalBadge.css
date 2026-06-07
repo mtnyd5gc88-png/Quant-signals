@@ -1,16 +1,28 @@
 .signal-badge {
   display: inline-flex;
   align-items: center;
-  padding: 3px 9px;
+  padding: 3px 8px;
   border-radius: 12px;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   font-family: var(--font-mono);
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   border: 1px solid;
   white-space: nowrap;
 }
-.signal-badge.buy  { background: var(--positive-dim); color: var(--positive); border-color: var(--positive); }
-.signal-badge.hold { background: var(--neutral-dim);  color: var(--neutral);  border-color: var(--neutral); }
-.signal-badge.cash { background: var(--bg-surface-4); color: var(--text-secondary); border-color: var(--border-default); }
+.signal-badge.buy  {
+  background: var(--positive-dim);
+  color: var(--positive);
+  border-color: var(--positive);
+}
+.signal-badge.hold {
+  background: var(--neutral-dim);
+  color: var(--neutral);
+  border-color: var(--neutral);
+}
+.signal-badge.cash {
+  background: var(--bg-surface-4);
+  color: var(--text-secondary);
+  border-color: var(--border-default);
+}

@@ -2,17 +2,21 @@
   background: var(--bg-surface-2);
   border: 1px solid var(--border-default);
   border-radius: 8px;
-  padding: 14px 18px;
-  min-width: 130px;
+  padding: 16px 20px;
+  min-width: 140px;
   flex: 1;
+  transition: border-color 100ms ease;
 }
+.kpi-card:hover { border-color: var(--border-strong); }
+
 .kpi-label {
   font-size: 10px;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.07em;
   color: var(--text-secondary);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  white-space: nowrap;
 }
 .kpi-value {
   font-size: var(--text-2xl);
@@ -22,13 +26,15 @@
   font-feature-settings: "tnum" 1;
 }
 .kpi-value.mono { font-family: var(--font-mono); }
+
 .kpi-change {
   font-size: 11px;
   font-family: var(--font-mono);
-  margin-top: 4px;
+  margin-top: 6px;
   display: flex;
   align-items: center;
   gap: 3px;
+  font-feature-settings: "tnum" 1;
 }
 .kpi-change.positive { color: var(--positive); }
 .kpi-change.negative { color: var(--negative); }

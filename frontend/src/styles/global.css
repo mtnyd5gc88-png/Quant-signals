@@ -42,7 +42,7 @@ input, select {
 }
 input:focus, select:focus { border-color: var(--accent-primary); }
 
-::-webkit-scrollbar          { width: 5px; height: 5px; }
+::-webkit-scrollbar          { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track    { background: var(--bg-surface-1); }
 ::-webkit-scrollbar-thumb    { background: var(--border-strong); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
