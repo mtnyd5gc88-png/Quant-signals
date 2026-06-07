@@ -24,17 +24,6 @@ const CHART_TOOLTIP = {
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-function getMonthlyTicks(data: { date: string }[]): string[] {
-  const seen = new Set<string>();
-  return data
-    .map((d) => d.date)
-    .filter((date) => {
-      const key = date.slice(0, 7);
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-}
 
 function heatColor(v: number): string {
   if (v > 0.06)  return 'var(--positive)';
@@ -89,7 +78,7 @@ export function Backtests() {
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="1 3" stroke="var(--chart-grid)" strokeOpacity={0.5} vertical={false} />
-            <XAxis dataKey="date" ticks={getMonthlyTicks(eqFiltered)} interval={0} tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v.slice(0, 7)} />
+            <XAxis dataKey="date" tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v.slice(0, 7)} interval="preserveStartEnd" />
             <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} width={48} tickFormatter={(v) => v.toFixed(1) + 'x'} />
             <Tooltip {...CHART_TOOLTIP} formatter={(v, n) => [(v as number).toFixed(3) + 'x', String(n)]} />
             <Area type="monotone" dataKey="strategy" stroke="var(--chart-1)" strokeWidth={2} fill="url(#stratFill2)" dot={false} name="Gross Strategy" />
@@ -111,7 +100,7 @@ export function Backtests() {
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="1 3" stroke="var(--chart-grid)" strokeOpacity={0.5} vertical={false} />
-            <XAxis dataKey="date" ticks={getMonthlyTicks(ddFiltered)} interval={0} tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v.slice(0, 7)} />
+            <XAxis dataKey="date" tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v.slice(0, 7)} interval="preserveStartEnd" />
             <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} width={48} tickFormatter={(v) => fmtPct(v)} />
             <Tooltip {...CHART_TOOLTIP} formatter={(v) => [fmtPct(v as number), 'Drawdown']} />
             <Area type="monotone" dataKey="drawdown" stroke="var(--negative)" strokeWidth={1.5} fill="url(#ddFill2)" dot={false} />
