@@ -8,6 +8,7 @@ import type {
   PortfolioSummary,
   RegimeResponse,
   RollingPoint,
+  SignalItem,
   SignalsResponse,
 } from './types';
 
@@ -89,5 +90,7 @@ export const api = {
       signal: AbortSignal.timeout(5000),
     }),
 
-  refresh: () => apiPost<{ status: string; refreshed_at: string }>('/signals/refresh'),
+  refresh: () => apiPost<{ status: string; message: string }>('/refresh'),
+
+  searchTicker: (q: string) => get<SignalItem>('/search', { q }),
 };

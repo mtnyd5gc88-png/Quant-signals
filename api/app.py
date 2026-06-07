@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.config import settings
 from api.db import init_db, DB_AVAILABLE
-from api.routes import auth as auth_router, diagnostics, performance, portfolio, refresh, regime, research, settings as settings_router, signals
+from api.routes import auth as auth_router, diagnostics, performance, portfolio, refresh, regime, research, search, settings as settings_router, signals
 from api.scheduler import start_scheduler, stop_scheduler
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s — %(message)s")
@@ -53,6 +53,7 @@ app.include_router(diagnostics.router,         prefix=_prefix)
 app.include_router(research.router,            prefix=_prefix)
 app.include_router(settings_router.router,     prefix=_prefix)
 app.include_router(refresh.router,             prefix=_prefix)
+app.include_router(search.router,              prefix=_prefix)
 
 
 @app.get("/api/health")

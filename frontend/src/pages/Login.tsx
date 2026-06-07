@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import { humanizeError } from '../utils/format';
 import './Login.css';
 
 const FEATURES = [
@@ -30,7 +31,7 @@ export function Login() {
       await login(email.trim(), password);
       navigate('/', { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      setError(humanizeError(err));
     } finally {
       setLoading(false);
     }

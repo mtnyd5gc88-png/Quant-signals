@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { SignalBadge } from '../components/SignalBadge';
 import { ProbBar } from '../components/ProbBar';
 import { ConfidenceDots } from '../components/ConfidenceDots';
@@ -13,13 +14,22 @@ const FILTERS = ['ALL', 'BUY', 'HOLD', 'CASH'] as const;
 type SortKey = 'prob_up' | 'target_return' | 'ticker' | 'model_confidence' | 'position_weight';
 
 export function Signals() {
+  const [searchParams] = useSearchParams();
   const [filter, setFilter] = useState('ALL');
   const [sortKey, setSortKey] = useState<SortKey>('prob_up');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(() => searchParams.get('q') ?? '');
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const { data, loading } = useSignals();
+
+  // Auto-expand exact ticker match when arriving from TopBar search
+  useEffect(() => {
+    const q = searchParams.get('q');
+    if (!q || !data.items.length) return;
+    const exact = data.items.find((i) => i.ticker === q.toUpperCase());
+    if (exact) setExpanded(exact.ticker);
+  }, [data.items, searchParams]);
 
   function handleSort(key: SortKey) {
     if (sortKey === key) {

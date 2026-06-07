@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { api } from '../api/client';
+import { humanizeError } from '../utils/format';
 import './Settings.css';
 
 function Toast({ message, type, onClose }: { message: string; type: 'success' | 'error' | 'info'; onClose: () => void }) {
@@ -45,7 +46,7 @@ function DataRefreshSection() {
       setLastRefresh(new Date().toISOString());
       setToast({ message: 'Data refreshed successfully', type: 'success' });
     } catch (e) {
-      setToast({ message: `Refresh failed: ${e instanceof Error ? e.message : 'Unknown error'}`, type: 'error' });
+      setToast({ message: humanizeError(e), type: 'error' });
     } finally {
       setRefreshing(false);
     }

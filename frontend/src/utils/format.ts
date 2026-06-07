@@ -29,6 +29,24 @@ export function colorClass(v: number): 'positive' | 'negative' | 'neutral' {
   return 'neutral';
 }
 
+export function humanizeError(err: unknown): string {
+  if (err instanceof TypeError && /fetch|network|Failed to fetch/i.test(err.message)) {
+    return '네트워크 연결을 확인해주세요.';
+  }
+  if (err instanceof Error) {
+    if (/405|Method Not Allowed/i.test(err.message)) {
+      return '서버 요청 방식이 맞지 않습니다. 잠시 후 다시 시도해주세요.';
+    }
+    if (/401|Unauthorized/i.test(err.message)) {
+      return '인증이 필요합니다. 다시 로그인해주세요.';
+    }
+    if (/already_running/i.test(err.message)) {
+      return '이미 데이터를 새로고침 중입니다. 잠시 후 확인해주세요.';
+    }
+  }
+  return '데이터를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.';
+}
+
 export function filterByRange<T extends { date: string }>(
   data: T[],
   range: string,
