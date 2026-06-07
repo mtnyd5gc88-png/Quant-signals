@@ -31,6 +31,13 @@
 @media (max-width: 767px) {
   .topbar-hamburger { display: flex; }
   .topbar-logo-name { display: none; }
+  .topbar-search-wrap { max-width: 160px; }
+  .topbar-search-kbd { display: none; }
+}
+
+@media (max-width: 479px) {
+  .topbar-timestamp { display: none; }
+  .topbar-search-wrap { max-width: 120px; }
 }
 
 /* ── Logo ── */

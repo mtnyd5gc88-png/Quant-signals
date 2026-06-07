@@ -200,6 +200,22 @@
   color: #92400e;
 }
 
+/* ── Mobile responsive ── */
+@media (max-width: 1023px) {
+  .diag-mq-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 639px) {
+  .diag-page {
+    padding: 12px;
+  }
+  .diag-mq-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* Run Configuration collapsible */
 .diag-run-config-panel { padding: 0; }
 

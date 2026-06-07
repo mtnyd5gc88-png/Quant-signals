@@ -256,6 +256,47 @@
   border-color: #2563eb;
 }
 
+/* ── Mobile responsive ── */
+@media (max-width: 639px) {
+  .filter-bar {
+    padding: 0 12px;
+    gap: 6px;
+  }
+  .filter-bar-right {
+    display: none;
+  }
+  .filter-bar-search input {
+    width: 100px;
+  }
+  .filter-pill {
+    padding: 0 10px;
+    font-size: 11px;
+  }
+
+  /* Allow table to scroll horizontally */
+  .data-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .signals-page .data-table {
+    min-width: 600px;
+  }
+  /* Hide ACTIONS column — row onClick already handles tap-to-open */
+  .signals-page .data-table th:last-child,
+  .signals-page .data-table td:last-child {
+    display: none;
+  }
+}
+
+@media (max-width: 479px) {
+  .filter-bar {
+    height: auto;
+    min-height: 48px;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+  }
+}
+
 /* ── Expanded row ── */
 .signal-row.expanded { background: var(--bg-surface-2) !important; }
 

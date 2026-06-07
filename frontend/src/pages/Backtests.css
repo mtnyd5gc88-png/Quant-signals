@@ -22,3 +22,13 @@
 .cost-value { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--text-primary); font-feature-settings: "tnum" 1; }
 .cost-value.negative { color: var(--negative); }
 .cost-sub { font-size: 11px; color: var(--text-tertiary); }
+
+@media (max-width: 1023px) {
+  .cost-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 639px) {
+  .page-content {
+    padding: 12px;
+  }
+}

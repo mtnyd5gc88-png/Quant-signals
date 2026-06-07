@@ -97,6 +97,14 @@
   font-weight: 700;
 }
 
+/* ── Mobile responsive ── */
+@media (max-width: 639px) {
+  .perf-page {
+    padding: 12px;
+    gap: 12px;
+  }
+}
+
 /* Metrics table */
 .perf-metrics-table {
   width: 100%;

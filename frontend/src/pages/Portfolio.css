@@ -171,6 +171,12 @@
 
 .port-bar-fill.over { background: #dc2626; }
 
+/* Scrollable wrapper for holdings table */
+.port-holdings-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* Bottom row: donut + warnings */
 .port-row-2 {
   display: flex;
@@ -248,4 +254,28 @@
   font-size: 13px;
   color: #92400e;
   line-height: 1.4;
+}
+
+/* ── Mobile responsive ── */
+@media (max-width: 1023px) {
+  .port-row-2 {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 639px) {
+  .port-page {
+    padding: 12px;
+  }
+  .port-holdings-table {
+    min-width: 500px;
+  }
+  .port-meta-strip {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px;
+  }
+  .port-meta-sep {
+    display: none;
+  }
 }

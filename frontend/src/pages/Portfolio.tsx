@@ -87,6 +87,7 @@ export function Portfolio() {
           </div>
         )}
         {!loading && !error && sorted.length > 0 && (
+        <div className="port-holdings-scroll">
         <table className="port-holdings-table">
           <thead>
             <tr>
@@ -122,6 +123,7 @@ export function Portfolio() {
             ))}
           </tbody>
         </table>
+        </div>
         )}
       </div>
 
