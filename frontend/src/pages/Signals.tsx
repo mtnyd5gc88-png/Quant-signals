@@ -231,7 +231,7 @@ export function Signals() {
               </div>
               <div className="scm-row-2">
                 <span className="scm-trust">
-                  Trust <ConfidenceDots value={item.model_confidence ?? 0} />
+                  Trust <ConfidenceDots value={Math.abs(item.prob_up - 0.5) * 2} />
                 </span>
                 <span className={`scm-return ${retVal > 0 ? 'pos' : 'neg'}`}>
                   {retVal > 0 ? '+' : ''}{(retVal * 100).toFixed(2)}%

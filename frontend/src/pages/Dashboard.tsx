@@ -95,8 +95,8 @@ export function Dashboard() {
               </defs>
               <CartesianGrid strokeDasharray="1 3" stroke="var(--chart-grid)" strokeOpacity={0.5} vertical={false} />
               <XAxis dataKey="date" tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v.slice(0, 7)} interval="preserveStartEnd" />
-              <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} width={48} tickFormatter={(v) => (v / 100).toFixed(1) + 'x'} />
-              <Tooltip {...CHART_TOOLTIP} formatter={(v, name) => [((v as number) / 100).toFixed(2) + 'x', String(name)]} />
+              <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} width={48} tickFormatter={(v) => v.toFixed(1) + 'x'} />
+              <Tooltip {...CHART_TOOLTIP} formatter={(v, name) => [(v as number).toFixed(2) + 'x', String(name)]} />
               <Area type="monotone" dataKey="strategy" stroke="var(--chart-1)" strokeWidth={2} fill="url(#stratFill)" dot={false} name="Strategy" />
               <Line type="monotone" dataKey="benchmark" stroke="var(--text-tertiary)" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="Benchmark" />
             </AreaChart>

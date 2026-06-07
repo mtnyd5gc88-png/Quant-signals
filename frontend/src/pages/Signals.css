@@ -347,7 +347,9 @@
   align-items: center;
   gap: 12px;
   padding-left: 36px; /* align under ticker name */
+  padding-right: 4px;
   overflow: hidden;
+  justify-content: space-between;
 }
 .scm-trust {
   font-size: 11px;
@@ -367,14 +369,12 @@
 .scm-return.pos { color: var(--positive); }
 .scm-return.neg { color: var(--negative); }
 .scm-price {
-  font-size: 12px;
+  font-size: 11px;
   font-family: var(--font-mono);
   color: var(--text-secondary);
-  min-width: 0;
-  flex-shrink: 1;
+  flex-shrink: 0;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  min-width: 48px;
   text-align: right;
 }
 
