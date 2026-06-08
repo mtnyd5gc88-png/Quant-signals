@@ -44,6 +44,8 @@
   .page-content {
     padding: 0;
     gap: 1px;
+    max-width: 100%;
+    overflow-x: hidden;
     background: var(--border-default);
   }
   .chart-panel {

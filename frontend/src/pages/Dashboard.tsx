@@ -3,6 +3,7 @@ import {
   ResponsiveContainer, Line, Area, AreaChart, CartesianGrid,
   XAxis, YAxis, Tooltip, BarChart, Bar, Cell,
 } from 'recharts';
+import { ChartContainer } from '../components/ChartContainer';
 import { KpiCard } from '../components/KpiCard';
 import { SectionHeader } from '../components/SectionHeader';
 import { TimeRangeSelector, type TimeRange } from '../components/TimeRangeSelector';
@@ -257,7 +258,7 @@ export function Dashboard() {
           {equityError && <SectionError message="Failed to load equity data." onRetry={equityRefetch} />}
           {perfError && <SectionError message="Failed to load performance data." onRetry={perfRefetch} />}
           <div className="chart-subtitle">Strategy vs. Benchmark (SPY) — rebased to 1.0</div>
-          <div style={{ width: '100%', minWidth: 0, height: 320 }}>
+          <ChartContainer height={320}>
             <ResponsiveContainer width="100%" height="100%" debounce={1}>
               <AreaChart data={equityFiltered} margin={{ top: 4, right: 2, left: 0, bottom: 0 }}>
                 <defs>
@@ -274,7 +275,7 @@ export function Dashboard() {
                 <Line type="monotone" dataKey="benchmark" stroke="var(--text-tertiary)" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="Benchmark" />
               </AreaChart>
             </ResponsiveContainer>
-          </div>
+          </ChartContainer>
           <TimeRangeSelector value={range} onChange={setRange} />
         </div>
 
@@ -284,7 +285,7 @@ export function Dashboard() {
             <FreshnessTag lastUpdated={signalsFetchedAt} />
           </div>
           <div className="chart-subtitle">Current signal breakdown across universe</div>
-          <div style={{ width: '100%', minWidth: 0, height: 240 }}>
+          <ChartContainer height={240}>
             <ResponsiveContainer width="100%" height="100%" debounce={1}>
               <BarChart data={signalDist} margin={{ top: 8, right: 2, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="1 3" stroke="var(--chart-grid)" strokeOpacity={0.5} vertical={false} />
@@ -298,7 +299,7 @@ export function Dashboard() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-          </div>
+          </ChartContainer>
           <div className="signal-dist-summary">
             {signalDist.map((s) => (
               <div key={s.name} className="signal-dist-row">
@@ -316,7 +317,7 @@ export function Dashboard() {
       <div className="dashboard-row-3">
         <div className="chart-panel" style={{ flex: 1 }}>
           <SectionHeader title="Drawdown" meta={`Max: ${fmtPct(perf.max_drawdown)}`} />
-          <div style={{ width: '100%', minWidth: 0, height: 220 }}>
+          <ChartContainer height={220}>
             <ResponsiveContainer width="100%" height="100%" debounce={1}>
               <AreaChart data={ddFiltered} margin={{ top: 4, right: 2, left: 0, bottom: 0 }}>
                 <defs>
@@ -332,7 +333,7 @@ export function Dashboard() {
                 <Area type="monotone" dataKey="drawdown" stroke="var(--negative)" strokeWidth={1.5} fill="url(#ddFill)" dot={false} />
               </AreaChart>
             </ResponsiveContainer>
-          </div>
+          </ChartContainer>
         </div>
       </div>
     </div>

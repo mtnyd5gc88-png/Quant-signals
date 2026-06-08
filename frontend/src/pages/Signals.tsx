@@ -55,7 +55,7 @@ export function Signals() {
     if (filter !== 'ALL') {
       rows = rows.filter((r) =>
         filter === 'SELL'
-          ? r.signal === 'SELL' || r.signal === 'CASH'
+          ? r.signal === 'SELL' || r.signal === 'CASH' || r.signal === 'STAY IN CASH'
           : r.signal === filter
       );
     }

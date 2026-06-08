@@ -1,3 +1,4 @@
+import { ChartContainer } from '../components/ChartContainer';
 import {
   LineChart, Line, AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -87,7 +88,7 @@ export function Performance() {
           <span className="perf-legend-label">SPY (B&H)</span>
         </div>
         <div className="perf-chart-title">Equity Curve</div>
-        <div style={{ width: '100%', minWidth: 0, height: 320 }}>
+        <ChartContainer height={320}>
         <ResponsiveContainer width="100%" height="100%" debounce={1}>
           <LineChart data={eqData} margin={{ top: 4, right: 16, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="2 4" stroke="#e5e7eb" vertical={false} />
@@ -136,13 +137,13 @@ export function Performance() {
             />
           </LineChart>
         </ResponsiveContainer>
-        </div>
+        </ChartContainer>
       </div>
 
       {/* Drawdown */}
       <div className="perf-panel">
         <div className="perf-chart-title">Drawdown</div>
-        <div style={{ width: '100%', minWidth: 0, height: 160 }}>
+        <ChartContainer height={160}>
         <ResponsiveContainer width="100%" height="100%" debounce={1}>
           <AreaChart data={ddData} margin={{ top: 4, right: 16, left: 0, bottom: 0 }}>
             <defs>
@@ -182,7 +183,7 @@ export function Performance() {
             />
           </AreaChart>
         </ResponsiveContainer>
-        </div>
+        </ChartContainer>
       </div>
 
       {/* Monthly Returns Heatmap */}

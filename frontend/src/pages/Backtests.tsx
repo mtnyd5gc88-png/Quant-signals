@@ -3,6 +3,7 @@ import {
   ResponsiveContainer, AreaChart, Area, Line,
   CartesianGrid, XAxis, YAxis, Tooltip,
 } from 'recharts';
+import { ChartContainer } from '../components/ChartContainer';
 import { KpiCard } from '../components/KpiCard';
 import { SectionHeader } from '../components/SectionHeader';
 import { TimeRangeSelector, type TimeRange } from '../components/TimeRangeSelector';
@@ -71,7 +72,7 @@ export function Backtests() {
       <div className="chart-panel">
         <div className="chart-title">Equity Curve</div>
         <div className="chart-subtitle">Strategy vs Benchmark (SPY) — rebased to 1.0</div>
-        <div style={{ width: '100%', minWidth: 0, height: 220 }}>
+        <ChartContainer height={220}>
           <ResponsiveContainer width="100%" height="100%" debounce={1}>
             <AreaChart data={eqFiltered} margin={{ top: 4, right: 2, left: 0, bottom: 0 }}>
               <defs>
@@ -88,14 +89,14 @@ export function Backtests() {
               <Line type="monotone" dataKey="benchmark" stroke="var(--text-tertiary)" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="Benchmark" />
             </AreaChart>
           </ResponsiveContainer>
-        </div>
+        </ChartContainer>
         <TimeRangeSelector value={range} onChange={setRange} />
       </div>
 
       {/* Drawdown */}
       <div className="chart-panel">
         <SectionHeader title="Drawdown" meta={`Max: ${fmtPct(perf.max_drawdown)}`} />
-        <div style={{ width: '100%', minWidth: 0, height: 180 }}>
+        <ChartContainer height={180}>
           <ResponsiveContainer width="100%" height="100%" debounce={1}>
             <AreaChart data={ddFiltered} margin={{ top: 4, right: 2, left: 0, bottom: 0 }}>
               <defs>
@@ -111,7 +112,7 @@ export function Backtests() {
               <Area type="monotone" dataKey="drawdown" stroke="var(--negative)" strokeWidth={1.5} fill="url(#ddFill2)" dot={false} />
             </AreaChart>
           </ResponsiveContainer>
-        </div>
+        </ChartContainer>
       </div>
 
       {/* Monthly Returns Heatmap */}
