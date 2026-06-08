@@ -258,7 +258,7 @@ export function Dashboard() {
           {perfError && <SectionError message="Failed to load performance data." onRetry={perfRefetch} />}
           <div className="chart-subtitle">Strategy vs. Benchmark (SPY) — rebased to 1.0</div>
           <div style={{ width: '100%', minWidth: 0, height: 320 }}>
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" debounce={1}>
               <AreaChart data={equityFiltered} margin={{ top: 4, right: 2, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="stratFill" x1="0" y1="0" x2="0" y2="1">
@@ -285,7 +285,7 @@ export function Dashboard() {
           </div>
           <div className="chart-subtitle">Current signal breakdown across universe</div>
           <div style={{ width: '100%', minWidth: 0, height: 240 }}>
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" debounce={1}>
               <BarChart data={signalDist} margin={{ top: 8, right: 2, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="1 3" stroke="var(--chart-grid)" strokeOpacity={0.5} vertical={false} />
                 <XAxis dataKey="name" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} axisLine={false} tickLine={false} />
@@ -317,7 +317,7 @@ export function Dashboard() {
         <div className="chart-panel" style={{ flex: 1 }}>
           <SectionHeader title="Drawdown" meta={`Max: ${fmtPct(perf.max_drawdown)}`} />
           <div style={{ width: '100%', minWidth: 0, height: 220 }}>
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" debounce={1}>
               <AreaChart data={ddFiltered} margin={{ top: 4, right: 2, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="ddFill" x1="0" y1="0" x2="0" y2="1">

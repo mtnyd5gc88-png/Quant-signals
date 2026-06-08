@@ -42,7 +42,9 @@ export function Backtests() {
   const { data: monthly } = useMonthlyReturns();
   const { data: diag } = useDiagnostics();
 
-  const eqFiltered = filterByRange(equity.points, range);
+  // Drop leading points where strategy hasn't started yet (null/0) so X-axis begins where data actually exists
+  const eqPoints = equity.points.filter(p => (p.strategy ?? 0) > 0);
+  const eqFiltered = filterByRange(eqPoints, range);
   const ddFiltered = filterByRange(dd, range);
   const t = diag.turnover;
 
@@ -67,10 +69,10 @@ export function Backtests() {
 
       {/* Equity Curve */}
       <div className="chart-panel">
-        <div className="chart-title">Equity Curve — Gross vs Net vs Benchmark</div>
-        <div className="chart-subtitle">Cost drag clearly visualized between gross and net strategy lines</div>
+        <div className="chart-title">Equity Curve</div>
+        <div className="chart-subtitle">Strategy vs Benchmark (SPY) — rebased to 1.0</div>
         <div style={{ width: '100%', minWidth: 0, height: 220 }}>
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" debounce={1}>
             <AreaChart data={eqFiltered} margin={{ top: 4, right: 2, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="stratFill2" x1="0" y1="0" x2="0" y2="1">
@@ -82,7 +84,7 @@ export function Backtests() {
               <XAxis dataKey="date" tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v.slice(0, 7)} interval="preserveStartEnd" />
               <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} width={40} tickFormatter={(v) => v.toFixed(1) + 'x'} />
               <Tooltip {...CHART_TOOLTIP} formatter={(v, n) => [(v as number).toFixed(3) + 'x', String(n)]} />
-              <Area type="monotone" dataKey="strategy" stroke="var(--chart-1)" strokeWidth={2} fill="url(#stratFill2)" dot={false} name="Gross Strategy" />
+              <Area type="monotone" dataKey="strategy" stroke="var(--chart-1)" strokeWidth={2} fill="url(#stratFill2)" dot={false} name="Strategy (Net)" />
               <Line type="monotone" dataKey="benchmark" stroke="var(--text-tertiary)" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="Benchmark" />
             </AreaChart>
           </ResponsiveContainer>
@@ -94,7 +96,7 @@ export function Backtests() {
       <div className="chart-panel">
         <SectionHeader title="Drawdown" meta={`Max: ${fmtPct(perf.max_drawdown)}`} />
         <div style={{ width: '100%', minWidth: 0, height: 180 }}>
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" debounce={1}>
             <AreaChart data={ddFiltered} margin={{ top: 4, right: 2, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="ddFill2" x1="0" y1="0" x2="0" y2="1">
