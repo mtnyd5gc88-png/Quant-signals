@@ -69,7 +69,7 @@ export function Backtests() {
       <div className="chart-panel">
         <div className="chart-title">Equity Curve — Gross vs Net vs Benchmark</div>
         <div className="chart-subtitle">Cost drag clearly visualized between gross and net strategy lines</div>
-        <div style={{ width: '100%', height: 220 }}>
+        <div style={{ width: '100%', minWidth: 0, height: 220 }}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={eqFiltered} margin={{ top: 4, right: 2, left: 0, bottom: 0 }}>
               <defs>
@@ -93,7 +93,7 @@ export function Backtests() {
       {/* Drawdown */}
       <div className="chart-panel">
         <SectionHeader title="Drawdown" meta={`Max: ${fmtPct(perf.max_drawdown)}`} />
-        <div style={{ width: '100%', height: 180 }}>
+        <div style={{ width: '100%', minWidth: 0, height: 180 }}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={ddFiltered} margin={{ top: 4, right: 2, left: 0, bottom: 0 }}>
               <defs>

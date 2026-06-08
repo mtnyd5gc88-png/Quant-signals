@@ -257,7 +257,7 @@ export function Dashboard() {
           {equityError && <SectionError message="Failed to load equity data." onRetry={equityRefetch} />}
           {perfError && <SectionError message="Failed to load performance data." onRetry={perfRefetch} />}
           <div className="chart-subtitle">Strategy vs. Benchmark (SPY) — rebased to 1.0</div>
-          <div style={{ width: '100%', height: 320 }}>
+          <div style={{ width: '100%', minWidth: 0, height: 320 }}>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={equityFiltered} margin={{ top: 4, right: 2, left: 0, bottom: 0 }}>
                 <defs>
@@ -284,7 +284,7 @@ export function Dashboard() {
             <FreshnessTag lastUpdated={signalsFetchedAt} />
           </div>
           <div className="chart-subtitle">Current signal breakdown across universe</div>
-          <div style={{ width: '100%', height: 240 }}>
+          <div style={{ width: '100%', minWidth: 0, height: 240 }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={signalDist} margin={{ top: 8, right: 2, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="1 3" stroke="var(--chart-grid)" strokeOpacity={0.5} vertical={false} />
@@ -316,7 +316,7 @@ export function Dashboard() {
       <div className="dashboard-row-3">
         <div className="chart-panel" style={{ flex: 1 }}>
           <SectionHeader title="Drawdown" meta={`Max: ${fmtPct(perf.max_drawdown)}`} />
-          <div style={{ width: '100%', height: 220 }}>
+          <div style={{ width: '100%', minWidth: 0, height: 220 }}>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={ddFiltered} margin={{ top: 4, right: 2, left: 0, bottom: 0 }}>
                 <defs>

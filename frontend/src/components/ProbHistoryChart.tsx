@@ -69,7 +69,7 @@ export function ProbHistoryChart({ history, currentSignal }: Props) {
 
   return (
     <div className="prob-history-chart">
-      <div style={{ width: '100%', height: 120 }}>
+      <div style={{ width: '100%', minWidth: 0, height: 120 }}>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={points} margin={{ top: 8, right: 4, left: 0, bottom: 0 }}>
           <defs>

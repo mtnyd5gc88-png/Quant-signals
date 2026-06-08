@@ -87,7 +87,7 @@ export function Performance() {
           <span className="perf-legend-label">SPY (B&H)</span>
         </div>
         <div className="perf-chart-title">Equity Curve</div>
-        <div style={{ width: '100%', height: 320 }}>
+        <div style={{ width: '100%', minWidth: 0, height: 320 }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={eqData} margin={{ top: 4, right: 16, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="2 4" stroke="#e5e7eb" vertical={false} />
@@ -142,7 +142,7 @@ export function Performance() {
       {/* Drawdown */}
       <div className="perf-panel">
         <div className="perf-chart-title">Drawdown</div>
-        <div style={{ width: '100%', height: 160 }}>
+        <div style={{ width: '100%', minWidth: 0, height: 160 }}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={ddData} margin={{ top: 4, right: 16, left: 0, bottom: 0 }}>
             <defs>

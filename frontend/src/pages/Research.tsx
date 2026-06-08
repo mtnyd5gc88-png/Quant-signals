@@ -361,7 +361,7 @@ function SignalDistTab({ signals }: { signals: ReturnType<typeof useSignals>['da
       <div className="chart-panel">
         <div className="chart-title">Predicted Probability Histogram</div>
         <div className="chart-subtitle">Distribution of Prob_Up across all tickers in universe</div>
-        <div style={{ width: '100%', height: 200 }}>
+        <div style={{ width: '100%', minWidth: 0, height: 200 }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={buckets} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="1 3" stroke="var(--chart-grid)" strokeOpacity={0.5} vertical={false} />
@@ -380,7 +380,7 @@ function SignalDistTab({ signals }: { signals: ReturnType<typeof useSignals>['da
 
       <div className="chart-panel">
         <div className="chart-title">Signal Breakdown</div>
-        <div style={{ width: '100%', height: 140 }}>
+        <div style={{ width: '100%', minWidth: 0, height: 140 }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={signalDist} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="1 3" stroke="var(--chart-grid)" strokeOpacity={0.5} vertical={false} />
