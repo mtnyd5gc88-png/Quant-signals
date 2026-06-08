@@ -53,6 +53,12 @@ class SignalHistoryPoint(BaseModel):
     signal: str
 
 
+class SignalHistoryEntry(BaseModel):
+    date: str
+    prob_up: float
+    signal: str
+
+
 class SignalDetail(SignalItem):
     history: list[SignalHistoryPoint] = []
 

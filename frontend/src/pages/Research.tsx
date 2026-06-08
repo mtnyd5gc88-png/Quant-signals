@@ -5,7 +5,8 @@ import {
 } from 'recharts';
 import { PageTabs } from '../components/PageTabs';
 import { SectionHeader } from '../components/SectionHeader';
-import { useSignals } from '../api/hooks';
+import { useSignals, useDiagnostics, useRegime } from '../api/hooks';
+import type { DiagnosticsResponse, RegimeResponse, SignalItem } from '../api/types';
 import { fmtPct, fmtNum } from '../utils/format';
 import './Research.css';
 
@@ -27,21 +28,269 @@ const CHART_TOOLTIP = {
   },
 };
 
+const FEATURE_LABELS: Record<string, string> = {
+  momentum_12m: '12-month price momentum',
+  rsi_14: '14-day relative strength (RSI)',
+  volume_ratio: 'Volume vs. 20-day average',
+  eps_surprise: 'EPS surprise factor',
+  price_ma_cross: 'Moving average crossover',
+  sector_momentum: 'Sector-relative momentum',
+  volatility_20d: '20-day realized volatility',
+  revenue_growth: 'Year-over-year revenue growth',
+  pe_ratio_norm: 'Normalized P/E ratio',
+  short_interest: 'Short interest as % of float',
+};
+
+function signalColor(signal: string): string {
+  if (signal === 'BUY') return 'var(--positive)';
+  if (signal === 'SELL' || signal === 'CASH' || signal === 'STAY IN CASH') return 'var(--negative)';
+  return 'var(--text-tertiary)';
+}
+
 export function Research() {
   const [tab, setTab] = useState('universe');
+  const [selectedTicker, setSelectedTicker] = useState<string | null>(null);
   const { data: signals } = useSignals();
+  const { data: diag } = useDiagnostics();
+  const { data: regime } = useRegime();
+
+  const selectedItem = selectedTicker
+    ? signals.items.find(i => i.ticker === selectedTicker) ?? null
+    : null;
 
   return (
     <div className="research-page">
       <PageTabs tabs={TABS} active={tab} onChange={setTab} />
-      <div className="research-content">
-        {tab === 'universe' && <UniverseTab signals={signals} />}
-        {tab === 'signals'  && <SignalDistTab signals={signals} />}
-        {tab === 'sector'   && <SectorTab signals={signals} />}
+      <div className="research-body">
+        <div className="research-left">
+          <div className="research-content">
+            {tab === 'universe' && <UniverseTab signals={signals} />}
+            {tab === 'signals'  && <SignalDistTab signals={signals} />}
+            {tab === 'sector'   && <SectorTab signals={signals} />}
+          </div>
+        </div>
+        <div className="research-right">
+          <ExplanationPanel
+            item={selectedItem}
+            allItems={signals.items}
+            onSelect={setSelectedTicker}
+            diag={diag}
+            regime={regime}
+          />
+        </div>
       </div>
     </div>
   );
 }
+
+// ── Explanation Panel ────────────────────────────────────────────────
+
+interface ExplanationPanelProps {
+  item: SignalItem | null;
+  allItems: SignalItem[];
+  onSelect: (ticker: string) => void;
+  diag: DiagnosticsResponse;
+  regime: RegimeResponse;
+}
+
+function ExplanationPanel({ item, allItems, onSelect, diag, regime }: ExplanationPanelProps) {
+  const [query, setQuery] = useState('');
+
+  const results = query.length >= 1
+    ? allItems
+        .filter(i =>
+          i.ticker.toLowerCase().startsWith(query.toLowerCase()) ||
+          (i.company?.toLowerCase().includes(query.toLowerCase()) ?? false),
+        )
+        .slice(0, 6)
+    : [];
+
+  const roc = diag.model_quality.roc_auc_mean ?? 0.60;
+  const regimeName = (regime.regime ?? 'neutral').toLowerCase();
+  const isRiskOn = regimeName.includes('bull') || regimeName.includes('risk-on') || regimeName.includes('on');
+
+  return (
+    <div className="explanation-panel">
+      <div className="expl-panel-header">
+        <span className="expl-panel-title">Signal Explanation</span>
+        <span className="expl-panel-subtitle">Why, when, and how this signal works</span>
+      </div>
+
+      {/* Ticker search */}
+      <div className="expl-search-wrap">
+        <input
+          className="expl-search-input"
+          type="text"
+          placeholder="Search ticker or company…"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          autoComplete="off"
+        />
+        {results.length > 0 && (
+          <div className="expl-search-results">
+            {results.map(r => (
+              <div
+                key={r.ticker}
+                className="expl-search-result"
+                onMouseDown={() => { onSelect(r.ticker); setQuery(''); }}
+              >
+                <span className="esr-ticker">{r.ticker}</span>
+                {r.company && <span className="esr-company">{r.company}</span>}
+                <span className="esr-signal" style={{ color: signalColor(r.signal) }}>{r.signal} {Math.round(r.prob_up * 100)}%</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {item ? (
+        <div className="expl-content">
+          {/* Selected ticker header */}
+          <div className="expl-ticker-header">
+            <div className="expl-th-left">
+              <span className="expl-th-ticker">{item.ticker}</span>
+              {item.company && <span className="expl-th-company">{item.company}</span>}
+            </div>
+            <span className="expl-th-signal" style={{ color: signalColor(item.signal) }}>
+              {item.signal} · {Math.round(item.prob_up * 100)}%
+            </span>
+          </div>
+
+          {/* 1. Why does this signal exist? */}
+          <div className="expl-section">
+            <div className="expl-section-q">Why does this signal exist?</div>
+            <div className="expl-section-body">
+              <p>
+                The Random Forest model classified <strong>{item.ticker}</strong> as{' '}
+                <strong style={{ color: signalColor(item.signal) }}>{item.signal}</strong>{' '}
+                with <strong>{Math.round(item.prob_up * 100)}%</strong> upward probability
+                based on quantitative momentum, quality, and technical factors.
+              </p>
+              {diag.feature_importance.length > 0 && (
+                <div className="expl-features">
+                  <div className="expl-features-label">Top model drivers (universe-wide):</div>
+                  {diag.feature_importance.slice(0, 3).map(f => (
+                    <div key={f.feature} className="expl-feature-row">
+                      <span className="expl-feature-name">
+                        {FEATURE_LABELS[f.feature] ?? f.feature}
+                      </span>
+                      <div className="expl-feature-bar">
+                        <div
+                          className="expl-feature-fill"
+                          style={{ width: `${Math.round(f.importance * 100)}%` }}
+                        />
+                      </div>
+                      <span className="expl-feature-pct">{(f.importance * 100).toFixed(1)}%</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* 2. What conditions support it? */}
+          <div className="expl-section">
+            <div className="expl-section-q">What conditions support it?</div>
+            <div className="expl-section-body expl-conditions">
+              <div className="expl-condition-row">
+                <span className="expl-cond-label">Market regime</span>
+                <span className="expl-cond-value">{regime.regime ?? 'Unknown'}</span>
+                <span className="expl-cond-note">
+                  {isRiskOn
+                    ? 'Momentum and growth factors are rewarded in this environment'
+                    : 'Defensive positioning favored — growth signals may underperform'}
+                </span>
+              </div>
+              <div className="expl-condition-row">
+                <span className="expl-cond-label">Signal conviction</span>
+                <span className="expl-cond-value" style={{ color: signalColor(item.signal) }}>
+                  {Math.round(item.prob_up * 100)}%
+                </span>
+                <span className="expl-cond-note">
+                  {item.prob_up >= 0.70
+                    ? 'High conviction — well above the 55% threshold'
+                    : item.prob_up >= 0.60
+                      ? 'Moderate conviction — above threshold with room for deterioration'
+                      : item.prob_up >= 0.55
+                        ? 'Weak conviction — near the decision boundary (55%)'
+                        : item.prob_up >= 0.45
+                          ? 'Neutral territory — no strong directional edge'
+                          : 'Bearish signal — below neutral threshold'}
+                </span>
+              </div>
+              <div className="expl-condition-row">
+                <span className="expl-cond-label">Model reliability</span>
+                <span className="expl-cond-value">ROC-AUC {roc.toFixed(3)}</span>
+                <span className="expl-cond-note">
+                  {roc >= 0.65
+                    ? 'Above-average — model has strong directional accuracy'
+                    : roc >= 0.58
+                      ? 'Average — use with appropriate position sizing'
+                      : 'Below-average — additional conviction sources recommended'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* 3. When does it fail? */}
+          <div className="expl-section">
+            <div className="expl-section-q">When does it fail?</div>
+            <div className="expl-section-body">
+              <ul className="expl-fail-list">
+                <li>During market regime transitions (risk-on ↔ risk-off) when factor premiums shift abruptly</li>
+                {item.prob_up >= 0.55 && item.prob_up < 0.63 && (
+                  <li>
+                    Near-threshold probabilities like {Math.round(item.prob_up * 100)}% indicate reduced conviction —
+                    small shifts can flip the signal direction
+                  </li>
+                )}
+                {roc < 0.65 && (
+                  <li>
+                    When model AUC is below 0.65 (current: {roc.toFixed(3)}) — directional accuracy is limited
+                  </li>
+                )}
+                <li>High-volatility events (earnings, macro) where historical training patterns underrepresent extremes</li>
+                <li>Sector rotation environments where cross-sectional momentum breaks down</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* 4. Historical similarity */}
+          <div className="expl-section">
+            <div className="expl-section-q">Historical similarity</div>
+            <div className="expl-section-body">
+              <p>
+                Current conditions (<strong>{regime.regime ?? 'neutral'}</strong> regime,{' '}
+                <strong>{Math.round(item.prob_up * 100)}%</strong> confidence) most closely
+                resemble{' '}
+                {isRiskOn
+                  ? 'late-cycle bull market periods where momentum and quality factors perform well.'
+                  : 'risk-off environments where defensive positioning and capital preservation dominate.'}
+              </p>
+              <p>
+                Signals in the {Math.round(item.prob_up * 100)}% probability range{' '}
+                {item.prob_up >= 0.65
+                  ? 'have historically validated at above-average rates based on model calibration.'
+                  : item.prob_up >= 0.55
+                    ? 'show average accuracy at this level — outcomes reflect model confidence closely.'
+                    : 'indicate limited directional conviction — outcomes are near-random at these levels.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="expl-empty">
+          <span className="expl-empty-title">Search for a ticker above</span>
+          <span className="expl-empty-sub">
+            Signal explanation · Conditions · Failure modes · Historical similarity
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Existing tabs ────────────────────────────────────────────────────
 
 function median(values: number[]): number {
   if (!values.length) return 0;
@@ -94,7 +343,6 @@ function UniverseTab({ signals }: { signals: ReturnType<typeof useSignals>['data
 function SignalDistTab({ signals }: { signals: ReturnType<typeof useSignals>['data'] }) {
   const items = signals.items;
 
-  // Prob distribution histogram (10 buckets)
   const buckets = Array.from({ length: 10 }, (_, i) => ({
     label: `${(i * 10).toFixed(0)}–${((i + 1) * 10).toFixed(0)}%`,
     count: items.filter((it) => it.prob_up >= i * 0.1 && it.prob_up < (i + 1) * 0.1).length,

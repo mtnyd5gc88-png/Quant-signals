@@ -1,0 +1,86 @@
+/* ── Signal History Chart ────────────────────────────── */
+
+.prob-history-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.prob-chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  gap: 4px;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  background: var(--bg-surface-2, rgba(255,255,255,0.03));
+  border-radius: 6px;
+  border: 1px dashed var(--border-default);
+}
+
+.prob-chart-empty-sub {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.prob-chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 4px;
+}
+
+.prob-chart-ref {
+  font-size: 9.5px;
+  font-weight: 500;
+}
+
+.prob-chart-ref.buy {
+  color: var(--positive);
+  opacity: 0.65;
+}
+
+.prob-chart-ref.hold {
+  color: var(--warn);
+  opacity: 0.65;
+}
+
+.prob-chart-count {
+  margin-left: auto;
+  font-size: 9.5px;
+  color: var(--text-tertiary);
+}
+
+/* Tooltip */
+.prob-chart-tooltip {
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  padding: 7px 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  min-width: 72px;
+}
+
+.prob-chart-tt-date {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  margin-bottom: 2px;
+}
+
+.prob-chart-tt-prob {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.prob-chart-tt-signal {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 1px;
+}

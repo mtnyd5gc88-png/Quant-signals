@@ -8,8 +8,10 @@ import type {
   PortfolioSummary,
   RegimeResponse,
   RollingPoint,
+  SignalHistoryEntry,
   SignalItem,
   SignalsResponse,
+  ValidationScorecard,
 } from './types';
 
 function getBase(): string {
@@ -93,4 +95,8 @@ export const api = {
   refresh: () => apiPost<{ status: string; message: string }>('/refresh'),
 
   searchTicker: (q: string) => get<SignalItem>('/search', { q }),
+
+  validate: (ticker: string) => get<ValidationScorecard>(`/validate/${encodeURIComponent(ticker)}`),
+
+  signalHistory: (ticker: string) => get<SignalHistoryEntry[]>(`/signals/${encodeURIComponent(ticker)}/history`),
 };

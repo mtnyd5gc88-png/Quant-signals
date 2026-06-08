@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import statistics
+from datetime import datetime, timedelta, timezone
 from typing import Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -13,7 +14,7 @@ from api.config import settings
 from api.db import get_db
 from api.models.run_log import RunLog
 from api.models.signal_snapshot import SignalSnapshot
-from api.schemas.signals import SignalDetail, SignalHistoryPoint, SignalItem, SignalsResponse
+from api.schemas.signals import SignalDetail, SignalHistoryEntry, SignalHistoryPoint, SignalItem, SignalsResponse
 
 # DB dependency type alias for readability
 _DBDep = Optional[AsyncSession]
@@ -116,3 +117,32 @@ async def get_signal_detail(
         ]
 
     return SignalDetail(**match, history=history)
+
+
+@router.get("/{ticker}/history", response_model=list[SignalHistoryEntry])
+async def get_signal_history(
+    ticker: str,
+    _user: CurrentUser,
+    db: Optional[AsyncSession] = Depends(get_db),
+) -> list[SignalHistoryEntry]:
+    if db is None:
+        return []
+    cutoff = datetime.now(timezone.utc) - timedelta(days=30)
+    stmt = (
+        select(SignalSnapshot, RunLog.run_at)
+        .join(RunLog, SignalSnapshot.run_id == RunLog.id)
+        .where(
+            SignalSnapshot.ticker == ticker.upper(),
+            RunLog.run_at >= cutoff,
+        )
+        .order_by(RunLog.run_at.asc())
+    )
+    rows = (await db.execute(stmt)).all()
+    return [
+        SignalHistoryEntry(
+            date=run_at.date().isoformat(),
+            prob_up=snap.prob_up or 0.0,
+            signal=snap.signal or "HOLD",
+        )
+        for snap, run_at in rows
+    ]

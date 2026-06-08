@@ -174,6 +174,98 @@
   flex-shrink: 0;
 }
 
+/* ── Investor Profile ── */
+
+.profile-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.profile-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1.5px solid var(--border-default);
+  background: var(--bg-surface-2);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 120ms, border-color 120ms, color 120ms;
+  white-space: nowrap;
+}
+
+.profile-btn:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.profile-btn.active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.profile-preview {
+  padding: 16px 20px;
+  background: var(--bg-surface-2);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.profile-preview-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-tertiary);
+  margin-bottom: 10px;
+}
+
+.profile-preview-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pp-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pp-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  min-width: 110px;
+  flex-shrink: 0;
+}
+
+.pp-value {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pp-value.positive { color: var(--positive); }
+.pp-value.negative { color: var(--negative); }
+.pp-value.neutral  { color: var(--text-secondary); }
+
+.pp-note {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.profile-active-notice {
+  padding: 10px 20px;
+  font-size: 12px;
+  color: var(--accent-primary);
+  background: var(--accent-light);
+  border-top: 1px solid var(--accent-border);
+}
+
 /* ── Mobile responsive ── */
 @media (max-width: 767px) {
   .settings-sections {

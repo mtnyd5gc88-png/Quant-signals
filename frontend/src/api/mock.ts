@@ -5,10 +5,14 @@ import type {
   EquityCurvePoint,
   MonthlyReturnPoint,
   PerformanceMetrics,
+  PortfolioImpact,
   PortfolioSummary,
   RegimeResponse,
   RollingPoint,
+  SignalHistoryEntry,
+  SignalHistoryPoint,
   SignalsResponse,
+  ValidationScorecard,
 } from './types';
 
 const TICKERS = [
@@ -241,3 +245,89 @@ export const mockPortfolio: PortfolioSummary = (() => {
     last_updated: new Date().toISOString(),
   };
 })();
+
+function mockHistoryPoints(ticker: string): SignalHistoryPoint[] {
+  const r = rng(ticker.charCodeAt(0) * 31 + (ticker.charCodeAt(1) ?? 5) * 11);
+  const baseProb = 0.42 + r() * 0.45;
+  const trendSlope = (r() - 0.5) * 0.006;   // slight upward or downward drift
+  const now = Date.now();
+  const WEEK_MS = 7 * 24 * 3600 * 1000;
+  return Array.from({ length: 12 }, (_, i) => {
+    const prob = Math.max(0.05, Math.min(0.97,
+      baseProb + trendSlope * i + (r() - 0.5) * 0.07,
+    ));
+    const signal = prob > 0.65 ? 'BUY' : prob > 0.48 ? 'HOLD' : 'SELL';
+    const run_at = new Date(now - (11 - i) * WEEK_MS).toISOString();
+    return { run_at, prob_up: parseFloat(prob.toFixed(3)), signal };
+  });
+}
+
+export function mockSignalHistory(ticker: string): SignalHistoryEntry[] {
+  return mockHistoryPoints(ticker).map(p => ({
+    date: p.run_at.slice(0, 10),
+    prob_up: p.prob_up,
+    signal: p.signal,
+  }));
+}
+
+export function mockValidation(ticker: string): ValidationScorecard {
+  const r = rng(ticker.charCodeAt(0) * 13 + (ticker.charCodeAt(1) ?? 7) * 7);
+  const prob = 0.52 + r() * 0.38;
+  const signal: ValidationScorecard['signal'] = prob > 0.65 ? 'BUY' : prob > 0.48 ? 'HOLD' : 'SELL';
+  const evidence = Math.round(30 + r() * 60);
+  const trust = Math.round(55 + r() * 35);
+  const fit = Math.round(40 + r() * 55);
+  const regret = Math.round(10 + r() * 50);
+  const idea = Math.min(100, Math.round(0.4 * evidence + 0.3 * (100 - regret) + 0.3 * fit));
+  const conv: ValidationScorecard['conviction'] =
+    evidence >= 75 && trust >= 70 ? 'VERY HIGH' :
+    evidence >= 60 && trust >= 62 ? 'HIGH' :
+    evidence >= 40 ? 'MEDIUM' : 'LOW';
+  const verdict: ValidationScorecard['verdict'] =
+    signal === 'BUY'
+      ? (idea >= 72 ? 'AGREE' : idea >= 52 ? 'PARTIALLY AGREE' : 'DISAGREE')
+      : signal !== 'HOLD'
+        ? (idea >= 65 ? 'AGREE' : 'DISAGREE')
+        : 'NEUTRAL';
+  const trends: ValidationScorecard['signal_trend'][] = ['IMPROVING', 'STABLE', 'DETERIORATING', 'STABLE'];
+  const trend = trends[Math.floor(r() * 4)];
+  const history = mockHistoryPoints(ticker);
+  const portfolioDataAvailable = r() > 0.4;
+  const weightDelta = signal === 'BUY' ? 0.03 + r() * 0.02 : signal !== 'HOLD' ? -(r() * 0.04) : 0;
+  const portfolioImpact: PortfolioImpact = {
+    expected_return_impact: parseFloat(((signal === 'BUY' ? 1 : -1) * r() * 0.025).toFixed(4)),
+    volatility_impact: parseFloat((0.008 + r() * 0.010).toFixed(4)),
+    diversification_change: parseFloat(((r() - 0.5) * 0.12).toFixed(3)),
+    sector_concentration_change: parseFloat(weightDelta.toFixed(4)),
+    max_drawdown_impact: parseFloat((-r() * 0.015).toFixed(4)),
+    portfolio_fit_score: fit,
+    portfolio_data_available: portfolioDataAvailable,
+  };
+  return {
+    ticker: ticker.toUpperCase(),
+    signal,
+    prob_up: prob,
+    target_return: (r() - 0.3) * 0.2,
+    regime: 'neutral',
+    idea_score: idea,
+    evidence_strength: evidence,
+    portfolio_fit: fit,
+    regret_risk: regret,
+    trust_score: trust,
+    conviction: conv,
+    suggested_action:
+      conv === 'VERY HIGH' ? 'Core Position Candidate' :
+      conv === 'HIGH' ? 'Consider Building Position' :
+      conv === 'MEDIUM' ? 'Speculative Position Only' : 'Monitor Only',
+    verdict,
+    verdict_reasons: [
+      `Model confidence: ${Math.round(prob * 100)}% upward probability`,
+      'Neutral market regime — no strong regime tailwind or headwind',
+      `Model ROC-AUC ${(0.55 + r() * 0.2).toFixed(2)} — ${trust >= 65 ? 'above' : 'near'}-average reliability`,
+    ],
+    signal_trend: trend,
+    history_count: history.length,
+    history,
+    portfolio_impact: portfolioImpact,
+  };
+}

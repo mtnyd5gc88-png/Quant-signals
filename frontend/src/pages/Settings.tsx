@@ -2,6 +2,8 @@ import { useState, type ReactNode } from 'react';
 import { Lock } from 'lucide-react';
 import { api } from '../api/client';
 import { humanizeError } from '../utils/format';
+import { useInvestorProfile, isDefaultProfile, type InvestorProfile } from '../context/InvestorProfile';
+import { RISK_NAMES } from '../utils/investorProfile';
 import './Settings.css';
 
 function Toast({ message, type, onClose }: { message: string; type: 'success' | 'error' | 'info'; onClose: () => void }) {
@@ -155,6 +157,141 @@ function ApiConfigSection() {
   );
 }
 
+function ProfileBtnGroup<T extends number>({
+  value, options, onChange,
+}: {
+  value: T;
+  options: readonly string[];
+  onChange: (v: T) => void;
+}) {
+  return (
+    <div className="profile-btn-group">
+      {options.map((label, i) => (
+        <button
+          key={i}
+          className={`profile-btn${value === i + 1 ? ' active' : ''}`}
+          onClick={() => onChange((i + 1) as T)}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function ProfileEffectPreview({ profile }: { profile: InvestorProfile }) {
+  const rt = profile.riskTolerance;
+  const fitChangePct = (rt - 3) * 10;
+  const regretChangePct = Math.round((3 - rt) * 15);
+
+  const fitText = fitChangePct > 0 ? `+${fitChangePct}% for BUY`
+    : fitChangePct < 0 ? `${fitChangePct}% for BUY`
+    : 'Neutral';
+  const regretText = regretChangePct > 0 ? `+${regretChangePct}% sensitivity`
+    : regretChangePct < 0 ? `${regretChangePct}% sensitivity`
+    : 'Neutral';
+  const convText = rt <= 2 ? 'Stricter — higher evidence required'
+    : rt >= 4 ? 'Looser — acts on weaker signals'
+    : 'Standard thresholds';
+
+  const thNote = profile.timeHorizon === 1
+    ? 'Short horizon: near-threshold and deteriorating signals carry +10–15 regret risk'
+    : profile.timeHorizon === 3 ? 'Long horizon: improving trend signals receive −10 regret risk'
+    : null;
+
+  return (
+    <div className="profile-preview">
+      <div className="profile-preview-title">Score adjustments for this profile</div>
+      <div className="profile-preview-grid">
+        <div className="pp-row">
+          <span className="pp-label">Portfolio Fit</span>
+          <span className={`pp-value ${fitChangePct > 0 ? 'positive' : fitChangePct < 0 ? 'negative' : 'neutral'}`}>
+            {fitText}
+          </span>
+        </div>
+        <div className="pp-row">
+          <span className="pp-label">Regret Risk</span>
+          <span className={`pp-value ${regretChangePct > 0 ? 'negative' : regretChangePct < 0 ? 'positive' : 'neutral'}`}>
+            {regretText}
+          </span>
+        </div>
+        <div className="pp-row">
+          <span className="pp-label">Conviction</span>
+          <span className="pp-value neutral">{convText}</span>
+        </div>
+      </div>
+      {thNote && <div className="pp-note">{thNote}</div>}
+    </div>
+  );
+}
+
+function InvestorProfileSection() {
+  const { profile, setProfile } = useInvestorProfile();
+
+  const update = <K extends keyof InvestorProfile>(key: K, val: InvestorProfile[K]) => {
+    setProfile({ ...profile, [key]: val });
+  };
+
+  return (
+    <div className="settings-card">
+      <SettingRow
+        label="Risk Tolerance"
+        description="How much investment risk are you comfortable taking?"
+        control={
+          <ProfileBtnGroup
+            value={profile.riskTolerance}
+            options={['Very Cons.', 'Conservative', 'Moderate', 'Aggressive', 'Very Aggr.']}
+            onChange={v => update('riskTolerance', v)}
+          />
+        }
+      />
+      <div className="setting-divider" />
+      <SettingRow
+        label="Drawdown Tolerance"
+        description="Maximum portfolio loss you can accept before feeling distress"
+        control={
+          <ProfileBtnGroup
+            value={profile.drawdownTolerance}
+            options={['< 10%', '< 20%', '< 30%', '> 30%']}
+            onChange={v => update('drawdownTolerance', v)}
+          />
+        }
+      />
+      <div className="setting-divider" />
+      <SettingRow
+        label="Time Horizon"
+        description="How long you plan to hold positions before re-evaluating"
+        control={
+          <ProfileBtnGroup
+            value={profile.timeHorizon}
+            options={['Short < 3mo', 'Medium 3-12mo', 'Long > 1yr']}
+            onChange={v => update('timeHorizon', v)}
+          />
+        }
+      />
+      <div className="setting-divider" />
+      <SettingRow
+        label="Volatility Preference"
+        description="Preferred signal certainty level — low prefers high-conviction signals"
+        control={
+          <ProfileBtnGroup
+            value={profile.volatilityPreference}
+            options={['Low', 'Medium', 'High']}
+            onChange={v => update('volatilityPreference', v)}
+          />
+        }
+      />
+      <ProfileEffectPreview profile={profile} />
+      {!isDefaultProfile(profile) && (
+        <div className="profile-active-notice">
+          Profile active: <strong>{RISK_NAMES[profile.riskTolerance - 1]}</strong> investor —
+          scores in Idea Scorecard are personalized for your profile.
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function Settings() {
   const [rowsPerPage, setRowsPerPage] = useState('50');
   const [timezone, setTimezone] = useState('UTC');
@@ -162,6 +299,15 @@ export function Settings() {
   return (
     <div className="page-content">
       <div className="settings-sections">
+
+        <div className="settings-section">
+          <div className="settings-section-title">Investor Profile</div>
+          <div className="setting-desc" style={{ marginBottom: 12 }}>
+            Personalizes Portfolio Fit, Regret Risk, and Conviction scores in the Idea Scorecard.
+            A Conservative investor sees stricter thresholds; an Aggressive investor sees looser ones.
+          </div>
+          <InvestorProfileSection />
+        </div>
 
         <div className="settings-section">
           <div className="settings-section-title">Data Refresh</div>

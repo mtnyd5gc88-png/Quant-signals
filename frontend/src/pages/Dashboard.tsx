@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   ResponsiveContainer, Line, Area, AreaChart, CartesianGrid,
   XAxis, YAxis, Tooltip, BarChart, Bar, Cell,
@@ -8,8 +8,9 @@ import { SectionHeader } from '../components/SectionHeader';
 import { TimeRangeSelector, type TimeRange } from '../components/TimeRangeSelector';
 import { FreshnessTag } from '../components/FreshnessTag';
 import { SectionError } from '../components/SectionError';
-import { usePerformance, useEquityCurve, useDrawdown, useSignals } from '../api/hooks';
-import { fmtPct, fmtPctSigned, fmtNum, filterByRange } from '../utils/format';
+import { usePerformance, useEquityCurve, useDrawdown, useSignals, useSignalChanges } from '../api/hooks';
+import { fmtPct, fmtPctSigned, fmtNum, fmtRelTime, filterByRange } from '../utils/format';
+import type { SignalItem } from '../api/types';
 import './Dashboard.css';
 
 const CHART_TOOLTIP = {
@@ -23,6 +24,43 @@ const CHART_TOOLTIP = {
     boxShadow: '0 4px 12px rgba(26,32,53,0.10)',
   },
 };
+
+interface RecentValidation {
+  ticker: string;
+  company?: string;
+  signal: string;
+  prob_up: number;
+  ts: number;
+}
+
+function signalColor(signal: string): string {
+  if (signal === 'BUY') return 'var(--positive)';
+  if (signal === 'SELL' || signal === 'CASH' || signal === 'STAY IN CASH') return 'var(--negative)';
+  return 'var(--text-tertiary)';
+}
+
+function quickConviction(prob_up: number): { label: string; color: string } {
+  if (prob_up >= 0.75) return { label: 'HIGH', color: 'var(--accent)' };
+  if (prob_up >= 0.65) return { label: 'MEDIUM', color: 'var(--warn)' };
+  return { label: 'LOW', color: 'var(--text-tertiary)' };
+}
+
+function CompactSignalRow({ item, badge, warning }: { item: SignalItem; badge: { label: string; color: string }; warning?: boolean }) {
+  return (
+    <div className="dac-signal-row">
+      <div className="dac-row-left">
+        <span className="dac-row-ticker">{item.ticker}</span>
+        {item.company && <span className="dac-row-company">{item.company}</span>}
+      </div>
+      <div className="dac-row-right">
+        <span className="dac-row-prob" style={{ color: signalColor(item.signal) }}>{Math.round(item.prob_up * 100)}%</span>
+        <span className="dac-row-badge" style={{ color: badge.color, borderColor: badge.color }}>
+          {warning ? '⚠ ' : ''}{badge.label}
+        </span>
+      </div>
+    </div>
+  );
+}
 
 export function Dashboard() {
   const [range, setRange] = useState<TimeRange>('ALL');
@@ -40,9 +78,38 @@ export function Dashboard() {
     { name: 'CASH', count: signals.cash_count,  fill: 'var(--text-tertiary)' },
   ];
 
+  const topConviction = signals.items
+    .filter(i => i.signal === 'BUY' && i.prob_up >= 0.65)
+    .sort((a, b) => b.prob_up - a.prob_up)
+    .slice(0, 3);
+
+  const elevatedRisk = signals.items
+    .filter(i => i.signal === 'BUY' && i.prob_up >= 0.55 && i.prob_up < 0.65)
+    .sort((a, b) => a.prob_up - b.prob_up)
+    .slice(0, 3);
+
+  const top10Tickers = useMemo(
+    () => signals.items
+      .filter(i => i.signal === 'BUY')
+      .sort((a, b) => b.prob_up - a.prob_up)
+      .slice(0, 10)
+      .map(i => i.ticker),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [signals.items.map(i => i.ticker).join(',')],
+  );
+  const { changes: signalChanges, loading: changesLoading } = useSignalChanges(top10Tickers);
+  const top3Changes = signalChanges.slice(0, 3);
+
+  const [recentActivity] = useState<RecentValidation[]>(() => {
+    try {
+      return (JSON.parse(localStorage.getItem('qs_recent_validations') ?? '[]') as RecentValidation[]).slice(0, 5);
+    } catch { return []; }
+  });
+
   return (
     <div className="page-content">
-      {/* KPI Strip */}
+      {/* Portfolio Health */}
+      <div className="dash-section-label">Portfolio Health</div>
       <div className="kpi-strip">
         <KpiCard
           label="Annualized Return"
@@ -74,9 +141,106 @@ export function Dashboard() {
         />
       </div>
 
+      {/* Attention Sections */}
+      <div className="dashboard-insight-row">
+        <div className="dashboard-attention-card">
+          <div className="dac-header">
+            <span className="dac-title">Highest Conviction Ideas</span>
+            <span className="dac-subtitle">Strong directional signals today</span>
+          </div>
+          <div className="dac-list">
+            {topConviction.length > 0
+              ? topConviction.map(item => (
+                <CompactSignalRow key={item.ticker} item={item} badge={quickConviction(item.prob_up)} />
+              ))
+              : <div className="dac-empty">No high-conviction signals today</div>
+            }
+          </div>
+        </div>
+
+        <div className="dashboard-attention-card">
+          <div className="dac-header">
+            <span className="dac-title">Elevated Regret Risk</span>
+            <span className="dac-subtitle">BUY signals near the decision boundary</span>
+          </div>
+          <div className="dac-list">
+            {elevatedRisk.length > 0
+              ? elevatedRisk.map(item => (
+                <CompactSignalRow
+                  key={item.ticker}
+                  item={item}
+                  badge={{ label: `${Math.round(item.prob_up * 100)}% prob`, color: 'var(--warn)' }}
+                  warning
+                />
+              ))
+              : <div className="dac-empty">No near-threshold BUY signals</div>
+            }
+          </div>
+        </div>
+      </div>
+
+      {/* Largest Signal Changes */}
+      <div className="dashboard-attention-card">
+        <div className="dac-header">
+          <span className="dac-title">Largest Signal Changes</span>
+          <span className="dac-subtitle">Probability moves vs. prior run</span>
+        </div>
+        {changesLoading ? (
+          <div className="dac-placeholder"><span>Loading…</span></div>
+        ) : top3Changes.length > 0 ? (
+          <div className="dac-list">
+            {top3Changes.map(({ ticker, delta, signal, prob_up }) => (
+              <div key={ticker} className="dac-signal-row">
+                <div className="dac-row-left">
+                  <span className="dac-row-ticker">{ticker}</span>
+                  <span className="dac-row-company" style={{ color: signalColor(signal) }}>{signal}</span>
+                </div>
+                <div className="dac-row-right">
+                  <span className="dac-row-prob">{Math.round(prob_up * 100)}%</span>
+                  <span
+                    className="dac-row-badge"
+                    style={{
+                      color: delta > 0 ? 'var(--positive)' : 'var(--negative)',
+                      borderColor: delta > 0 ? 'var(--positive)' : 'var(--negative)',
+                    }}
+                  >
+                    {delta > 0 ? '+' : ''}{Math.round(delta * 100)}pp
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="dac-placeholder">
+            <span>History building…</span>
+            <span className="dac-placeholder-sub">Signal change tracking requires multiple database runs</span>
+          </div>
+        )}
+      </div>
+
+      {/* Recent Validation Activity */}
+      {recentActivity.length > 0 && (
+        <div className="dashboard-attention-card">
+          <div className="dac-header">
+            <span className="dac-title">Recent Validation Activity</span>
+            <span className="dac-subtitle">Tickers you recently examined</span>
+          </div>
+          <div className="dac-list">
+            {recentActivity.map(r => (
+              <div key={r.ticker} className="dac-recent-row">
+                <span className="dac-row-ticker">{r.ticker}</span>
+                {r.company && <span className="dac-row-company">{r.company}</span>}
+                <span className="dac-row-prob" style={{ color: signalColor(r.signal) }}>{r.signal}</span>
+                <span className="dac-row-prob">{Math.round(r.prob_up * 100)}%</span>
+                <span className="dac-recent-time">{fmtRelTime(new Date(r.ts).toISOString())}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Main Charts Row */}
       <div className="dashboard-row-2">
-        {/* Equity Curve */}
         <div className="chart-panel" style={{ flex: 2 }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 2 }}>
             <div className="chart-title">Equity Curve</div>
@@ -96,7 +260,7 @@ export function Dashboard() {
               <CartesianGrid strokeDasharray="1 3" stroke="var(--chart-grid)" strokeOpacity={0.5} vertical={false} />
               <XAxis dataKey="date" tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v.slice(0, 7)} interval="preserveStartEnd" />
               <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} width={40} tickFormatter={(v) => v.toFixed(1) + 'x'} />
-              <Tooltip {...CHART_TOOLTIP} formatter={(v, name) => [(v as number).toFixed(2) + 'x', String(name)]} />
+              <Tooltip {...CHART_TOOLTIP} formatter={(v: unknown, name: unknown) => [(v as number).toFixed(2) + 'x', String(name)]} />
               <Area type="monotone" dataKey="strategy" stroke="var(--chart-1)" strokeWidth={2} fill="url(#stratFill)" dot={false} name="Strategy" />
               <Line type="monotone" dataKey="benchmark" stroke="var(--text-tertiary)" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="Benchmark" />
             </AreaChart>
@@ -104,7 +268,6 @@ export function Dashboard() {
           <TimeRangeSelector value={range} onChange={setRange} />
         </div>
 
-        {/* Signal Distribution */}
         <div className="chart-panel" style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 2 }}>
             <div className="chart-title">Signal Distribution</div>
@@ -116,11 +279,7 @@ export function Dashboard() {
               <CartesianGrid strokeDasharray="1 3" stroke="var(--chart-grid)" strokeOpacity={0.5} vertical={false} />
               <XAxis dataKey="name" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} width={28} />
-              <Tooltip
-                {...CHART_TOOLTIP}
-                formatter={(value, name) => [value, name === 'count' ? 'Count' : String(name)]}
-                labelFormatter={() => ''}
-              />
+              <Tooltip {...CHART_TOOLTIP} formatter={() => ['']} labelFormatter={() => ''} />
               <Bar dataKey="count" radius={[3, 3, 0, 0]}>
                 {signalDist.map((entry, i) => (
                   <Cell key={i} fill={entry.fill} />
@@ -156,7 +315,7 @@ export function Dashboard() {
               <CartesianGrid strokeDasharray="1 3" stroke="var(--chart-grid)" strokeOpacity={0.5} vertical={false} />
               <XAxis dataKey="date" tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v.slice(0, 7)} interval="preserveStartEnd" />
               <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} width={40} tickFormatter={(v) => fmtPct(v)} />
-              <Tooltip {...CHART_TOOLTIP} formatter={(v) => [fmtPct(v as number), 'Drawdown']} />
+              <Tooltip {...CHART_TOOLTIP} formatter={(v: unknown) => [fmtPct(v as number), 'Drawdown']} />
               <Area type="monotone" dataKey="drawdown" stroke="var(--negative)" strokeWidth={1.5} fill="url(#ddFill)" dot={false} />
             </AreaChart>
           </ResponsiveContainer>

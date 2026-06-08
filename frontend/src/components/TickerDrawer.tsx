@@ -1,9 +1,20 @@
+import { useEffect } from 'react';
 import { X } from 'lucide-react';
 import { SignalBadge } from './SignalBadge';
 import { ProbBar } from './ProbBar';
+import { IdeaScorecard } from './IdeaScorecard';
+import { useValidation } from '../api/hooks';
 import type { SignalItem, PortfolioHolding } from '../api/types';
 import { fmtPrice, fmtPctSigned, colorClass } from '../utils/format';
 import './TickerDrawer.css';
+
+interface RecentValidation {
+  ticker: string;
+  company?: string;
+  signal: string;
+  prob_up: number;
+  ts: number;
+}
 
 const MAX_WEIGHT = 0.15;
 
@@ -28,6 +39,18 @@ interface Props {
 }
 
 export function TickerDrawer({ item, onClose, rocAuc, regime, portfolioHolding }: Props) {
+  const { data: scorecard, loading: scorecardLoading, error: scorecardError } = useValidation(item?.ticker ?? null);
+
+  useEffect(() => {
+    if (!item) return;
+    try {
+      const key = 'qs_recent_validations';
+      const prev: RecentValidation[] = JSON.parse(localStorage.getItem(key) ?? '[]');
+      const entry: RecentValidation = { ticker: item.ticker, company: item.company, signal: item.signal, prob_up: item.prob_up, ts: Date.now() };
+      localStorage.setItem(key, JSON.stringify([entry, ...prev.filter(r => r.ticker !== item.ticker)].slice(0, 20)));
+    } catch (_) { /* ignore */ }
+  }, [item?.ticker]); // eslint-disable-line react-hooks/exhaustive-deps
+
   if (!item) return null;
 
   const retVal = item.target_return ?? item.expected_return ?? 0;
@@ -110,6 +133,18 @@ export function TickerDrawer({ item, onClose, rocAuc, regime, portfolioHolding }
               <strong>{reliability}</strong> predictive reliability. Current market regime:{' '}
               <strong>{regime}</strong>.
             </p>
+          </section>
+
+          <div className="drawer-divider" />
+
+          {/* Idea Scorecard + Second Opinion */}
+          <section className="drawer-section">
+            <h4 className="drawer-section-title">Idea Scorecard</h4>
+            <IdeaScorecard
+              data={scorecard!}
+              loading={scorecardLoading || !scorecard}
+              error={scorecardError}
+            />
           </section>
 
           <div className="drawer-divider" />

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './auth/AuthContext';
+import { InvestorProfileProvider } from './context/InvestorProfile';
 import { AppShell } from './layout/AppShell';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
@@ -21,6 +22,7 @@ function ProtectedShell({ children }: { children: ReactNode }) {
 export default function App() {
   return (
     <BrowserRouter>
+      <InvestorProfileProvider>
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
@@ -43,6 +45,7 @@ export default function App() {
           </Route>
         </Routes>
       </AuthProvider>
+      </InvestorProfileProvider>
     </BrowserRouter>
   );
 }

@@ -106,3 +106,69 @@ export function useCalibration() {
 export function usePortfolio() {
   return useApi(api.portfolio, mock.mockPortfolio);
 }
+
+export interface SignalDelta {
+  ticker: string;
+  delta: number;
+  signal: string;
+  prob_up: number;
+}
+
+export function useSignalChanges(tickers: string[]) {
+  const [changes, setChanges] = useState<SignalDelta[]>([]);
+  const [loading, setLoading] = useState(false);
+  const key = tickers.join(',');
+
+  useEffect(() => {
+    if (tickers.length === 0) { setChanges([]); return; }
+    if (USE_MOCK) {
+      const computed = tickers.flatMap(t => {
+        const hist = mock.mockSignalHistory(t);
+        if (hist.length < 2) return [];
+        const delta = hist[hist.length - 1].prob_up - hist[hist.length - 2].prob_up;
+        return [{ ticker: t, delta, signal: hist[hist.length - 1].signal, prob_up: hist[hist.length - 1].prob_up }];
+      });
+      setChanges(computed.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta)));
+      return;
+    }
+    let cancelled = false;
+    setLoading(true);
+    Promise.all(
+      tickers.map(t => api.signalHistory(t).catch(() => [] as import('./types').SignalHistoryEntry[])),
+    ).then(histories => {
+      if (cancelled) return;
+      const deltas: SignalDelta[] = [];
+      histories.forEach((hist, i) => {
+        if (hist.length < 2) return;
+        const delta = hist[hist.length - 1].prob_up - hist[hist.length - 2].prob_up;
+        deltas.push({ ticker: tickers[i], delta, signal: hist[hist.length - 1].signal, prob_up: hist[hist.length - 1].prob_up });
+      });
+      setChanges(deltas.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta)));
+      setLoading(false);
+    }).catch(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+
+  return { changes, loading };
+}
+
+export function useValidation(ticker: string | null) {
+  const [data, setData] = useState<import('./types').ValidationScorecard | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!ticker) { setData(null); return; }
+    if (USE_MOCK) { setData(mock.mockValidation(ticker)); return; }
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    api.validate(ticker)
+      .then((d) => { if (!cancelled) { setData(d); setLoading(false); } })
+      .catch((e: Error) => { if (!cancelled) { setError(e.message); setLoading(false); } });
+    return () => { cancelled = true; };
+  }, [ticker]);
+
+  return { data, loading, error };
+}

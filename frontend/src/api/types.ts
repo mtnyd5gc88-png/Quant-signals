@@ -131,3 +131,50 @@ export interface PortfolioSummary {
   expected_return: number;
   last_updated: string;
 }
+
+export interface SignalHistoryPoint {
+  run_at: string;
+  prob_up: number;
+  signal: string;
+}
+
+export interface SignalHistoryEntry {
+  date: string;
+  prob_up: number;
+  signal: string;
+}
+
+export interface PortfolioImpact {
+  expected_return_impact: number;
+  volatility_impact: number;
+  diversification_change: number;
+  sector_concentration_change: number;
+  max_drawdown_impact: number;
+  portfolio_fit_score: number;
+  portfolio_data_available: boolean;
+}
+
+export interface ValidationScorecard {
+  ticker: string;
+  signal: string;
+  prob_up: number;
+  target_return?: number;
+  regime: string;
+
+  idea_score: number;
+  evidence_strength: number;
+  portfolio_fit: number;
+  regret_risk: number;
+  trust_score: number;
+
+  conviction: 'VERY HIGH' | 'HIGH' | 'MEDIUM' | 'LOW';
+  suggested_action: string;
+
+  verdict: 'AGREE' | 'PARTIALLY AGREE' | 'DISAGREE' | 'NEUTRAL';
+  verdict_reasons: string[];
+
+  signal_trend: 'IMPROVING' | 'STABLE' | 'DETERIORATING' | 'INSUFFICIENT DATA';
+  history_count: number;
+  history: SignalHistoryPoint[];
+  portfolio_impact?: PortfolioImpact;
+}
