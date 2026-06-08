@@ -69,43 +69,47 @@ export function Backtests() {
       <div className="chart-panel">
         <div className="chart-title">Equity Curve — Gross vs Net vs Benchmark</div>
         <div className="chart-subtitle">Cost drag clearly visualized between gross and net strategy lines</div>
-        <ResponsiveContainer width="100%" height={220}>
-          <AreaChart data={eqFiltered} margin={{ top: 4, right: 2, left: 0, bottom: 0 }}>
-            <defs>
-              <linearGradient id="stratFill2" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="var(--accent-dim)" stopOpacity={0.3} />
-                <stop offset="100%" stopColor="var(--accent-dim)" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="1 3" stroke="var(--chart-grid)" strokeOpacity={0.5} vertical={false} />
-            <XAxis dataKey="date" tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v.slice(0, 7)} interval="preserveStartEnd" />
-            <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} width={40} tickFormatter={(v) => v.toFixed(1) + 'x'} />
-            <Tooltip {...CHART_TOOLTIP} formatter={(v, n) => [(v as number).toFixed(3) + 'x', String(n)]} />
-            <Area type="monotone" dataKey="strategy" stroke="var(--chart-1)" strokeWidth={2} fill="url(#stratFill2)" dot={false} name="Gross Strategy" />
-            <Line type="monotone" dataKey="benchmark" stroke="var(--text-tertiary)" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="Benchmark" />
-          </AreaChart>
-        </ResponsiveContainer>
+        <div style={{ width: '100%', height: 220 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={eqFiltered} margin={{ top: 4, right: 2, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="stratFill2" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="var(--accent-dim)" stopOpacity={0.3} />
+                  <stop offset="100%" stopColor="var(--accent-dim)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="1 3" stroke="var(--chart-grid)" strokeOpacity={0.5} vertical={false} />
+              <XAxis dataKey="date" tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v.slice(0, 7)} interval="preserveStartEnd" />
+              <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} width={40} tickFormatter={(v) => v.toFixed(1) + 'x'} />
+              <Tooltip {...CHART_TOOLTIP} formatter={(v, n) => [(v as number).toFixed(3) + 'x', String(n)]} />
+              <Area type="monotone" dataKey="strategy" stroke="var(--chart-1)" strokeWidth={2} fill="url(#stratFill2)" dot={false} name="Gross Strategy" />
+              <Line type="monotone" dataKey="benchmark" stroke="var(--text-tertiary)" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="Benchmark" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
         <TimeRangeSelector value={range} onChange={setRange} />
       </div>
 
       {/* Drawdown */}
       <div className="chart-panel">
         <SectionHeader title="Drawdown" meta={`Max: ${fmtPct(perf.max_drawdown)}`} />
-        <ResponsiveContainer width="100%" height={180}>
-          <AreaChart data={ddFiltered} margin={{ top: 4, right: 2, left: 0, bottom: 0 }}>
-            <defs>
-              <linearGradient id="ddFill2" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="var(--negative)" stopOpacity={0.3} />
-                <stop offset="100%" stopColor="var(--negative)" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="1 3" stroke="var(--chart-grid)" strokeOpacity={0.5} vertical={false} />
-            <XAxis dataKey="date" tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v.slice(0, 7)} interval="preserveStartEnd" />
-            <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} width={40} tickFormatter={(v) => fmtPct(v)} />
-            <Tooltip {...CHART_TOOLTIP} formatter={(v) => [fmtPct(v as number), 'Drawdown']} />
-            <Area type="monotone" dataKey="drawdown" stroke="var(--negative)" strokeWidth={1.5} fill="url(#ddFill2)" dot={false} />
-          </AreaChart>
-        </ResponsiveContainer>
+        <div style={{ width: '100%', height: 180 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={ddFiltered} margin={{ top: 4, right: 2, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="ddFill2" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="var(--negative)" stopOpacity={0.3} />
+                  <stop offset="100%" stopColor="var(--negative)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="1 3" stroke="var(--chart-grid)" strokeOpacity={0.5} vertical={false} />
+              <XAxis dataKey="date" tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v.slice(0, 7)} interval="preserveStartEnd" />
+              <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} width={40} tickFormatter={(v) => fmtPct(v)} />
+              <Tooltip {...CHART_TOOLTIP} formatter={(v) => [fmtPct(v as number), 'Drawdown']} />
+              <Area type="monotone" dataKey="drawdown" stroke="var(--negative)" strokeWidth={1.5} fill="url(#ddFill2)" dot={false} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Monthly Returns Heatmap */}

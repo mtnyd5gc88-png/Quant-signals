@@ -52,13 +52,11 @@ input:focus, select:focus, textarea:focus {
   input, select, textarea {
     font-size: 16px;
   }
+  /* Prevent Recharts SVG from causing horizontal page overflow; allow vertical for tooltips */
   .recharts-wrapper,
   .recharts-surface {
     max-width: 100% !important;
-    overflow: hidden !important;
-  }
-  .chart-panel {
-    contain: layout style;
+    overflow-x: hidden !important;
   }
 }
 

@@ -87,7 +87,8 @@ export function Performance() {
           <span className="perf-legend-label">SPY (B&H)</span>
         </div>
         <div className="perf-chart-title">Equity Curve</div>
-        <ResponsiveContainer width="100%" height={320}>
+        <div style={{ width: '100%', height: 320 }}>
+        <ResponsiveContainer width="100%" height="100%">
           <LineChart data={eqData} margin={{ top: 4, right: 16, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="2 4" stroke="#e5e7eb" vertical={false} />
             <XAxis
@@ -135,12 +136,14 @@ export function Performance() {
             />
           </LineChart>
         </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Drawdown */}
       <div className="perf-panel">
         <div className="perf-chart-title">Drawdown</div>
-        <ResponsiveContainer width="100%" height={160}>
+        <div style={{ width: '100%', height: 160 }}>
+        <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={ddData} margin={{ top: 4, right: 16, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="ddFillPerf" x1="0" y1="0" x2="0" y2="1">
@@ -179,6 +182,7 @@ export function Performance() {
             />
           </AreaChart>
         </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Monthly Returns Heatmap */}

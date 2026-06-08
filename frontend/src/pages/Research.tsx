@@ -361,34 +361,38 @@ function SignalDistTab({ signals }: { signals: ReturnType<typeof useSignals>['da
       <div className="chart-panel">
         <div className="chart-title">Predicted Probability Histogram</div>
         <div className="chart-subtitle">Distribution of Prob_Up across all tickers in universe</div>
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={buckets} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="1 3" stroke="var(--chart-grid)" strokeOpacity={0.5} vertical={false} />
-            <XAxis dataKey="label" tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} width={32} />
-            <Tooltip {...CHART_TOOLTIP} />
-            <Bar dataKey="count" radius={[3, 3, 0, 0]}>
-              {buckets.map((b, i) => (
-                <Cell key={i} fill={b.mid < 0.4 ? 'var(--negative)' : b.mid < 0.6 ? 'var(--neutral)' : 'var(--positive)'} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+        <div style={{ width: '100%', height: 200 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={buckets} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="1 3" stroke="var(--chart-grid)" strokeOpacity={0.5} vertical={false} />
+              <XAxis dataKey="label" tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} width={32} />
+              <Tooltip {...CHART_TOOLTIP} />
+              <Bar dataKey="count" radius={[3, 3, 0, 0]}>
+                {buckets.map((b, i) => (
+                  <Cell key={i} fill={b.mid < 0.4 ? 'var(--negative)' : b.mid < 0.6 ? 'var(--neutral)' : 'var(--positive)'} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
       <div className="chart-panel">
         <div className="chart-title">Signal Breakdown</div>
-        <ResponsiveContainer width="100%" height={140}>
-          <BarChart data={signalDist} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="1 3" stroke="var(--chart-grid)" strokeOpacity={0.5} vertical={false} />
-            <XAxis dataKey="name" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} width={32} />
-            <Tooltip {...CHART_TOOLTIP} />
-            <Bar dataKey="count" radius={[3, 3, 0, 0]}>
-              {signalDist.map((d, i) => <Cell key={i} fill={d.fill} />)}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+        <div style={{ width: '100%', height: 140 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={signalDist} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="1 3" stroke="var(--chart-grid)" strokeOpacity={0.5} vertical={false} />
+              <XAxis dataKey="name" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} axisLine={false} tickLine={false} width={32} />
+              <Tooltip {...CHART_TOOLTIP} />
+              <Bar dataKey="count" radius={[3, 3, 0, 0]}>
+                {signalDist.map((d, i) => <Cell key={i} fill={d.fill} />)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );

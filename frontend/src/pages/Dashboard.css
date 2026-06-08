@@ -18,16 +18,13 @@
 .dashboard-row-2 {
   display: flex;
   gap: var(--space-4);
-  min-height: 0;
   min-width: 0;
-  overflow: hidden;
 }
 
 .dashboard-row-3 {
   display: flex;
   gap: var(--space-4);
   min-width: 0;
-  overflow: hidden;
 }
 
 .chart-panel {
@@ -284,8 +281,5 @@
     overflow: hidden;
     box-sizing: border-box;
     background: var(--bg-surface-1);
-    height: auto;
-    display: flex;
-    flex-direction: column;
   }
 }

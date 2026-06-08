@@ -69,7 +69,8 @@ export function ProbHistoryChart({ history, currentSignal }: Props) {
 
   return (
     <div className="prob-history-chart">
-      <ResponsiveContainer width="100%" height={120}>
+      <div style={{ width: '100%', height: 120 }}>
+      <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={points} margin={{ top: 8, right: 4, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
@@ -128,6 +129,7 @@ export function ProbHistoryChart({ history, currentSignal }: Props) {
           />
         </AreaChart>
       </ResponsiveContainer>
+      </div>
       <div className="prob-chart-legend">
         <span className="prob-chart-ref buy">— 65% strong</span>
         <span className="prob-chart-ref hold">— 55% threshold</span>

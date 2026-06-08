@@ -1,3 +1,9 @@
+.kpi-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .heatmap-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .heatmap-table { border-collapse: collapse; width: 100%; min-width: 580px; font-family: var(--font-mono); font-size: 11px; }
 .heatmap-table thead th {
