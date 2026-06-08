@@ -48,6 +48,7 @@ export function TickerDrawer({ item, onClose, rocAuc, regime, portfolioHolding }
       const prev: RecentValidation[] = JSON.parse(localStorage.getItem(key) ?? '[]');
       const entry: RecentValidation = { ticker: item.ticker, company: item.company, signal: item.signal, prob_up: item.prob_up, ts: Date.now() };
       localStorage.setItem(key, JSON.stringify([entry, ...prev.filter(r => r.ticker !== item.ticker)].slice(0, 20)));
+      window.dispatchEvent(new Event('qs:recent-updated'));
     } catch (_) { /* ignore */ }
   }, [item?.ticker]); // eslint-disable-line react-hooks/exhaustive-deps
 

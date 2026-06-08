@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   ResponsiveContainer, Line, Area, AreaChart, CartesianGrid,
   XAxis, YAxis, Tooltip, BarChart, Bar, Cell,
@@ -100,11 +100,19 @@ export function Dashboard() {
   const { changes: signalChanges, loading: changesLoading } = useSignalChanges(top10Tickers);
   const top3Changes = signalChanges.slice(0, 3);
 
-  const [recentActivity] = useState<RecentValidation[]>(() => {
-    try {
-      return (JSON.parse(localStorage.getItem('qs_recent_validations') ?? '[]') as RecentValidation[]).slice(0, 5);
-    } catch { return []; }
-  });
+  const [recentActivity, setRecentActivity] = useState<RecentValidation[]>([]);
+  useEffect(() => {
+    function read() {
+      try {
+        setRecentActivity(
+          (JSON.parse(localStorage.getItem('qs_recent_validations') ?? '[]') as RecentValidation[]).slice(0, 5),
+        );
+      } catch { setRecentActivity([]); }
+    }
+    read();
+    window.addEventListener('qs:recent-updated', read);
+    return () => window.removeEventListener('qs:recent-updated', read);
+  }, []);
 
   return (
     <div className="page-content">
